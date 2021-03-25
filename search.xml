@@ -18,4 +18,32 @@
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
   </entry>
+  <entry>
+    <title>Hexo启用搜索功能</title>
+    <url>/2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/</url>
+    <content><![CDATA[<h1 id="Hexo启用搜索功能"><a href="#Hexo启用搜索功能" class="headerlink" title="Hexo启用搜索功能"></a>Hexo启用搜索功能</h1><p>1.首先在Hexo的根目录下执行以下命令</p>
+<p><code>npm install hexo-generator-searchdb --save </code> </p>
+<p><img src="C:\Users\17473\AppData\Roaming\Typora\typora-user-images\image-20210325172142569.png" alt="image-20210325172142569"></p>
+<p>有WARN没关系，最后还是可以用的</p>
+<p>2.在全局配置文件_config.yml，新增如下内容</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br><span class="line">  <span class="attr">limit:</span> <span class="number">10000</span></span><br></pre></td></tr></table></figure>
+
+<p>3.在主题配置文件_config.yml修改local_search为true</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">local_search:</span><br><span class="line">    <span class="built_in">enable</span>: <span class="literal">true</span>```</span><br></pre></td></tr></table></figure>
+
+<p>4.新建一个页面，命名为 search 。命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo new page search</span><br></pre></td></tr></table></figure>
+
+<p>5.编辑刚新建的页面，将页面的类型设置为 search</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: search</span><br><span class="line">date: 2021-03-25 17:09:15</span><br><span class="line">type: &quot;search&quot;</span><br></pre></td></tr></table></figure>
+
+<p>6.执行hexo g和hexo d部署完成</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
 </search>
