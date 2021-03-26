@@ -10,10 +10,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="Fechin,"> 
-    <meta name="description" content="HTTP协议学习http和https的区别：
+    <meta name="description" content=" HTTP协议学习
+ http和https的区别：
+
 HTTP 的URL 以http:// 开头，而HTTPS 的URL 以https:// 开头
 HTTP 是不安全的，而 HTTPS 是安全的
-HTTP ,"> 
+H,"> 
     <meta name="author" content="一叶枯舟"> 
     <link rel="alternative" href="atom.xml" title="一叶枯舟" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -65,21 +67,27 @@ HTTP ,">
 
         </div>
         <div class="content markdown">
-            <h1 id="HTTP协议学习"><a href="#HTTP协议学习" class="headerlink" title="HTTP协议学习"></a>HTTP协议学习</h1><h2 id="http和https的区别："><a href="#http和https的区别：" class="headerlink" title="http和https的区别："></a>http和https的区别：</h2><ol>
+            <h1 id="http协议学习"><a class="markdownIt-Anchor" href="#http协议学习"></a> HTTP协议学习</h1>
+<h2 id="http和https的区别"><a class="markdownIt-Anchor" href="#http和https的区别"></a> http和https的区别：</h2>
+<ol>
 <li>HTTP 的URL 以http:// 开头，而HTTPS 的URL 以https:// 开头</li>
 <li>HTTP 是不安全的，而 HTTPS 是安全的</li>
 <li>HTTP 标准端口是80 ，而 HTTPS 的标准端口是443</li>
 <li>在OSI 网络模型中，HTTP工作于应用层，而HTTPS 的安全传输机制工作在传输层</li>
 <li>HTTP 无法加密，而HTTPS 对传输的数据进行加密</li>
-<li>HTTP无需证书，而HTTPS 需要CA机构wosign的颁发的SSL证书 </li>
+<li>HTTP无需证书，而HTTPS 需要CA机构wosign的颁发的SSL证书</li>
 </ol>
-<h2 id="http为什么是无状态协议？如何解决？"><a href="#http为什么是无状态协议？如何解决？" class="headerlink" title="http为什么是无状态协议？如何解决？"></a>http为什么是无状态协议？如何解决？</h2><p>HTTP 是一种不保存状态，即无状态（stateless）协议。HTTP 协议自身不对请求和响应之间的通信状态进行保存。也就是说在 HTTP 这个级别，协议对于发送过的请求或响应都不做持久化处理</p>
+<h2 id="http为什么是无状态协议如何解决"><a class="markdownIt-Anchor" href="#http为什么是无状态协议如何解决"></a> http为什么是无状态协议？如何解决？</h2>
+<p>HTTP 是一种不保存状态，即无状态（stateless）协议。HTTP 协议自身不对请求和响应之间的通信状态进行保存。也就是说在 HTTP 这个级别，协议对于发送过的请求或响应都不做持久化处理</p>
 <p><strong>解决：</strong></p>
 <ul>
-<li>基于Session实现的会话保持<br>在会话开始时（客户端第一次像服务器发送http请求），服务器将会话状态保存起来（本机内存或数据库中），然后分配一个会话标识（SessionId）给客户端，这个会话标识一般保存在客户端Cookie中，以后每次浏览器发送http请求都会带上Cookie中的SessionId到服务器，服务器拿到会话标识就可以把之前存储在服务器端的状态信息与会话联系起来，实现会话保持（如果遇到浏览器禁用Cookie的情况，则可以通过url重写的方式将会话标识放在url的参数里，也可实现会话保持）</li>
-<li>基于Cookie实现的会话保持<br>基于Cookie实现会话保持与上述基于Session实现会话保持的最主要区别是前者完全将会话状态信息存储在浏览器Cookie中，这样一来每次浏览器发送HTTP请求的时候都会带上状态信息，因此也就可以实现状态保持。</li>
+<li>基于Session实现的会话保持<br>
+在会话开始时（客户端第一次像服务器发送http请求），服务器将会话状态保存起来（本机内存或数据库中），然后分配一个会话标识（SessionId）给客户端，这个会话标识一般保存在客户端Cookie中，以后每次浏览器发送http请求都会带上Cookie中的SessionId到服务器，服务器拿到会话标识就可以把之前存储在服务器端的状态信息与会话联系起来，实现会话保持（如果遇到浏览器禁用Cookie的情况，则可以通过url重写的方式将会话标识放在url的参数里，也可实现会话保持）</li>
+<li>基于Cookie实现的会话保持<br>
+基于Cookie实现会话保持与上述基于Session实现会话保持的最主要区别是前者完全将会话状态信息存储在浏览器Cookie中，这样一来每次浏览器发送HTTP请求的时候都会带上状态信息，因此也就可以实现状态保持。</li>
 </ul>
-<h2 id="http常用的方法"><a href="#http常用的方法" class="headerlink" title="http常用的方法"></a>http常用的方法</h2><ul>
+<h2 id="http常用的方法"><a class="markdownIt-Anchor" href="#http常用的方法"></a> http常用的方法</h2>
+<ul>
 <li>GET： 用于请求访问已经被URI（统一资源标识符）识别的资源，可以通过URL传参给服务器</li>
 <li>POST：用于传输信息给服务器，主要功能与GET方法类似，但一般推荐使用POST方式。</li>
 <li>PUT： 传输文件，报文主体中包含文件内容，保存到对应URI位置。</li>
@@ -87,7 +95,8 @@ HTTP ,">
 <li>DELETE：删除文件，与PUT方法相反，删除对应URI位置的文件。</li>
 <li>OPTIONS：查询相应URI支持的HTTP方法。</li>
 </ul>
-<h2 id="HTTP请求报文与响应报文格式"><a href="#HTTP请求报文与响应报文格式" class="headerlink" title="HTTP请求报文与响应报文格式"></a>HTTP请求报文与响应报文格式</h2><p>请求报文包含四部分：</p>
+<h2 id="http请求报文与响应报文格式"><a class="markdownIt-Anchor" href="#http请求报文与响应报文格式"></a> HTTP请求报文与响应报文格式</h2>
+<p>请求报文包含四部分：</p>
 <p><img src="/2021/03/26/http/1.png" alt="1"></p>
 <ul>
 <li>a、请求行：包含请求方法、URI、HTTP版本信息</li>
@@ -99,14 +108,16 @@ HTTP ,">
 <p><img src="/2021/03/26/http/2.png" alt="2"></p>
 <p>常见的首部：</p>
 <ul>
-<li><strong>通用首部字段（请求报文与响应报文都会使用的首部字段）</strong><ul>
+<li><strong>通用首部字段（请求报文与响应报文都会使用的首部字段）</strong>
+<ul>
 <li>Date：创建报文时间</li>
 <li>Connection：连接的管理</li>
 <li>Cache-Control：缓存的控制</li>
 <li>Transfer-Encoding：报文主体的传输编码方式</li>
 </ul>
 </li>
-<li><strong>请求首部字段（请求报文会使用的首部字段）</strong><ul>
+<li><strong>请求首部字段（请求报文会使用的首部字段）</strong>
+<ul>
 <li>Host：请求资源所在服务器</li>
 <li>Accept：可处理的媒体类型</li>
 <li>Accept-Charset：可接收的字符集</li>
@@ -114,13 +125,15 @@ HTTP ,">
 <li>Accept-Language：可接受的自然语言</li>
 </ul>
 </li>
-<li><strong>响应首部字段（响应报文会使用的首部字段）</strong><ul>
+<li><strong>响应首部字段（响应报文会使用的首部字段）</strong>
+<ul>
 <li>Accept-Ranges：可接受的字节范围</li>
 <li>Location：令客户端重新定向到的URI</li>
 <li>Server：HTTP服务器的安装信息</li>
 </ul>
 </li>
-<li><strong>实体首部字段（请求报文与响应报文的的实体部分使用的首部字段）</strong><ul>
+<li><strong>实体首部字段（请求报文与响应报文的的实体部分使用的首部字段）</strong>
+<ul>
 <li>Allow：资源可支持的HTTP方法</li>
 <li>Content-Type：实体主类的类型</li>
 <li>Content-Encoding：实体主体适用的编码方式</li>
@@ -130,14 +143,16 @@ HTTP ,">
 </ul>
 </li>
 </ul>
-<h2 id="HTTPS工作原理"><a href="#HTTPS工作原理" class="headerlink" title="HTTPS工作原理"></a>HTTPS工作原理</h2><ul>
+<h2 id="https工作原理"><a class="markdownIt-Anchor" href="#https工作原理"></a> HTTPS工作原理</h2>
+<ul>
 <li>一、首先HTTP请求服务端生成证书，客户端对证书的有效期、合法性、域名是否与请求的域名一致、证书的公钥（RSA加密）等进行校验；</li>
 <li>二、客户端如果校验通过后，就根据证书的公钥的有效， 生成随机数，随机数使用公钥进行加密（RSA加密）；</li>
 <li>三、消息体产生的后，对它的摘要进行MD5（或者SHA1）算法加密，此时就得到了RSA签名；</li>
 <li>四、发送给服务端，此时只有服务端（RSA私钥）能解密。</li>
 <li>五、解密得到的随机数，再用AES加密，作为密钥（此时的密钥只有客户端和服务端知道）。</li>
 </ul>
-<h2 id="一次完整的HTTP请求"><a href="#一次完整的HTTP请求" class="headerlink" title="一次完整的HTTP请求"></a>一次完整的HTTP请求</h2><p>HTTP通信机制是在一次完整的HTTP通信过程中，Web浏览器与Web服务器之间将完成下列7个步骤：</p>
+<h2 id="一次完整的http请求"><a class="markdownIt-Anchor" href="#一次完整的http请求"></a> 一次完整的HTTP请求</h2>
+<p>HTTP通信机制是在一次完整的HTTP通信过程中，Web浏览器与Web服务器之间将完成下列7个步骤：</p>
 <ul>
 <li>建立TCP连接</li>
 </ul>
@@ -147,32 +162,37 @@ HTTP ,">
 </ul>
 <p>一旦建立了TCP连接，<strong>Web浏览器就会向Web服务器发送请求命令</strong>。例如：GET /sample/hello.jsp HTTP/1.1。</p>
 <ul>
-<li>Web浏览器发送请求头<ul>
+<li>Web浏览器发送请求头
+<ul>
 <li>浏览器发送其请求命令之后，还要以头信息的形式向Web服务器发送一些别的信息，<strong>之后浏览器发送了一空白行来通知服务器</strong>，它已经结束了该头信息的发送。</li>
 </ul>
 </li>
-<li>Web服务器应答<ul>
+<li>Web服务器应答
+<ul>
 <li>客户机向服务器发出请求后，服务器会客户机回送应答， <strong>HTTP/1.1 200 OK ，应答的第一部分是协议的版本号和应答状态码。</strong></li>
 </ul>
 </li>
-<li>Web服务器发送应答头<ul>
+<li>Web服务器发送应答头
+<ul>
 <li>正如客户端会随同请求发送关于自身的信息一样，服务器也会随同应答向用户发送关于它自己的数据及被请求的文档。</li>
 </ul>
 </li>
-<li>Web服务器向浏览器发送数据<ul>
+<li>Web服务器向浏览器发送数据
+<ul>
 <li>Web服务器向浏览器发送头信息后，它会发送一个空白行来表示头信息的发送到此为结束，接着，<strong>它就以Content-Type应答头信息所描述的格式发送用户所请求的实际数据</strong>。</li>
 </ul>
 </li>
-<li>Web服务器关闭TCP连接<ul>
+<li>Web服务器关闭TCP连接
+<ul>
 <li>一般情况下，一旦Web服务器向浏览器发送了请求数据，它就要关闭TCP连接，然后如果浏览器或者服务器在其头信息加入了这行代码：</li>
 </ul>
 </li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Connection:keep-alive</span><br></pre></td></tr></table></figure>
-
 <p>TCP连接在发送后将仍然保持打开状态，于是，浏览器可以继续通过相同的连接发送请求。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</p>
 <p><strong>建立TCP连接-&gt;发送请求行-&gt;发送请求头-&gt;（到达服务器）发送状态行-&gt;发送响应头-&gt;发送响应数据-&gt;断TCP连接</strong></p>
-<h2 id="常见的HTTP相应状态码"><a href="#常见的HTTP相应状态码" class="headerlink" title="常见的HTTP相应状态码"></a>常见的HTTP相应状态码</h2><ul>
+<h2 id="常见的http相应状态码"><a class="markdownIt-Anchor" href="#常见的http相应状态码"></a> 常见的HTTP相应状态码</h2>
+<ul>
 <li>200：请求被正常处理</li>
 <li>204：请求被受理但没有资源可以返回</li>
 <li>206：客户端只是请求资源的一部分，服务器只对请求的部分资源执行GET方法，相应报文中通过Content-Range指定范围的资源。</li>
@@ -188,22 +208,27 @@ HTTP ,">
 <li>500：服务器内部错误</li>
 <li>503：服务器正忙</li>
 </ul>
-<h2 id="HTTP1-1版本新特性"><a href="#HTTP1-1版本新特性" class="headerlink" title="HTTP1.1版本新特性"></a>HTTP1.1版本新特性</h2><ul>
+<h2 id="http11版本新特性"><a class="markdownIt-Anchor" href="#http11版本新特性"></a> HTTP1.1版本新特性</h2>
+<ul>
 <li>a、<strong>默认持久连接节省通信量</strong>，只要客户端服务端任意一端没有明确提出断开TCP连接，就一直保持连接，可以发送多次HTTP请求</li>
 <li>b、<strong>管线化，客户端可以同时发出多个HTTP请求，而不用一个个等待响应</strong></li>
-<li>c、<strong>断点续传</strong><ul>
+<li>c、<strong>断点续传</strong>
+<ul>
 <li><strong>实际上就是利用HTTP消息头使用分块传输编码，将实体主体分块传输。</strong></li>
 </ul>
 </li>
 </ul>
-<h2 id="HTTP优化方案"><a href="#HTTP优化方案" class="headerlink" title="HTTP优化方案"></a>HTTP优化方案</h2><ul>
+<h2 id="http优化方案"><a class="markdownIt-Anchor" href="#http优化方案"></a> HTTP优化方案</h2>
+<ul>
 <li><strong>TCP复用：TCP连接复用是将多个客户端的HTTP请求复用到一个服务器端TCP连接上，而HTTP复用则是一个客户端的多个HTTP请求通过一个TCP连接进行处理。前者是负载均衡设备的独特功能；而后者是HTTP 1.1协议所支持的新功能，目前被大多数浏览器所支持。</strong></li>
 <li><strong>内容缓存：将经常用到的内容进行缓存起来，那么客户端就可以直接在内存中获取相应的数据了。</strong></li>
 <li><strong>压缩：将文本数据进行压缩，减少带宽</strong></li>
 <li><strong>SSL加速（SSL Acceleration）：使用SSL协议对HTTP协议进行加密，在通道内加密并加速</strong></li>
 <li><strong>TCP缓冲：通过采用TCP缓冲技术，可以提高服务器端响应时间和处理效率，减少由于通信链路问题给服务器造成的连接负担。</strong></li>
 </ul>
+<blockquote>
 <p><em><strong>参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/yicixing7/article/details/79320821">https://blog.csdn.net/yicixing7/article/details/79320821</a></strong></em></p>
+</blockquote>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
@@ -239,7 +264,7 @@ HTTP ,">
     </div>
     
         <div class='side'>
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#HTTP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text">HTTP协议学习</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E5%92%8Chttps%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">http和https的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%EF%BC%9F%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">http为什么是无状态协议？如何解决？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">http常用的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87%E4%B8%8E%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.4.</span> <span class="toc-text">HTTP请求报文与响应报文格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTPS%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.</span> <span class="toc-text">HTTPS工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E5%AE%8C%E6%95%B4%E7%9A%84HTTP%E8%AF%B7%E6%B1%82"><span class="toc-number">1.6.</span> <span class="toc-text">一次完整的HTTP请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84HTTP%E7%9B%B8%E5%BA%94%E7%8A%B6%E6%80%81%E7%A0%81"><span class="toc-number">1.7.</span> <span class="toc-text">常见的HTTP相应状态码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP1-1%E7%89%88%E6%9C%AC%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-number">1.8.</span> <span class="toc-text">HTTP1.1版本新特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="toc-number">1.9.</span> <span class="toc-text">HTTP优化方案</span></a></li></ol></li></ol>	
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#http%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text"> HTTP协议学习</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E5%92%8Chttps%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.1.</span> <span class="toc-text"> http和https的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%8F%E8%AE%AE%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3"><span class="toc-number">1.2.</span> <span class="toc-text"> http为什么是无状态协议？如何解决？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text"> http常用的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87%E4%B8%8E%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.4.</span> <span class="toc-text"> HTTP请求报文与响应报文格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#https%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.</span> <span class="toc-text"> HTTPS工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E5%AE%8C%E6%95%B4%E7%9A%84http%E8%AF%B7%E6%B1%82"><span class="toc-number">1.6.</span> <span class="toc-text"> 一次完整的HTTP请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84http%E7%9B%B8%E5%BA%94%E7%8A%B6%E6%80%81%E7%A0%81"><span class="toc-number">1.7.</span> <span class="toc-text"> 常见的HTTP相应状态码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http11%E7%89%88%E6%9C%AC%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-number">1.8.</span> <span class="toc-text"> HTTP1.1版本新特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="toc-number">1.9.</span> <span class="toc-text"> HTTP优化方案</span></a></li></ol></li></ol>	
         </div>
     
 </div>
