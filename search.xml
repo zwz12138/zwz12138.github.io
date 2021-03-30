@@ -5,17 +5,17 @@
     <url>/2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/</url>
     <content><![CDATA[<h1 id="hexo启用搜索功能"><a class="markdownIt-Anchor" href="#hexo启用搜索功能"></a> Hexo启用搜索功能</h1>
 <p>1.首先在Hexo的根目录下执行以下命令</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save </span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">npm install hexo-generator-searchdb --save <br></code></pre></td></tr></table></figure>
 <p><img src="/2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/C:%5CUsers%5C17473%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20210325172142569.png" alt="image-20210325172142569"></p>
 <p>有WARN没关系，最后还是可以用的</p>
 <p>2.在全局配置文件_config.yml，新增如下内容</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br><span class="line">  <span class="attr">limit:</span> <span class="number">10000</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yml"><table><tr><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">search:</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">search.xml</span><br>  <span class="hljs-attr">field:</span> <span class="hljs-string">post</span><br>  <span class="hljs-attr">format:</span> <span class="hljs-string">html</span><br>  <span class="hljs-attr">limit:</span> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure>
 <p>3.在主题配置文件_config.yml修改local_search为true</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">local_search:</span><br><span class="line">    <span class="built_in">enable</span>: <span class="literal">true</span>```</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">local_search:<br>    <span class="hljs-built_in">enable</span>: <span class="hljs-literal">true</span>```<br></code></pre></td></tr></table></figure>
 <p>4.新建一个页面，命名为 search 。命令如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo new page search</span><br></pre></td></tr></table></figure>
+<figure class="highlight haxe"><table><tr><td class="code"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type">page</span> search<br></code></pre></td></tr></table></figure>
 <p>5.编辑刚新建的页面，将页面的类型设置为 search</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: search</span><br><span class="line">date: 2021-03-25 17:09:15</span><br><span class="line">type: &quot;search&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">title</span>: search<br><span class="hljs-attribute">date</span>: <span class="hljs-number">2021</span>-<span class="hljs-number">03</span>-<span class="hljs-number">25</span> <span class="hljs-number">17</span>:<span class="hljs-number">09</span>:<span class="hljs-number">15</span><br><span class="hljs-attribute">type</span>: <span class="hljs-string">&quot;search&quot;</span><br></code></pre></td></tr></table></figure>
 <p>6.执行hexo g和hexo d部署完成</p>
 ]]></content>
       <categories>
@@ -26,40 +26,21 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo启用搜索功能(图片测试)</title>
-    <url>/2021/03/25/phtest/</url>
-    <content><![CDATA[<h1 id="hexo启用搜索功能"><a class="markdownIt-Anchor" href="#hexo启用搜索功能"></a> Hexo启用搜索功能</h1>
-<p>1.首先在Hexo的根目录下执行以下命令</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save </span><br></pre></td></tr></table></figure>
-<p><img src="/2021/03/25/phtest/image-20210325172142569.png" alt="image-20210325172142569"></p>
-<p>有WARN没关系，最后还是可以用的</p>
-<p>2.在全局配置文件_config.yml，新增如下内容</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br><span class="line">  <span class="attr">limit:</span> <span class="number">10000</span></span><br></pre></td></tr></table></figure>
-<p>3.在主题配置文件_config.yml修改local_search为true</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">local_search:</span><br><span class="line">    <span class="built_in">enable</span>: <span class="literal">true</span>```</span><br></pre></td></tr></table></figure>
-<p>4.新建一个页面，命名为 search 。命令如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo new page search</span><br></pre></td></tr></table></figure>
-<p>5.编辑刚新建的页面，将页面的类型设置为 search</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: search</span><br><span class="line">date: 2021-03-25 17:09:15</span><br><span class="line">type: &quot;search&quot;</span><br></pre></td></tr></table></figure>
-<p>6.执行hexo g和hexo d部署完成</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Hello World</title>
     <url>/2021/03/24/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
 <h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start"></a> Quick Start</h2>
 <h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post"></a> Create a new post</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure>
 <p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
 <h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server"></a> Run server</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure>
 <p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
 <h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files"></a> Generate static files</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure>
 <p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
 <h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites"></a> Deploy to remote sites</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure>
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
   </entry>
@@ -187,7 +168,7 @@
 </ul>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Connection:keep-alive</span><br></pre></td></tr></table></figure>
+<figure class="highlight armasm"><table><tr><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">Connection:</span><span class="hljs-meta">keep</span>-alive<br></code></pre></td></tr></table></figure>
 <p>TCP连接在发送后将仍然保持打开状态，于是，浏览器可以继续通过相同的连接发送请求。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</p>
 <p><strong>建立TCP连接-&gt;发送请求行-&gt;发送请求头-&gt;（到达服务器）发送状态行-&gt;发送响应头-&gt;发送响应数据-&gt;断TCP连接</strong></p>
 <h2 id="常见的http相应状态码"><a class="markdownIt-Anchor" href="#常见的http相应状态码"></a> 常见的HTTP相应状态码</h2>
@@ -236,5 +217,24 @@
         <tag>web学习</tag>
         <tag>http</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Hexo启用搜索功能(图片测试)</title>
+    <url>/2021/03/25/phtest/</url>
+    <content><![CDATA[<h1 id="hexo启用搜索功能"><a class="markdownIt-Anchor" href="#hexo启用搜索功能"></a> Hexo启用搜索功能</h1>
+<p>1.首先在Hexo的根目录下执行以下命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">npm install hexo-generator-searchdb --save <br></code></pre></td></tr></table></figure>
+<p><img src="/2021/03/25/phtest/image-20210325172142569.png" alt="image-20210325172142569"></p>
+<p>有WARN没关系，最后还是可以用的</p>
+<p>2.在全局配置文件_config.yml，新增如下内容</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">search:</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">search.xml</span><br>  <span class="hljs-attr">field:</span> <span class="hljs-string">post</span><br>  <span class="hljs-attr">format:</span> <span class="hljs-string">html</span><br>  <span class="hljs-attr">limit:</span> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure>
+<p>3.在主题配置文件_config.yml修改local_search为true</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">local_search:<br>    <span class="hljs-built_in">enable</span>: <span class="hljs-literal">true</span>```<br></code></pre></td></tr></table></figure>
+<p>4.新建一个页面，命名为 search 。命令如下：</p>
+<figure class="highlight haxe"><table><tr><td class="code"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type">page</span> search<br></code></pre></td></tr></table></figure>
+<p>5.编辑刚新建的页面，将页面的类型设置为 search</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">title</span>: search<br><span class="hljs-attribute">date</span>: <span class="hljs-number">2021</span>-<span class="hljs-number">03</span>-<span class="hljs-number">25</span> <span class="hljs-number">17</span>:<span class="hljs-number">09</span>:<span class="hljs-number">15</span><br><span class="hljs-attribute">type</span>: <span class="hljs-string">&quot;search&quot;</span><br></code></pre></td></tr></table></figure>
+<p>6.执行hexo g和hexo d部署完成</p>
+]]></content>
   </entry>
 </search>
