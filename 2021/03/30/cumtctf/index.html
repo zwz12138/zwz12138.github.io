@@ -185,7 +185,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.4k 字
+      1.5k 字
     </span>
   
 
@@ -228,7 +228,9 @@
             <h1 style="display: none">CUMTCTF春季赛-PWN</h1>
             
             <div class="markdown-body">
-              <h1 id="pwn1"><a class="markdownIt-Anchor" href="#pwn1"></a> PWN1</h1>
+              <p>首先庆祝一下咋队得第二吧（原来是第二的，把密码学交了就显示第一了，当时没做出来）</p>
+<p><img src="/2021/03/30/cumtctf/%E7%AC%AC%E4%B8%80.png" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<h1 id="pwn1"><a class="markdownIt-Anchor" href="#pwn1"></a> PWN1</h1>
 <p>查看程序，逻辑是读取你输入的字符串，然后和CUMTCTF对比，如果通过就执行bin/sh</p>
 <p><img src="/2021/03/30/cumtctf/1.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>在比较前下个断点，进行调试，发现此时对比的是地址0x4008d5</p>
