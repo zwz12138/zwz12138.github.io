@@ -1,0 +1,165 @@
+---
+title: XXE 漏洞学习
+date: 2021-05-13 23:22:17
+tags: 
+     - web学习 
+categories:
+     - web学习 
+     - 学习
+
+---
+
+# upload-labs 学习
+
+## Pass-1
+
+直接上传webshell，发现报错，提示只能上传.jpg|.png|.gif类型的文件。
+
+![img](clip_image002.jpg)
+
+先把webshell的后缀改成jpg，然后上传，使用Burp抓包
+
+![img](clip_image004.jpg)
+
+圈住的地方是上传的文件名字，改成1.php，然后发送
+
+![img](clip_image006.jpg)
+
+可以看到成功上传了
+
+![img](clip_image008.jpg)
+
+使用菜刀可以成功连接
+
+![img](clip_image010.jpg)
+
+## Pass-2
+
+同样的方法，先把webshell的后缀改成jpg，然后抓包上传
+
+![img](clip_image012.jpg)
+
+ 
+
+这次把名字改成2.php，方便区分
+
+![img](clip_image014.jpg)
+
+菜刀连接成功
+
+![img](clip_image016.jpg)
+
+## Pass-3
+
+这里发现使用上面方法已经不行了，上传之后会被提示不允许上传asp，aspx，php，jsp后缀文件，应该是黑名单过滤
+
+![img](clip_image018.jpg)
+
+关于Apache服务器的一些绕过知识：
+
+可以上传例如php3, phtml后缀的文件绕过，前提是Apache的httpd.conf中配置有如下代码:
+
+AddType application/x-httpd-php .php .php3 .phtml
+
+服务器会将.php3, .phtml后缀的文件当成.php解析
+
+所以尝试上传.php3的文件
+
+![img](clip_image020.jpg)
+
+可以看到成功上传了
+
+![img](clip_image022.jpg)
+
+不过这里会被重命名
+
+![img](clip_image024.jpg)
+
+用菜刀能连接上
+
+![img](clip_image026.jpg)
+
+## Pass-4
+
+**注：这里需要5.6版本以下且未开启nts的php**
+
+查看源码，还是黑名单过滤，发现过滤了大多数文件名
+
+$deny_ext = array(".php",".php5",".php4",".php3",".php2",".php1",".html",".htm",".phtml",".pht",".pHp",".pHp5",".pHp4",".pHp3",".pHp2",".pHp1",".Html",".Htm",".pHtml",".jsp",".jspa",".jspx",".jsw",".jsv",".jspf",".jtml",".jSp",".jSpx",".jSpa",".jSw",".jSv",".jSpf",".jHtml",".asp",".aspx",".asa",".asax",".ascx",".ashx",".asmx",".cer",".aSp",".aSpx",".aSa",".aSax",".aScx",".aShx",".aSmx",".cEr",".sWf",".swf",".ini");
+
+但是没有过滤.htaccess文件
+
+**.htaccess****文件是Apache服务器中的一个配置文件，它负责相关目录下的网页配置。通过.htaccess文件，可以实现：网页301重定向、自定义404错误页面、改变文件扩展名、允许/阻止特定的用户或者目录的访问、禁止目录列表、配置默认文档等功能IIS平台上不存在该文件，该文件默认开启，启用和关闭在httpd.conf文件中配置**。
+
+就是说，我们只要能上传这个文件，就可以改变相应目录下的文件配置
+
+首先上传一个.htaccess文件内容为
+
+SetHandler application/x-httpd-php
+
+作用是使所有文件都被解析成PHP
+
+![img](clip_image028.jpg)
+
+抓包把文件名改为.htaccess
+
+![img](clip_image030.jpg)
+
+这时应该成功上传了
+
+![img](clip_image0322.jpg)
+
+然后尝试上传一个jpg的马
+
+![img](clip_image034.jpg)
+
+菜刀连接不上，但是这个jpg是确实可以解析成php的，把jpg内容修改为如下，重新上传
+
+![img](clip_image036.jpg)
+
+这个时候访问就可以看到jpg已经被解析为php了
+
+![img](clip_image038.jpg)
+
+## Pass-5
+
+查看源码过滤了.htaccess文件，而提示是上传目录存在readme.php文件
+
+![img](clip_image040.jpg)![img](clip_image042.jpg)
+
+这里我们用到一个.user.ini的文件，.user.ini实际上就是一个可以由用户“自定义”的php.ini，而有些配置项可以用来利用，比如auto_append_file，可以指定一个文件，自动包含在要执行的文件前，所以我们先上传一个名为.user.ini的文件，内容是auto_prepend_file=1.gif
+
+![img](clip_image044.jpg)
+
+然后我们上传一个1.gif的文件，内容为
+
+<?php
+
+ phpinfo(); 
+
+?>
+
+![img](clip_image046.jpg)
+
+当我们访问readme.php时，就可以调用1.gif的内容了
+
+如下，可以看到这里1.gif中的phpinfo函数被调用了
+
+![img](clip_image048.jpg)
+
+## Pass-6
+
+这里查看源码，里面相对pass-4少了$file_ext = strtolower($file_ext); //转换为小写
+
+这段代码，尝试采用.phP格式上传绕过
+
+![img](clip_image050.jpg)
+
+这里上传成功了
+
+![img](clip_image052.jpg)
+
+![img](clip_image054.jpg)
+
+ 
+

