@@ -1237,4 +1237,57 @@
         <tag>web学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>逆向TraceMe.exe</title>
+    <url>/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/</url>
+    <content><![CDATA[<h1 id="逆向tracemeexe"><a class="markdownIt-Anchor" href="#逆向tracemeexe"></a> 逆向TraceMe.exe</h1>
+<p>首先我们得找到关键函数，就是关键跳，修改后能够直接破解成功的步骤，我们知道这个程序是有对话框的，所以我们在window的对话框api上下断点</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image002.jpg" alt="img" style="zoom:80%;">
+<p>首先尝试随便输入用户名和序列号</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image004.jpg" alt="img" style="zoom:80%;">
+<p>可以看到这个时候触发了断点在0x75D4E290处</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image006.jpg" alt="img" style="zoom:80%;">
+<p>直接使用f9跳转到返回的地方，跳过一些api函数后，这里这两个我认为应该都是读取对话框的函数。</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image008.jpg" alt="img" style="zoom:80%;">
+<p>我们继续单步运行，这里注意到，当运行到图中所示地址时，eax和edx就出现了我们输入的内容</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image010.jpg" alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image012.jpg" alt="img" style="zoom:80%;">
+<p>之后会call 401340这个函数，我认为这个是一个关键函数</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image014.jpg" alt="img" style="zoom:80%;">
+<p>经过调试分析，这个函数的大概逻辑如下</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image016.jpg" alt="img" style="zoom:80%;">
+<p>0x405030的地方存储的数值如下</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image018.jpg" alt="img" style="zoom:80%;">
+<p>继续运行，可以看到ecx=7的时候就跳出了这个循环</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image020.jpg" alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image022.jpg" alt="img" style="zoom:80%;">
+<p>执行完之后，貌似得到2675，可能是密钥值，因为之后的函数把string2“ebp：2675“和string1”abcdefg“进行比较了</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image024.jpg" alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image026.jpg" alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image028.jpg" alt="img" style="zoom:80%;">
+<p>比较函数过后会来到这个地方，test eax，eax，表示eax为1时跳转，这里我们的eax是0，尝试修改为jne</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image030.jpg" alt="img" style="zoom:80%;">
+<p>之后可以看到是成功的，说明这个就是关键跳</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image032.jpg" alt="img" style="zoom:80%;">
+<p>我们要写一个注册机程序那就得先逆向他的加密代码，根据我们判断以下的逻辑</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image033.jpg" alt="img" style="zoom:80%;">
+<p>写出python脚本代码如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br>a=<span class="hljs-built_in">str</span>(raw_input(<span class="hljs-string">&quot;请输入用户名：&quot;</span>)) <br>yanzhen=[<span class="hljs-number">0x0C</span> ,<span class="hljs-number">0x0A</span> ,<span class="hljs-number">0x13</span> ,<span class="hljs-number">0x09</span> ,<span class="hljs-number">0x0C</span> ,<span class="hljs-number">0x0B</span> ,<span class="hljs-number">0x0A</span> ,<span class="hljs-number">0x08</span>]<br>edi=<span class="hljs-built_in">len</span>(a)<br><span class="hljs-comment">#print len(a)</span><br>ecx=<span class="hljs-number">3</span><br>esi=<span class="hljs-number">0</span><br>eax=<span class="hljs-number">0</span><br><span class="hljs-keyword">while</span> ecx&lt;edi:<br>  <span class="hljs-keyword">if</span> eax&gt;<span class="hljs-number">7</span>:<br>    eax=<span class="hljs-number">0</span><br>  ebx=<span class="hljs-number">0</span><br>  edx=<span class="hljs-number">0</span><br>  edx=<span class="hljs-built_in">ord</span>(a[ecx])<br>  ebx=yanzhen[eax]<br>  <span class="hljs-comment">#print &quot;ebx=&quot; + str(ebx)</span><br>  <span class="hljs-comment">#print &quot;edx=&quot; + str(edx)</span><br>  ebx=edx*ebx<br>  esi=ebx+esi<br>  ecx+=<span class="hljs-number">1</span><br>  eax+=<span class="hljs-number">1</span><br><span class="hljs-built_in">print</span> <span class="hljs-string">&quot;序列号为：&quot;</span>+ <span class="hljs-built_in">str</span>(esi)<br></code></pre></td></tr></table></figure>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image035.gif" alt="img" style="zoom:80%;">
+<p>验证</p>
+<p><img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image037.gif" alt="img" style="zoom:80%;"><img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image039.gif" alt="img" style="zoom:80%;"></p>
+]]></content>
+      <categories>
+        <category>逆向学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>逆向学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SploitFun Linux x86 Exploit 开发系列教程 学习</title>
+    <url>/2021/07/30/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[]]></content>
+  </entry>
 </search>
