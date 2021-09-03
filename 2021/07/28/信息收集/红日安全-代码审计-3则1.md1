@@ -1,0 +1,516 @@
+---
+title: 信息收集
+date: 2021-07-28 17:22:27
+tags: 
+     - web学习 
+categories:
+     - web学习 
+     - 学习
+
+---
+
+# 信息收集
+
+## 1.  厂商信息收集
+
+### 1.1资产查询
+
+启信宝： 启信宝-企业查询企业信用信息平台 (qixin.com)
+天眼查：天眼查-商业查询平台企业信息查询公司查询工商查询企业信用信息系统 (tianyancha.com)
+企查查：企查查-企业工商信息查询系统查企业查老板查风险就上企查查!(qcc.com)
+方法：主要通过这些查询网站查询产商的信息：网站域名、app、小程序、子公司、员工信息等。
+例：使用企查查，点击知识产权处可以查看到该公司备案号网站和app
+
+![图片1](图片1.png)
+
+七麦数据 https://www.qimai.cn/
+
+可以查询一些app信息
+
+![image-20210903152952582](image-20210903152952582.png)
+
+## 1.2 APP域名信息收集
+
+### GitHub - kelvinBen/AppInfoScanner: 
+
+ 
+
+一款适用于以HW行动/红队/渗透测试团队为场景的移动端(Android、iOS、WEB、H5、静态网站)信息收集扫描工具（https://github.com/kelvinBen/AppInfoScanner）
+
+基本命令：python3 app.py android -i app路径
+
+python3 app.py web -i web路径
+
+![image-20210903153148837](image-20210903153148837.png)
+
+## 1.3资产归属判断
+
+### Whois查询
+
+###  玉米网（http://www.yumi.com/tool/whois/more.html）
+
+![image-20210903153258530](image-20210903153258530.png)
+
+###  站长之家（http://whois.chinaz.com/）
+
+![image-20210903153454946](image-20210903153454946.png)
+
+## 1.4备案信息查询
+
+### ICP备案查询（https://beian.miit.gov.cn）
+
+### 站长之家 [ICP备案查询 - 站长工具 (chinaz.com)](http://icp.chinaz.com/)
+
+## 1.5指纹识别收集
+
+#### Railgun工具
+
+[lz520520/railgun (github.com)](https://github.com/lz520520/railgun)
+
+![image-20210903154013613](image-20210903154013613.png)
+
+### 在线指纹识别  Whatweb：http://whatweb.bugscaner.com/look/
+
+### TideFinger
+
+使用方式：python3 TideFinger.py -u http://www.123.com [-p 1] [-m 
+
+## 1.6网络空间搜索引擎
+
+### Fofa
+
+https://fofa.so/
+
+查询语法：
+
+https://fofa.so/help_articles/list?id=8#%E6%9F%A5%E8%AF%A2%E8%AF%AD%E6%B3%955
+
+### Zoomeye
+
+https://www.zoomeye.org/
+
+### Shodan
+
+https://www.shodan.io/
+
+### ⽃象资产情报
+
+https://arl.riskivy.com/
+
+![图形用户界面, 应用程序, 网站  描述已自动生成](file:///C:/Users/17473/AppData/Local/Temp/msohtmlclip1/01/clip_image024.png
+
+ 
+
+# 2.子域名枚举
+
+## 2.1在线子域名查询网站
+
+在线爆破 https://phpinfo.me/domain/
+
+ 
+
+## 2.2爆破工具
+
+### subDomainsBrute
+
+[lijiejie/subDomainsBrute: A fast sub domain brute tool for pentesters (github.com)](https://github.com/lijiejie/subDomainsBrute)
+
+可以和goby配合使用
+
+<img src="clip_image026.png" alt="图形用户界面, 文本, 应用程序  描述已自动生成" style="zoom: 67%;" />
+
+ 
+
+### OneForAll **一款功能强大的子域收集工具**
+
+[shmilylty/OneForAll: OneForAll是一款功能强大的子域收集工具 (github.com)](https://github.com/shmilylty/OneForAll)
+
+基本使用命令：
+
+python3 oneforall.py --target example.com run
+
+python3 oneforall.py --targets ./example.txt run
+
+### 水泽-信息收集自动化工具
+
+[0x727/ShuiZe_0x727: 信息收集自动化工具 (github.com)](https://github.com/0x727/ShuiZe_0x727)
+
+**使用方法**
+
+python3 ShuiZe.py -d domain.com   收集单一的根域名资产
+
+python3 ShuiZe.py --domainFile domain.txt  批量跑根域名列表
+
+python3 ShuiZe.py -c 192.168.1.0,192.168.2.0,192.168.3.0  收集C段资产
+
+python3 ShuiZe.py -f url.txt 对url里的网站漏洞检测
+
+python3 ShuiZe.py -d domain.com --justInfoGather 1  仅信息收集，不检测漏洞
+
+python3 ShuiZe.py -d domain.com --ksubdomain 0        不调用ksubdomain爆破子域名
+
+
+
+## 3. ip查询
+
+### 3.1 dns解析记录（查真实ip）
+
+http://www.siteinfotool.com/
+
+ http://toolbar.netcraft.com/site_report 
+
+https://dnsdumpster.com/
+
+ https://viewdns.info/iphistory/
+
+ https://asm.ca.com/
+
+ 或使用网络空间搜索引擎查询站点
+
+## 3.2 C段查询
+
+### C段查询归属
+
+http://ipwhois.cnnic.net.cn/
+
+[iP地址查询--手机号码查询归属地 | 邮政编码查询 | iP地址归属地查询 | 身份证号码验证在线查询网 (ip138.com)](https://www.ip138.com/)
+
+## 3.3 旁站查询（在同一服务器上）
+
+站长之家：
+
+http://stool.chinaz.com/same
+
+[旁站/C段 - 渗透测试工具箱 (gdpcisa.org)](https://pentest.gdpcisa.org/getdomain)
+
+## 3.4 IP反查域名
+
+https://dns.aizhan.com/
+
+# 4.主机发现/端口信息收集
+
+## Nmap
+
+官网：https://nmap.org/
+
+安装：
+
+**Mac os: brew install nmap**
+
+**Centos: yum install nmap**
+
+**Ubuntu: apt-get install nmap**
+
+ 
+
+**扫描方式**
+
+**TCP : -sT**
+
+**SYN : -sS**
+
+**ACK : -sA**
+
+**UDP : -sU**
+
+**RPC : -sR**
+
+**ICMP: -sP**
+
+**Disable Port Scan: -sn**
+
+**常见扫描方案**
+
+**扫描10000****端口、操作系统、版本**
+
+**nmap -T4 -A <Target>**
+
+**版本探测**
+
+**nmap -sV <Target>**
+
+**操作系统**
+
+**nmap -O <Target>**
+
+ 
+
+## Goby
+
+Goby可以一键扫描资产中的端口，自动分类资产类型
+
+ 
+
+# 5.Github 信息收集
+
+可以在所有公共GitHub存储库中搜索以下类型的信息，以及您有权访问的所有私有GitHub存储库
+
+搜索代码：
+
+in:name test       #仓库标题搜索含有关键字test
+
+in:descripton test     #仓库描述搜索含有关键字
+
+in:readme test      #Readme文件搜素含有关键字
+
+stars:>3000 test     #stars数量大于3000的搜索关键字
+
+stars:1000..3000 test  #stars数量大于1000小于3000的搜索关键字
+
+forks:>1000 test      #forks数量大于1000的搜索关键字
+
+forks:1000..3000 test  #forks数量大于1000小于3000的搜索关键字
+
+size:>=5000 test      #指定仓库大于5000k(5M)的搜索关键字
+
+pushed:>2019-02-12 test  #发布时间大于2019-02-12的搜索关键字
+
+created:>2019-02-12 test  #创建时间大于2019-02-12的搜索关键字
+
+user:test         #用户名搜素
+
+license:apache-2.0 test  #明确仓库的 LICENSE 搜索关键字
+
+language:java test     #在java语言的代码中搜索关键字
+
+user:test in:name test   #组合搜索,用户名test的标题含有test的
+
+使用 Github 进行邮件配置信息收集：（此处配合google使用）
+
+site:Github.com smtp
+
+site:Github.com smtp @qq.com
+
+site:Github.com smtp @126.com
+
+site:Github.com smtp @163.com
+
+site:Github.com smtp @sina.com.cn
+
+site:Github.com smtp password
+
+site:Github.com String password smtp
+
+使用Github进行数据库信息收集：（此处配合google使用）
+
+site:Github.com sa password
+
+site:Github.com root password
+
+site:Github.com User ID=’sa’;Password
+
+site:Github.com inurl:sql
+
+ 
+
+ 
+
+# 6.敏感目录信息/目录扫描
+
+## 御剑目录扫描工具
+
+[shenyushun/py-webscanner: 练手写的网站后台扫描器，字典在御剑基础上新增了一些，共1097802条不重复数据。 (github.com)](https://github.com/shenyushun/py-webscanner)
+
+## BBscan
+
+[lijiejie/BBScan: A fast vulnerability scanner (github.com)](https://github.com/lijiejie/BBScan)
+
+使用：py -2 BBScan.py -f url.txt
+
+
+
+## Drib
+
+Kal集成工具，使用方式：
+
+使用：dirb+url
+
+## Wpscan-针对wordpress的漏洞扫描工具
+
+需要通过在线识别工具查询 https://xxx.com的cms为wordpress。
+
+# 7.Google 语法查询
+
+**google hack****快速生成小工具：**
+
+http://www.0xby.com/g.html
+
+inurl://admin/login.php 查找管理员登录页面
+
+inurl:/phpmyadmin/index.php  查找后台数据库管理页面
+
+inurl:Login admin 返回url中含有 Login 和 admin 的网页
+
+site:baidu.com inurl:Login  只在baidu.com 中查找url中含有 Login的网页
+
+site:baidu.com filetype:pdf  只返回baidu.com站点上文件类型为pdf的网页
+
+link:www.baidu.com  返回所有包含指向 www.baidu.com 的网页
+
+related:www.llhc.edu.cn 返回与 www.llhc.edu.cn 网页布局相似的页面
+
+info:www.baidu.com 返回百度的一些信息
+
+define:Hacker 返回关于Hacker的定义
+
+site:xx.com intext:管理 site:xx.com inurl:login site:xx.com intitle:后台   查找网站后台
+
+site:xx.com filetype:php 查看服务器使用的程序
+
+site:xx.com inurl:file site:xx.com inurl:load 查看上传漏洞
+
+# 8.信息泄漏
+
+## spring boot信息泄露字典 
+
+```
+/%20/swagger-ui.html 
+/actuator 
+/actuator/auditevents 
+/actuator/beans 
+/actuator/conditions 
+/actuator/configprops 
+/actuator/env 
+/actuator/health 
+/actuator/heapdump 
+/actuator/httptrace 
+/actuator/hystrix.stream 
+/actuator/info 
+/actuator/jolokia 
+/actuator/logfile 
+/actuator/loggers 
+/actuator/mappings 
+/actuator/metrics 
+/actuator/scheduledtasks 
+/actuator/swagger-ui.html 
+/actuator/threaddump 
+/actuator/trace 
+/api.html 
+/api/index.html 
+/api/swagger-ui.html 
+/api/v2/api-docs 
+/api-docs 
+/auditevents 
+/autoconfig 
+/beans 
+/caches 
+/cloudfoundryapplication 
+/conditions 
+/configprops 
+/distv2/index.html 
+/docs 
+/druid/index.html 
+/druid/login.html 
+/druid/websession.html 
+/dubbo-provider/distv2/index.html 
+/dump 
+/entity/all 
+/env 
+/env/(name) 
+/eureka 
+/flyway 
+/gateway/actuator 
+/gateway/actuator/auditevents 
+/gateway/actuator/beans
+/gateway/actuator/conditions 
+/gateway/actuator/configprops 
+/gateway/actuator/env 
+/gateway/actuator/health 
+/gateway/actuator/heapdump 
+/gateway/actuator/httptrace 
+/gateway/actuator/hystrix.stream 
+/gateway/actuator/info 
+/gateway/actuator/jolokia 
+/gateway/actuator/logfile 
+/gateway/actuator/loggers 
+/gateway/actuator/mappings 
+/gateway/actuator/metrics 
+/gateway/actuator/scheduledtasks 
+/gateway/actuator/swagger-ui.html 
+/gateway/actuator/threaddump 
+/gateway/actuator/trace 
+/health 
+/heapdump 
+/heapdump.json 
+/httptrace 
+/hystrix 
+/hystrix.stream 
+/info 
+/intergrationgraph 
+/jolokia 
+/jolokia/list 
+/liquibase 
+/logfile 
+/loggers 
+/mappings 
+/metrics 
+/monitor 
+/prometheus 
+/refresh 
+/scheduledtasks 
+/sessions 
+/shutdown 
+/spring-security-oauth-resource/swagger-ui.html 
+/spring-security-rest/api/swagger-ui.html 
+/static/swagger.json 
+/sw/swagger-ui.html 
+/swagger 
+/swagger/codes 
+/swagger/index.html 
+/swagger/static/index.html 
+/swagger/swagger-ui.html 
+/swagger-dubbo/api-docs 
+/swagger-ui 
+/swagger-ui.html
+/swagger-ui/html 
+/swagger-ui/index.html 
+/system/druid/index.html 
+/template/swagger-ui.html 
+/threaddump 
+/trace 
+/user/swagger-ui.html 
+/v1.1/swagger-ui.html 
+/v1.2/swagger-ui.html 
+/v1.3/swagger-ui.html 
+/v1.4/swagger-ui.html 
+/v1.5/swagger-ui.html 
+/v1.6/swagger-ui.html 
+/v1.7/swagger-ui.html 
+/v1.8/swagger-ui.html 
+/v1.9/swagger-ui.html 
+/v2.0/swagger-ui.html 
+/v2.1/swagger-ui.html 
+/v2.2/swagger-ui.html 
+/v2.3/swagger-ui.html 
+/v2/swagger.json 
+/webpage/system/druid/index.html 
+
+```
+
+
+
+ 
+
+## 网盘信息泄漏
+
+凌风云：https://www.lingfengyun.com/ 
+
+蓝菊花：http://www.lanjuhua.com/ 
+
+大力盘：https://www.dalipan.com/ 
+
+猪猪盘：http://www.zhuzhupan.com/ 
+
+PanSou：http://www.pansou.com/ 
+
+盘飞飞：https://panfeifei.com/ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
