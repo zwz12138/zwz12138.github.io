@@ -18,7 +18,7 @@
   <meta name="author" content="一叶枯舟">
   <meta name="keywords" content="">
   
-  <title>ATT&amp;CK红队评估二 内网靶场记录 - 一叶枯舟</title>
+  <title>记录一次内网不出网cs上线渗透操作过程 - 一叶枯舟</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -163,7 +163,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="ATT&CK红队评估二 内网靶场记录">
+            <span class="h2" id="subtitle" title="记录一次内网不出网cs上线渗透操作过程">
               
             </span>
 
@@ -173,8 +173,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-03 12:23" pubdate>
-        2021年10月3日 中午
+      <time datetime="2021-11-17 17:22" pubdate>
+        2021年11月17日 下午
       </time>
     </span>
   
@@ -185,7 +185,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      897 字
+      371 字
     </span>
   
 
@@ -195,7 +195,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      9
+      4
        分钟
     </span>
   
@@ -225,68 +225,33 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">ATT&amp;CK红队评估二 内网靶场记录</h1>
+            <h1 style="display: none">记录一次内网不出网cs上线渗透操作过程</h1>
             
             <div class="markdown-body">
-              <h1 id="attck红队评估二套靶场"><a class="markdownIt-Anchor" href="#attck红队评估二套靶场"></a> <strong>ATT&amp;CK红队评估二套靶场</strong></h1>
-<h2 id="0x00-环境搭建"><a class="markdownIt-Anchor" href="#0x00-环境搭建"></a> 0x00 环境搭建</h2>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005203929704.png" srcset="/img/loading.gif" lazyload alt="image-20211005203929704" style="zoom: 80%;">
-<p>​		这里有个坑，就是WEB靶机密码是不对的，就离谱，我网上找了半天也没看到有人说这个问题，最后看到一个师傅的博客上说web靶机密码不对可以还原虚拟机快照，WEB靶机恢复到快照1.3即可</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005204330139.png" srcset="/img/loading.gif" lazyload alt="image-20211005204330139" style="zoom:80%;">
-<p>靶机配置：</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006223721115.png" srcset="/img/loading.gif" lazyload alt="image-20211006223721115" style="zoom:80%;">
-<h2 id="0x01-外网信息收集"><a class="markdownIt-Anchor" href="#0x01-外网信息收集"></a> 0x01 外网信息收集</h2>
-<p><strong>注：我这搭建的的环境不太对劲，不管我怎么操作，WEB机器一直连不上域网络，而且登陆就会提示此工作站与域的信任关系失效，猜测应该和配置这个靶场的时间有关了，最后我只能先用本地administrator账号启动web服务</strong></p>
-<p>​		攻击机在192.168.111.128，先进行端口服务扫描</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005231017582.png" srcset="/img/loading.gif" lazyload alt="image-20211005231017582" style="zoom:80%;">
-<p>看到7001开放weblogic服务，访问console目录发现有登陆页面</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005231157395.png" srcset="/img/loading.gif" lazyload alt="image-20211005231157395" style="zoom:80%;">
-<p>GitHub上找了一个weblogic扫描工具进行扫描https://github.com/tangxiaofeng7/Weblogic-scan，存在cve-2019-2725漏洞</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005231627720.png" srcset="/img/loading.gif" lazyload alt="image-20211005231627720" style="zoom:80%;">
-<h2 id="0x02-利用"><a class="markdownIt-Anchor" href="#0x02-利用"></a> 0x02 利用</h2>
-<p>然后随便找了个利用工具上传冰蝎马</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005232541381.png" srcset="/img/loading.gif" lazyload alt="image-20211005232541381" style="zoom:80%;">
-<p>使用工具连接</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/211005232733022.png" srcset="/img/loading.gif" lazyload alt="image-20211005232733022" style="zoom: 67%;">
-<p>执行命令查看基本信息，可以看到机器有双网卡，有存在域de1ay下</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005233002342.png" srcset="/img/loading.gif" lazyload alt="image-20211005233002342" style="zoom:80%;">
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005233104949.png" srcset="/img/loading.gif" lazyload alt="image-20211005233104949" style="zoom:80%;">
-<p>使用cs上线</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211005234435060.png" srcset="/img/loading.gif" lazyload alt="image-20211005234435060" style="zoom:80%;">
-<p>冰蝎执行powershell上线</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006000431936.png" srcset="/img/loading.gif" lazyload alt="image-20211006000431936" style="zoom:80%;">
-<p>这里执行太久没有反应，我就多弄了一下，然后就这样了，emmm</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006000528210.png" srcset="/img/loading.gif" lazyload alt="image-20211006000528210" style="zoom:80%;">
-<p>beacon提权</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006001051755.png" srcset="/img/loading.gif" lazyload alt="image-20211006001051755" style="zoom:80%;">
-<p>看到密码是1qaz@WSX</p>
-<p><img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006001551621.png" srcset="/img/loading.gif" lazyload alt="image-20211006001551621"></p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006002034050.png" srcset="/img/loading.gif" lazyload alt="image-20211006002034050" style="zoom:80%;">
-<p>内外网端口探测，beacon命令portscan，我这环境和配置有点问题，其实我这台WEB机器不能连接上delay的域网络，登陆不了域内账号，我试了很多遍，最后只能先使用本地账号开启web服务，理论上这里可以看到10.10.10.201的pc机器。</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006214921960.png" srcset="/img/loading.gif" lazyload alt="image-20211006214921960" style="zoom:80%;">
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006215008478.png" srcset="/img/loading.gif" lazyload alt="image-20211006215008478" style="zoom:80%;">
-<p>由于以上原因，我先跳过横向移动过程，理论上面端口扫描是可以看得到域内10.10.10.201的win7的pc机的，这里直接手动上线这台机器进行下一步操作了，emmm。</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006215410344.png" srcset="/img/loading.gif" lazyload alt="image-20211006215410344" style="zoom:80%;">
-<p>看域的名称</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006223346131.png" srcset="/img/loading.gif" lazyload alt="image-20211006223346131" style="zoom:80%;">
-<p>再次扫描域网段10.10.10.0/24，发现10.10.10.10有可能就是域控</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image4036398.png" srcset="/img/loading.gif" lazyload alt="image-20211006224036398" style="zoom:80%;">
-<h2 id="0x03-pth攻击"><a class="markdownIt-Anchor" href="#0x03-pth攻击"></a> 0x03 pth攻击</h2>
-<p>先抓取这台机器上的账号密码，然后pth攻击</p>
-<p><img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006225229969.png" srcset="/img/loading.gif" lazyload alt="image-20211006225229969"></p>
-<p>不过我这使用本机监听失败了，因为这个DC不出网，不过我看网上payload使用smb监听也失败了，emmm，可能真是我这个环境配的有问题，先到这，后面研究下，或者先换个靶场做</p>
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006225536118.png" srcset="/img/loading.gif" lazyload alt="image-20211006225536118" style="zoom:80%;">
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image-20211006225714893.png" srcset="/img/loading.gif" lazyload alt="image-20211006225714893" style="zoom:80%;">
-<img src="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/image226.png" srcset="/img/loading.gif" lazyload alt="image-20211006230321226" style="zoom:80%;">
-<h2 id="0x04-使用其他漏洞渗透"><a class="markdownIt-Anchor" href="#0x04-使用其他漏洞渗透"></a> 0x04 使用其他漏洞渗透</h2>
-<p>​		看网上说可以使用MS17010，加msf派生shell，后续测试</p>
-<h2 id="0x05-权限维持知识"><a class="markdownIt-Anchor" href="#0x05-权限维持知识"></a> 0x05 权限维持(知识)</h2>
-<p><strong>基本知识：</strong></p>
-<p>做权限维持方式很多,粘滞键、启动项、影子用户等等。这次是拿到域控,这种情况下,黄金票据是一个很好的维权手段 黄金票据是伪造票据授予票据（TGT），也被称为认证票据。TGT仅用于向域控制器上的密钥分配中心（KDC）证明用户已被其他域控制器认证。</p>
-<h3 id="黄金票据的条件要求"><a class="markdownIt-Anchor" href="#黄金票据的条件要求"></a> <strong>黄金票据的条件要求</strong>：</h3>
-<p>1.域名称2.域的SID值3.域的KRBTGT账户NTLM密码哈希4.伪造用户名</p>
-<p>黄金票据可以在拥有普通域用户权限和KRBTGT账号的哈希的情况下用来获取域管理员权限，上面已经获得域控的 system 权限了，还可以使用黄金票据做权限维持，当域控权限掉后，在通过域内其他任意机器伪造票据重新获取最高权限。</p>
-<p><strong>也就是需要拿到域内KRBTGT账户，通常在DC上抓取密码</strong></p>
+              <h1 id="记录一次内网不出网cs上线渗透"><a class="markdownIt-Anchor" href="#记录一次内网不出网cs上线渗透"></a> 记录一次内网不出网cs上线渗透</h1>
+<h2 id="0x00"><a class="markdownIt-Anchor" href="#0x00"></a> 0x00</h2>
+<p>因为遇到一个不出网的站并且拿到了shell，就想试试免杀上线cs。</p>
+<h2 id="0x01-pystinger使用"><a class="markdownIt-Anchor" href="#0x01-pystinger使用"></a> 0x01 pystinger使用</h2>
+<p>这次用的是<a target="_blank" rel="noopener" href="https://github.com/FunnyWolf/pystinger">FunnyWolf/pystinger: Bypass firewall for traffic forwarding using webshell 一款使用webshell进行流量转发的出网工具 (github.com)</a> ，来实现的。</p>
+<p><strong>1.首先在站点上传他们的服务端的webshell，访问后会显示以下情况。</strong></p>
+<p>![image-20211129104341833](D:\onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129104341833.png)</p>
+<p><strong>2.然后需要在目标机器上运行stinger_server.exe</strong></p>
+<p>这里参考网上文章，先把stinger_server.exe上传到服务器，这里创建一个vbs文件，内容如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">Set ws = CreateObject(&quot;Wscript.Shell&quot;)<br>ws.run &quot;cmd /c C:\xxx\xxx\stinger_server.exe 0.0.0.0&quot;,vbhide<br></code></pre></td></tr></table></figure>
+<p>上传vbs文件后运行即可</p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129110545112.png" srcset="/img/loading.gif" lazyload alt="image-20211129110545112" style="zoom:80%;">
+<p>直接运行vbs文件即可，然后用tasklist查看一下进程是否有stinger_server.exe</p>
+<p><strong>3.然后在vps上启动stinger_client，命令</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">.<span class="hljs-regexp">/stinger_client -w http:/</span><span class="hljs-regexp">/example.com:8080/</span>proxy.jsp(webshell路径) -l <span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span> -p <span class="hljs-number">60000</span><br></code></pre></td></tr></table></figure>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129105046596.png" srcset="/img/loading.gif" lazyload alt="image-20211129105046596" style="zoom:80%;">
+<h2 id="0x02-cs使用"><a class="markdownIt-Anchor" href="#0x02-cs使用"></a> 0x02 CS使用</h2>
+<p>上面操作进行完之后，需要在cs中创建一个监听器，host填的是目标机器的内网ip地址</p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129111155364.png" srcset="/img/loading.gif" lazyload alt="image-20211129111155364" style="zoom:67%;">
+<p>对了，这台机器使用tasklist看到有360的进程，所以就顺便试了免杀，用的是<a target="_blank" rel="noopener" href="https://github.com/1y0n/AV_Evasion_Tool">1y0n/AV_Evasion_Tool: 掩日 - 免杀执行器生成工具 (github.com)</a></p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129110152221.png" srcset="/img/loading.gif" lazyload alt="image-20211129110152221" style="zoom: 50%;">
+<p>然后cs导出c的payload，拖入生成exe。</p>
+<p>上传后直接运行，cs里显示上线是127.0.0.1</p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129164424229.png" srcset="/img/loading.gif" lazyload alt="image-20211129164424229" style="zoom:67%;">
 
             </div>
             <hr>
@@ -324,9 +289,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/">
+                      <a href="/2021/11/26/%EF%BC%88CVE-2018-6893%EF%BC%89Finecms-5-2-0-SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%EF%BC%88dns%E6%B3%A8%E5%85%A5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%EF%BC%89%E8%AE%B0%E5%BD%95/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">记录一次内网不出网cs上线渗透操作过程</span>
+                        <span class="hidden-mobile">（CVE-2018-6893）Finecms 5.2.0 SQL注入漏洞（dns注入+时间盲注）记录</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -334,8 +299,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A4%8D%E7%8E%B0/">
-                        <span class="hidden-mobile">java反序列化学习与复现</span>
+                      <a href="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">ATT&CK红队评估二 内网靶场记录</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

