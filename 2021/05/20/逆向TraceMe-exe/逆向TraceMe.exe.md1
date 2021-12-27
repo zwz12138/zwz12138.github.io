@@ -1,0 +1,115 @@
+---
+title: 逆向TraceMe.exe
+date: 2021-05-20 11:43:44
+tags: 
+     - 逆向学习 
+categories:
+     - 逆向学习 
+     - 学习
+
+---
+
+# 逆向TraceMe.exe
+
+首先我们得找到关键函数，就是关键跳，修改后能够直接破解成功的步骤，我们知道这个程序是有对话框的，所以我们在window的对话框api上下断点
+
+<img src="clip_image002.jpg" alt="img" style="zoom:80%;" />
+
+ 
+
+首先尝试随便输入用户名和序列号
+
+<img src="clip_image004.jpg" alt="img" style="zoom:80%;" />
+
+可以看到这个时候触发了断点在0x75D4E290处
+
+<img src="clip_image006.jpg" alt="img" style="zoom:80%;" />
+
+直接使用f9跳转到返回的地方，跳过一些api函数后，这里这两个我认为应该都是读取对话框的函数。
+
+<img src="clip_image008.jpg" alt="img" style="zoom:80%;" />
+
+我们继续单步运行，这里注意到，当运行到图中所示地址时，eax和edx就出现了我们输入的内容
+
+<img src="clip_image010.jpg" alt="img" style="zoom:80%;" />
+
+<img src="clip_image012.jpg" alt="img" style="zoom:80%;" />
+
+之后会call 401340这个函数，我认为这个是一个关键函数
+
+<img src="clip_image014.jpg" alt="img" style="zoom:80%;" />
+
+经过调试分析，这个函数的大概逻辑如下
+
+<img src="clip_image016.jpg" alt="img" style="zoom:80%;" />
+
+0x405030的地方存储的数值如下
+
+<img src="clip_image018.jpg" alt="img" style="zoom:80%;" />
+
+继续运行，可以看到ecx=7的时候就跳出了这个循环
+
+<img src="clip_image020.jpg" alt="img" style="zoom:80%;" />
+
+<img src="clip_image022.jpg" alt="img" style="zoom:80%;" />
+
+执行完之后，貌似得到2675，可能是密钥值，因为之后的函数把string2“ebp：2675“和string1”abcdefg“进行比较了
+
+<img src="clip_image024.jpg" alt="img" style="zoom:80%;" />
+
+<img src="clip_image026.jpg" alt="img" style="zoom:80%;" />
+
+<img src="clip_image028.jpg" alt="img" style="zoom:80%;" />
+
+比较函数过后会来到这个地方，test eax，eax，表示eax为1时跳转，这里我们的eax是0，尝试修改为jne
+
+<img src="clip_image030.jpg" alt="img" style="zoom:80%;" />
+
+之后可以看到是成功的，说明这个就是关键跳
+
+<img src="clip_image032.jpg" alt="img" style="zoom:80%;" />
+
+我们要写一个注册机程序那就得先逆向他的加密代码，根据我们判断以下的逻辑
+
+<img src="clip_image033.jpg" alt="img" style="zoom:80%;" />
+
+写出python脚本代码如下
+
+```python
+# -*- coding: utf-8 -*-
+a=str(raw_input("请输入用户名：")) 
+yanzhen=[0x0C ,0x0A ,0x13 ,0x09 ,0x0C ,0x0B ,0x0A ,0x08]
+edi=len(a)
+#print len(a)
+ecx=3
+esi=0
+eax=0
+while ecx<edi:
+  if eax>7:
+​    eax=0
+  ebx=0
+  edx=0
+  edx=ord(a[ecx])
+  ebx=yanzhen[eax]
+  #print "ebx=" + str(ebx)
+  #print "edx=" + str(edx)
+  ebx=edx*ebx
+  esi=ebx+esi
+  ecx+=1
+  eax+=1
+print "序列号为："+ str(esi)
+```
+
+
+
+<img src="clip_image035.gif" alt="img" style="zoom:80%;" />
+
+验证
+
+<img src="clip_image037.gif" alt="img" style="zoom:80%;" /><img src="clip_image039.gif" alt="img" style="zoom:80%;" />
+
+ 
+
+ 
+
+ 

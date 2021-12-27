@@ -1,0 +1,499 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>逆向TraceMe.exe - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="逆向TraceMe.exe">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-05-20 11:43" pubdate>
+        2021年5月20日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      460 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      5
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">逆向TraceMe.exe</h1>
+            
+            <div class="markdown-body">
+              <h1 id="逆向tracemeexe"><a class="markdownIt-Anchor" href="#逆向tracemeexe"></a> 逆向TraceMe.exe</h1>
+<p>首先我们得找到关键函数，就是关键跳，修改后能够直接破解成功的步骤，我们知道这个程序是有对话框的，所以我们在window的对话框api上下断点</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image002.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>首先尝试随便输入用户名和序列号</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image004.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>可以看到这个时候触发了断点在0x75D4E290处</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image006.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>直接使用f9跳转到返回的地方，跳过一些api函数后，这里这两个我认为应该都是读取对话框的函数。</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image008.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>我们继续单步运行，这里注意到，当运行到图中所示地址时，eax和edx就出现了我们输入的内容</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image010.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image012.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>之后会call 401340这个函数，我认为这个是一个关键函数</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image014.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>经过调试分析，这个函数的大概逻辑如下</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image016.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>0x405030的地方存储的数值如下</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image018.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>继续运行，可以看到ecx=7的时候就跳出了这个循环</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image020.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image022.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>执行完之后，貌似得到2675，可能是密钥值，因为之后的函数把string2“ebp：2675“和string1”abcdefg“进行比较了</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image024.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image026.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image028.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>比较函数过后会来到这个地方，test eax，eax，表示eax为1时跳转，这里我们的eax是0，尝试修改为jne</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image030.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>之后可以看到是成功的，说明这个就是关键跳</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image032.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>我们要写一个注册机程序那就得先逆向他的加密代码，根据我们判断以下的逻辑</p>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image033.jpg" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>写出python脚本代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br>a=<span class="hljs-built_in">str</span>(raw_input(<span class="hljs-string">&quot;请输入用户名：&quot;</span>)) <br>yanzhen=[<span class="hljs-number">0x0C</span> ,<span class="hljs-number">0x0A</span> ,<span class="hljs-number">0x13</span> ,<span class="hljs-number">0x09</span> ,<span class="hljs-number">0x0C</span> ,<span class="hljs-number">0x0B</span> ,<span class="hljs-number">0x0A</span> ,<span class="hljs-number">0x08</span>]<br>edi=<span class="hljs-built_in">len</span>(a)<br><span class="hljs-comment">#print len(a)</span><br>ecx=<span class="hljs-number">3</span><br>esi=<span class="hljs-number">0</span><br>eax=<span class="hljs-number">0</span><br><span class="hljs-keyword">while</span> ecx&lt;edi:<br>  <span class="hljs-keyword">if</span> eax&gt;<span class="hljs-number">7</span>:<br>    eax=<span class="hljs-number">0</span><br>  ebx=<span class="hljs-number">0</span><br>  edx=<span class="hljs-number">0</span><br>  edx=<span class="hljs-built_in">ord</span>(a[ecx])<br>  ebx=yanzhen[eax]<br>  <span class="hljs-comment">#print &quot;ebx=&quot; + str(ebx)</span><br>  <span class="hljs-comment">#print &quot;edx=&quot; + str(edx)</span><br>  ebx=edx*ebx<br>  esi=ebx+esi<br>  ecx+=<span class="hljs-number">1</span><br>  eax+=<span class="hljs-number">1</span><br><span class="hljs-built_in">print</span> <span class="hljs-string">&quot;序列号为：&quot;</span>+ <span class="hljs-built_in">str</span>(esi)<br></code></pre></td></tr></table></figure>
+<img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image035.gif" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;">
+<p>验证</p>
+<p><img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image037.gif" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;"><img src="/2021/05/20/%E9%80%86%E5%90%91TraceMe-exe/clip_image039.gif" srcset="/img/loading.gif" lazyload alt="img" style="zoom:80%;"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！，本博客仅用于交流学习，由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，文章作者不为此承担任何责任。
+文章作者拥有对此站文章的修改和解释权。如欲转载此站文章，需取得作者同意，且必须保证此文章的完整性，包括版权声明等全部内容。未经文章作者允许，不得任意修改或者增减此文章内容，不得以任何方式将其用于商业目的。若造成严重后果，本人将依法追究法律责任。 阅读本站文章则默认遵守此规则。
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/05/23/SploitFun-Linux-x86-Exploit-%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-%E5%AD%A6%E4%B9%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《SploitFun Linux x86 Exploit 开发系列教程》学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/05/17/%E7%BA%A2%E6%97%A5%E5%AE%89%E5%85%A8-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-3%E5%88%99/">
+                        <span class="hidden-mobile">红日安全[代码审计]3则</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

