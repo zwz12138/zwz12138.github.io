@@ -1,0 +1,579 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>PE文件结构学习记录-1 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="PE文件结构学习记录-1">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-23 15:13" pubdate>
+        2022年2月23日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      49
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PE文件结构学习记录-1</h1>
+            
+            <div class="markdown-body">
+              <h1 id="内存读写"><a class="markdownIt-Anchor" href="#内存读写"></a> 内存读写</h1>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs x86asm"><span class="hljs-built_in">byte</span> <span class="hljs-number">8</span>位<br><span class="hljs-built_in">WORD</span> <span class="hljs-number">16</span>位<br><span class="hljs-built_in">DWORD</span> <span class="hljs-number">32</span>位<br><br>取值<br><span class="hljs-keyword">MOV</span> <span class="hljs-built_in">EAX</span>,<span class="hljs-built_in">DWORD</span> <span class="hljs-built_in">PTR</span> <span class="hljs-built_in">DS</span>:[<span class="hljs-number">0x123FC2</span>]<br>取内存地址	编号<br><span class="hljs-keyword">LEA</span> <span class="hljs-built_in">EAX</span>,<span class="hljs-built_in">DWORD</span> <span class="hljs-built_in">PTR</span> <span class="hljs-built_in">DS</span>:[<span class="hljs-number">0x123FC2</span>]<br>内存前的<span class="hljs-built_in">DS</span> <span class="hljs-built_in">ES</span> <span class="hljs-built_in">SS</span><br><span class="hljs-built_in">DS</span> 是个数 <br><span class="hljs-built_in">ESP</span> <span class="hljs-built_in">EBP</span>: <span class="hljs-built_in">SS</span><br><span class="hljs-built_in">EDI</span> :<span class="hljs-built_in">ES</span><br><br><span class="hljs-built_in">ESP</span> 栈顶<br><span class="hljs-built_in">EBP</span> 栈底<br><span class="hljs-keyword">push</span> 入栈<br><span class="hljs-keyword">pop</span> 出栈<br>栈高往低走<br><br><span class="hljs-keyword">push</span> 相当<br><span class="hljs-keyword">lea</span> <span class="hljs-built_in">esp</span>,<span class="hljs-built_in">dword</span> <span class="hljs-built_in">ptr</span> <span class="hljs-built_in">ss</span>:[<span class="hljs-built_in">esp</span>-<span class="hljs-number">4</span>]<br><span class="hljs-keyword">mov</span> <span class="hljs-built_in">dword</span> <span class="hljs-built_in">ptr</span> <span class="hljs-built_in">ss</span>[<span class="hljs-built_in">esp</span>],<span class="hljs-built_in">eax</span><br>栈顶拔高<br><br><span class="hljs-built_in">ECX</span> 值决定<span class="hljs-keyword">REP</span>指令重复次数<br>stos指令，它的功能是将<span class="hljs-built_in">eax</span>中的数据放入的<span class="hljs-built_in">edi</span>所指的地址中，同时，<span class="hljs-built_in">edi</span>会增加<span class="hljs-number">4</span>个字节，<span class="hljs-keyword">rep</span>使指令重复执行<span class="hljs-built_in">ecx</span>中填写的次数。<br>方括弧表示存储器，这个地址实际上是<span class="hljs-built_in">edi</span>的内容所指向的地址。这里的stos其实对应的是<span class="hljs-keyword">stosd</span>,其它的还有<br><span class="hljs-keyword">CALL</span> : <span class="hljs-built_in">EIP</span>改为函数地址，返回地址压栈<br><span class="hljs-keyword">RET</span> 返回时改<span class="hljs-built_in">EIP</span>（弹栈,<span class="hljs-built_in">esp</span>加）<br><br><br></code></pre></td></tr></table></figure>
+<h1 id="pe头解析"><a class="markdownIt-Anchor" href="#pe头解析"></a> pe头解析</h1>
+<p>内容</p>
+<p><img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/5b4b62c4c1faa.jpg" srcset="/img/loading.gif" lazyload alt="5b4b62c4c1faa"></p>
+<p>以下内容有<em>参考</em>x复制✓[<a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-270210.htm">原创]归纳PE结构基础知识，顺便手撕个PE-编程技术-看雪论坛-安全社区|安全招聘|bbs.pediy.com</a></p>
+<p>内存对齐和硬盘对齐</p>
+<p>就是一个pe文件在硬盘上的数据可能和硬盘中的不一样</p>
+<p>因为老软件硬盘对齐是200h</p>
+<p>内存对齐是1000h</p>
+<p>后来就对齐一样了</p>
+<p>使用分节结构原因：</p>
+<p>节省内存，多开的时候只需要</p>
+<h2 id="dos头"><a class="markdownIt-Anchor" href="#dos头"></a> DOS头</h2>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs lasso">typedef struct _IMAE_DOS_HEADER<br>&#123; <br>    WORD e_magic;              <span class="hljs-comment">//  0x00, &#x27;MZ&#x27;（0x5A4D）标识 </span><br>        <span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><br>    LONG e_lfanew;             <span class="hljs-comment">//  0x3C, PE头的起始地址，默认0xB0处</span><br>&#125; IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;  <br><br></code></pre></td></tr></table></figure>
+<p><strong>重要：</strong><br>
+<strong>1.WORD e_magic</strong>（0x00处）<br>
+● 对应PE文件的开头，是PE文件DOS头的标识符&quot;MZ&quot;→0x5A4D<br>
+○ 对应Winnt.h头文件中宏定义: #define IMAGE_DOS_SIGNATURE 0x4D5A // MZ<br>
+<strong>2.LONG e_lfanew</strong>（0x3C处）<br>
+● 对应PE文件0x3C处指向NT头在文件中的偏移（默认0xB0），即32位及以上系统文件头在文件中真正的偏移</p>
+<h2 id="2nt头"><a class="markdownIt-Anchor" href="#2nt头"></a> 2.NT头</h2>
+<h3 id="1dword-signaturepe000x00004550"><a class="markdownIt-Anchor" href="#1dword-signaturepe000x00004550"></a> （1）DWORD Signature：&quot;PE\0\0&quot;→0x00004550</h3>
+<h3 id="2文件头结构体-image_file_header-fileheader标准pe头"><a class="markdownIt-Anchor" href="#2文件头结构体-image_file_header-fileheader标准pe头"></a> (2)文件头结构体 IMAGE_FILE_HEADER FileHeader（标准PE头）</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 文件头结构体： _IMAGE_FILE_HEADER</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_FILE_HEADER</span>&#123;</span><br>     WORD Machine;                               <span class="hljs-comment">// +0x00, 指定程序的运行平台，勿改</span><br>     WORD NumberOfSections;          <span class="hljs-comment">// +0x02, PE中的节/块(section)数量，勿改</span><br>     DWORD TimeDateStamp;                <span class="hljs-comment">// +0x04, 时间戳：链接器填写的文件生成时间</span><br>     DWORD PointerToSymbolTable;  <span class="hljs-comment">// +0x08, 指向符号表的地址(主要用于调试)</span><br>     DWORD NumberOfSymbols;          <span class="hljs-comment">// +0x0C, 符号表中符号个数(同上)</span><br>     WORD SizeOfOptionalHeader;  <span class="hljs-comment">// +0x10, IMAGE_OPTIONAL_HEADER32选项头结构大小，勿改</span><br>     WORD Characteristics;               <span class="hljs-comment">// +0x12, 文件属性，勿改</span><br>&#125; IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;<br> <br><span class="hljs-comment">//* 字段1：Machine 表CPU的类型, 定义在windows.h中，常用类型</span><br>            <span class="hljs-number">32</span>位：<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_MACHINE_I386, 0x014c　<span class="hljs-comment">// Intel 386, x86</span></span><br>            <span class="hljs-number">64</span>位：<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_MACHINE_AMD64, 0x8664 <span class="hljs-comment">// AMD64(KB), x64</span></span><br><span class="hljs-comment">//* 字段2：NumberOfSections 表PE中的节(section)数量：</span><br>            节表紧跟在IMAGE_NT_HEADERS后面,此字段决定了节表中元素的个数，即节的个数<br>      遍历节表经验：根据此处的个数拿对应的节表数据<br><span class="hljs-comment">//* 字段6：SizeOfOptionalHeader 表IMAGE_OPTIONAL_HEADER32 结构大小</span><br>            定位节表位置=选项头地址+选项头大小<br><span class="hljs-comment">//* 字段7： Characteristics 表文件属性,EXE默认0100,DLL默认210Eh,或运算组合设置。</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_RELOCS_STRIPPED　　　　 0x0001　<span class="hljs-comment">// 文件中不存在重定位信息</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_EXECUTABLE_IMAGE　　　　0x0002　<span class="hljs-comment">// 文件可执行</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_LINE_NUMS_STRIPPED　　　0x0004　<span class="hljs-comment">// 文件中不存在行信息</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_LOCAL_SYMS_STRIPPED　　 0x0008　<span class="hljs-comment">// 文件中不存在符号信息</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_AGGRESIVE_WS_TRIM　　　 0x0010　<span class="hljs-comment">// 调整工作集</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_LARGE_ADDRESS_AWARE　　 0x0020　<span class="hljs-comment">// 程序能处理大于2G的地址</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_BYTES_REVERSED_LO　　　 0x0080　<span class="hljs-comment">// 小尾方式</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_32BIT_MACHINE　　　　　 0x0100　<span class="hljs-comment">// 只在32位平台上运行</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_DEBUG_STRIPPED　　　　　0x0200　<span class="hljs-comment">// 不包含调试信息</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP　0x0400　<span class="hljs-comment">// 不能从可移动盘运行</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_NET_RUN_FROM_SWAP　　　　0x0800　<span class="hljs-comment">// 不能从网络运行 </span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_SYSTEM　　　　　　　　　　0x1000　<span class="hljs-comment">// 系统文件（如驱动程序），不能直接运行</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_DLL　　　　　　　　　　　 0x2000　<span class="hljs-comment">// 是一个dll文件</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_UP_SYSTEM_ONLY　　　　　 0x4000　<span class="hljs-comment">// 文件不能在多处理器计算机上运行</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IMAGE_FILE_BYTES_REVERSED_HI　　　  0x8000　<span class="hljs-comment">// 大尾方式</span></span><br></code></pre></td></tr></table></figure>
+<h3 id="3选项头结构体image_optional_header区分32位和64位可选pe头"><a class="markdownIt-Anchor" href="#3选项头结构体image_optional_header区分32位和64位可选pe头"></a> (3)选项头结构体IMAGE_OPTIONAL_HEADER（区分32位和64位，可选PE头）</h3>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs awk">typedef struct _IMAGE_OPTIONAL_HEADER<br>&#123;<br>    WORD   Magic;                            <span class="hljs-regexp">//</span>* PE标志字：<span class="hljs-number">32</span>位（<span class="hljs-number">0</span>x10B），<span class="hljs-number">64</span>位（<span class="hljs-number">0</span>x20B）<br>    BYTE   MajorLinkerVersion;               <span class="hljs-regexp">//</span>  主链接器版本号<br>    BYTE   MinorLinkerVersion;               <span class="hljs-regexp">//</span>  副链接器版本号<br>    DWORD  SizeOfCode;                        <span class="hljs-regexp">//</span>  代码所占空间大小（代码节大小）<br>    DWORD  SizeOfInitializedData;         <span class="hljs-regexp">//</span>  已初始化数据所占空间大小<br>    DWORD  SizeOfUninitializedData;           <span class="hljs-regexp">//</span>  未初始化数据所占空间大小<br>    DWORD  AddressOfEntryPoint;               <span class="hljs-regexp">//</span>* 程序执行入口RVA，(w)(Win)mainCRTStartup：即<span class="hljs-number">0</span>D首次断下来的自进程地址<br>    DWORD  BaseOfCode;                        <span class="hljs-regexp">//</span>  代码段基址<br>    DWORD  BaseOfData;                        <span class="hljs-regexp">//</span>  数据段基址<br>    DWORD  ImageBase;                     <span class="hljs-regexp">//</span>* 内存加载基址，exe默认<span class="hljs-number">0</span>x400000，dll默认<span class="hljs-number">0</span>x10000000<br>    DWORD  SectionAlignment;              <span class="hljs-regexp">//</span>* 节区数据在内存中的对齐值，一定是<span class="hljs-number">4</span>的倍数，一般是<span class="hljs-number">0</span>x1000(<span class="hljs-number">4096</span>=<span class="hljs-number">4</span>K)<br>    DWORD  FileAlignment;                 <span class="hljs-regexp">//</span>* 节区数据在文件中的对齐值，一般是<span class="hljs-number">0</span>x200(磁盘扇区大小<span class="hljs-number">512</span>)<br>    WORD   MajorOperatingSystemVersion;      <span class="hljs-regexp">//</span>  要求操作系统最低版本号的主版本号<br>    WORD   MinorOperatingSystemVersion;      <span class="hljs-regexp">//</span>  要求操作系统最低版本号的副版本号<br>    WORD   MajorImageVersion;                <span class="hljs-regexp">//</span>  可运行于操作系统的主版本号<br>    WORD   MinorImageVersion;                <span class="hljs-regexp">//</span>  可运行于操作系统的次版本号<br>    WORD   MajorSubsystemVersion;            <span class="hljs-regexp">//</span>  主子系统版本号：不可修改<br>    WORD   MinorSubsystemVersion;            <span class="hljs-regexp">//</span>  副子系统版本号<br>    DWORD  Win32VersionValue;             <span class="hljs-regexp">//</span>  版本号：不被病毒利用的话一般为<span class="hljs-number">0</span>,XP中不可修改<br>    DWORD  SizeOfImage;                       <span class="hljs-regexp">//</span>* PE文件在进程内存中的总大小，与SectionAlignment对齐<br>    DWORD  SizeOfHeaders;                 <span class="hljs-regexp">//</span>* PE文件头部在文件中的按照文件对齐后的总大小（所有头 + 节表）<br>    DWORD  CheckSum;                      <span class="hljs-regexp">//</span>  对文件做校验，判断文件是否被修改：<span class="hljs-number">3</span>环无用，MapFileAndCheckSum获取<br>    WORD   Subsystem;                        <span class="hljs-regexp">//</span>  子系统，与连接选项<span class="hljs-regexp">/system相关：1=驱动程序，2=图形界面，3=控制台/</span>Dll<br>    WORD   DllCharacteristics;               <span class="hljs-regexp">//</span>  文件特性<br>    DWORD  SizeOfStackReserve;                <span class="hljs-regexp">//</span>  初始化时保留的栈大小<br>    DWORD  SizeOfStackCommit;             <span class="hljs-regexp">//</span>  初始化时实际提交的栈大小<br>    DWORD  SizeOfHeapReserve;             <span class="hljs-regexp">//</span>  初始化时保留的堆大小<br>    DWORD  SizeOfHeapCommit;              <span class="hljs-regexp">//</span>  初始化时实际提交的堆大小<br>    DWORD  LoaderFlags;                       <span class="hljs-regexp">//</span>  已废弃，与调试有关，默认为 <span class="hljs-number">0</span><br>    DWORD  NumberOfRvaAndSizes;               <span class="hljs-regexp">//</span>  下边数据目录的项数，此字段自Windows NT发布以来,一直是<span class="hljs-number">16</span><br>    IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];<span class="hljs-regexp">//</span> 数据目录表<br>&#125; IMAGE_OPTIONAL_HEADER32, * PIMAGE_OPTIONAL_HEADER32;<br> <br><span class="hljs-regexp">//</span>* 字段<span class="hljs-number">6</span>：AddressOfEntryPoint 表 程序入口RVA，即OEP:<br>      EOP:程序入口点，壳相关概念<br>      OEP:原本的程序入口点（实际为偏移，+模块基址=实际入口点）<br>      EP: 被加工后的入口点<br><span class="hljs-regexp">//</span>* 字段<span class="hljs-number">9</span>：ImageBase 表 模块加载基地址，exe默认<span class="hljs-number">0</span>x400000，dll默认<span class="hljs-number">0</span>x10000000<br>      建议装载地址：exe映射加载到内存中的首地址= PE <span class="hljs-number">0</span>处，即实例句柄hInstance<br>      一般而言，exe文件可遵从装载地址建议，但dll文件无法满足<br><span class="hljs-regexp">//</span>* 尾字段：DataDirectory 表 数据目录表，用来定义多种不通用处的数据块。<br>      存储了PE中各个表的位置，详情参考IMAGE_DIRECTORY_ENTRY...系列宏<br></code></pre></td></tr></table></figure>
+<h2 id="3节表"><a class="markdownIt-Anchor" href="#3节表"></a> 3.节表</h2>
+<h3 id="1节表总概"><a class="markdownIt-Anchor" href="#1节表总概"></a> （1）节表总概</h3>
+<ul>
+<li>
+<p>节表：描述PE文件与内存之间的映射关系，由一系列的IMAGE_SECTION_HEADER结构排列而成，每个结构用来描述一个节（每个节占用0x28h），说明PE文件的指定内容拷贝至内存的哪个位置、拷贝大小及内存属性的设置。结构的排列顺序和它们描述的节在文件中的排列顺序是一致的。全部有效结构的最后以一个空的IMAGE_SECTION_HEADER结构作为结束，所以节表中总的IMAGE_SECTION_HEADER结构数量等于节的数量加一。节表总是被存放在紧接在PE文件头的地方。</p>
+</li>
+<li>
+<p>节表大小 = FileHeader.NumberOfSections（节数量）* IMAGE_SECTION_HEADER 结构体。</p>
+</li>
+<li>
+<pre class="highlight"><code class="c++"><span class="hljs-comment">// IMAGE_SECTION_HEADER 节表结构体，大小40B</span>
+<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_SECTION_HEADER</span> &#123;</span>
+  BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];  <span class="hljs-comment">// 节表名称：描述性字段</span>
+  <span class="hljs-comment">// 下方4个字段：从文件S1处开始，拷贝S2大小的数据，到内存S3处，有效数据占用内存S4大小</span>
+  <span class="hljs-keyword">union</span> &#123;
+    DWORD PhysicalAddress;
+    DWORD VirtualSize;         <span class="hljs-comment">// S4:内存大小</span>
+  &#125; Misc;
+  DWORD VirtualAddress;          <span class="hljs-comment">// S3:内存地址：基于模块基址</span>
+  DWORD SizeOfRawData;           <span class="hljs-comment">// （拷贝的到内存数据大小）S2:文件对齐大小</span>
+  DWORD PointerToRawData;        <span class="hljs-comment">// （节在文件中偏移）S1:文件偏移</span>
+  DWORD PointerToRelocations;    <span class="hljs-comment">// 无用</span>
+  DWORD PointerToLinenumbers;    <span class="hljs-comment">// 无用</span>
+  WORD  NumberOfRelocations;    <span class="hljs-comment">// 无用</span>
+  WORD  NumberOfLinenumbers;    <span class="hljs-comment">// 无用</span>
+  DWORD Characteristics;     <span class="hljs-comment">// 节属性，取值IMAGE_SCN_...系列宏</span>
+&#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
+
+&lt;!--code￼<span class="hljs-number">4</span>--&gt;
+</code></pre>
+</li>
+</ul>
+<p>SizeOfRawData不一定比Misc大，因为Misc在文件中，可能是在文件里未初始化未进行分配的值（记录的是在内存中的大小）</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><br>&lt;img <span class="hljs-attribute">src</span>=<span class="hljs-string">&quot;image-20220227212440476.png&quot;</span> <span class="hljs-attribute">alt</span>=<span class="hljs-string">&quot;image-20220227212440476&quot;</span> <span class="hljs-attribute">style</span>=<span class="hljs-string">&quot;zoom:67%;&quot;</span> /&gt;<br><br></code></pre></td></tr></table></figure>
+<p>写代码的坑<br>
+vs fopen_s 函数：<br>
+第一个参数是FILE *指针<br>
+第二个文件名字<br>
+第三个是方法</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vala"><br><span class="hljs-meta"># call jmp</span><br><br></code></pre></td></tr></table></figure>
+<p>jmp = E8<br>
+jmp后面的值x = jmp后一条指令地址（运行时内存中的地址）+要跳转的地址<br>
+call = E9<br>
+call 后面的值同上，均是运行时内存中的地址</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vala"><br><span class="hljs-meta"># 指针</span><br><br></code></pre></td></tr></table></figure>
+<p>（byte*）转byte型指针<br>
+（dword）要用指针算地址的时候转的dword类型<br>
+都是强制类型转换</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs php"><br><span class="hljs-comment"># 任意空白区添加代码</span><br><br><span class="hljs-comment">## 修改vs编译的程序，遇到的问题：</span><br><br><span class="hljs-number">1</span>.要是修改vs编译出来的程序要跳过.textbss这个节表，这个表的内存地址和文件地址都为<span class="hljs-number">0x000000</span><br><br><span class="hljs-number">2</span>.vs编译的程序已经开启ALSR(地址随机化)，要想修改成功需要关闭这个<br><br>&lt;img src=<span class="hljs-string">&quot;image-20220303143104764.png&quot;</span> alt=<span class="hljs-string">&quot;image-20220303143104764&quot;</span> style=<span class="hljs-string">&quot;zoom: 67%;&quot;</span> /&gt;<br><br><br><br>```c++<br>LPVOID changeimagebuffer(LPVOID imagebuffer) &#123;<br>	PIMAGE_DOS_HEADER pDosHeader = <span class="hljs-literal">NULL</span>;<br>	DWORD SizeOfImage = <span class="hljs-number">0</span>;<br>	DWORD SizeOfHeaders = <span class="hljs-number">0</span>;<br>	WORD NumberOfSections = <span class="hljs-number">0</span>;<br>	PIMAGE_SECTION_HEADER pSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	LPVOID pImageBuffer = <span class="hljs-literal">NULL</span>;<br>	PBYTE codebegin = <span class="hljs-literal">NULL</span>;<br><br><br><br>	pDosHeader = (PIMAGE_DOS_HEADER)imagebuffer;<br>	pNtHeaders = FileToNtHeader(imagebuffer);<br><br>	<span class="hljs-comment">//判断空闲区是否能存储shellcode代码(文件对齐大小-misc里真实内存大小）</span><br>	pSectionHeaderBase = LocateSectionBase(imagebuffer);<br>	<span class="hljs-keyword">if</span> (((pSectionHeaderBase-&gt;SizeOfRawData) - (pSectionHeaderBase-&gt;Misc.VirtualSize)) &lt; sizeof(shellcode))<br>	&#123;<br>		printf(<span class="hljs-string">&quot;代码空闲区不足&quot;</span>);<br>		free(imagebuffer);<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>	&#125;<br><br>	<span class="hljs-comment">//把代码复制到空闲区</span><br>	codebegin = (PBYTE)((DWORD)imagebuffer + pSectionHeaderBase-&gt;VirtualAddress + pSectionHeaderBase-&gt;Misc.VirtualSize)+<span class="hljs-number">14</span>;<br>	memcpy(codebegin, shellcode, sizeof(shellcode));<br>	<span class="hljs-comment">//修正E8</span><br><br>	DWORD e8addr = (DWORD)(MESSAGE_BOX_ADDRESS - (pNtHeaders-&gt;OptionalHeader.ImageBase + ((DWORD)codebegin +(DWORD)<span class="hljs-number">0x0D</span> - (DWORD)imagebuffer)));<br>	<span class="hljs-comment">//e8addr = 0x7D8A55E1;</span><br>	*(PDWORD)(codebegin + <span class="hljs-number">9</span>) = e8addr;<br>	<span class="hljs-comment">// 修正E9</span><br>	DWORD e9addr = (DWORD)((pNtHeaders-&gt;OptionalHeader.ImageBase + pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint) - (pNtHeaders-&gt;OptionalHeader.ImageBase + ((DWORD)codebegin + (DWORD)<span class="hljs-number">0x12</span> - (DWORD)imagebuffer)));<br>	<span class="hljs-comment">//e9addr = 0xFFFFDC95;</span><br>	*(PDWORD)(codebegin + <span class="hljs-number">0xE</span>) = e9addr;<br>	<span class="hljs-comment">//pSectionHeaderBase = (PIMAGE_SECTION_HEADER)(BYTE*)imagebuffer + pDosHeader-&gt;e_lfanew + sizeof(IMAGE_); </span><br><br>	pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint = (DWORD)codebegin - (DWORD)imagebuffer;<br>	<span class="hljs-comment">//pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint = 0x01A730;</span><br>	<span class="hljs-keyword">return</span> imagebuffer;<br><br><br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="新增加一个节"><a class="markdownIt-Anchor" href="#新增加一个节"></a> 新增加一个节</h1>
+<h2 id="需要进行的操作"><a class="markdownIt-Anchor" href="#需要进行的操作"></a> 需要进行的操作</h2>
+<p>1)添加一个新的节(可以copy一份)<br>
+2)在新增节后面填充一个节大小的000<br>
+3)修改PE头中节的数量<br>
+4)修改sizeofimage的大小<br>
+5)再原有数据的最后，新增一个节的数据(内存对齐的整数倍).<br>
+6)修正新增节表的属性</p>
+<p>注意：SizeOfHeader - (DOS +垃圾数据+ PE标记+标准PE头+可选PE头+己存在节表)= 2个节表的大小</p>
+<p>空间不够可以把PE头往上移动（占DOS头的垃圾数据）</p>
+<h2 id="代码遇到的问题"><a class="markdownIt-Anchor" href="#代码遇到的问题"></a> 代码遇到的问题</h2>
+<p>1.imagebuffer开辟内存空间太小了，解决：<strong>重新申请一个足够大的空间然后拷贝内存</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function">LPVOID <span class="hljs-title">NEWSetion</span><span class="hljs-params">(LPVOID pImageBuffer)</span> </span>&#123;<br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">1)添加一个新的节(可以copy一份)</span><br><span class="hljs-comment">2)在新增节后面填充一个节大小的000</span><br><span class="hljs-comment">3)修改PE头中节的数量</span><br><span class="hljs-comment">4)修改sizeofimage的大小</span><br><span class="hljs-comment">5)再原有数据的最后，新增一个节的数据(内存对齐的整数倍).</span><br><span class="hljs-comment">6)修正新增节表的属性</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">注意：SizeOfHeader - (DOS +垃圾数据+ PE标记+标准PE头+可选PE头+己存在节表)= 2个节表的大小</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">空间不够可以把PE头往上移动（占DOS头的垃圾数据）</span><br><span class="hljs-comment">	</span><br><span class="hljs-comment">	*/</span><br>	PIMAGE_DOS_HEADER pDosHeader = <span class="hljs-literal">NULL</span>;<br>	DWORD SizeOfImage = <span class="hljs-number">0</span>;<br>	DWORD SizeOfHeaders = <span class="hljs-number">0</span>;<br>	WORD NumberOfSections = <span class="hljs-number">0</span>;<br>	DWORD pointtonew = <span class="hljs-number">0</span>;<br>	PIMAGE_SECTION_HEADER pSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_SECTION_HEADER pnewSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	<span class="hljs-comment">//LPVOID pImageBuffer = NULL;</span><br>	PBYTE codebegin = <span class="hljs-literal">NULL</span>;<br><br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pImageBuffer);<span class="hljs-comment">//nt头</span><br>	<span class="hljs-comment">//内存对齐大小</span><br>	<span class="hljs-keyword">const</span> DWORD size = pNtHeaders-&gt;OptionalHeader.SectionAlignment;<br><br>	LPVOID npFileBuffer = <span class="hljs-built_in">malloc</span>(pNtHeaders-&gt;OptionalHeader.SizeOfImage + size);<br><br><br>	<span class="hljs-built_in">memset</span>(npFileBuffer,<span class="hljs-number">0x00</span> , pNtHeaders-&gt;OptionalHeader.SizeOfImage + size);<br>	<span class="hljs-built_in">memcpy</span>(npFileBuffer, pImageBuffer, pNtHeaders-&gt;OptionalHeader.SizeOfImage);<br><br>	pImageBuffer = npFileBuffer;<br>	pDosHeader = (PIMAGE_DOS_HEADER)pImageBuffer;<span class="hljs-comment">//dos头</span><br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pImageBuffer);<span class="hljs-comment">//nt头</span><br>	<br>	<span class="hljs-comment">//验证剩余空间是否够2个节表大小</span><br>	DWORD freesp = pNtHeaders-&gt;OptionalHeader.SizeOfHeaders - (pDosHeader-&gt;e_lfanew + <span class="hljs-number">0x4</span> + <span class="hljs-number">0x14</span> + pNtHeaders-&gt;FileHeader.SizeOfOptionalHeader + (pNtHeaders-&gt;FileHeader.NumberOfSections * <span class="hljs-number">0x28</span>));<br>	<span class="hljs-keyword">if</span> (freesp &lt; <span class="hljs-number">0x28</span> * <span class="hljs-number">2</span>)<br>	&#123;<br>		<span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;空间不足够添加节表，添加失败&quot;</span>);<br>		<span class="hljs-keyword">return</span> pImageBuffer;<br>	&#125;;<br><br><br>	<span class="hljs-comment">//找最后一个节表结束的位置添加节</span><br>	pSectionHeaderBase = <span class="hljs-built_in">LocateSectionBase</span>(pImageBuffer);<br>	LPVOID addsectionstart = (BYTE*)pSectionHeaderBase + (DWORD)(<span class="hljs-number">0x28</span> * (pNtHeaders-&gt;FileHeader.NumberOfSections));<br>	<span class="hljs-built_in">memcpy</span>(addsectionstart, pSectionHeaderBase, <span class="hljs-number">0x28</span>);<br><br>	<span class="hljs-comment">//在内存最后添加一个内存对齐整数倍的00</span><br>	LPVOID endexe = (BYTE*)pImageBuffer + pNtHeaders-&gt;OptionalHeader.SizeOfImage ;<br><br><br>	BYTE* tian1 = <span class="hljs-keyword">new</span> BYTE[size];<br>	<span class="hljs-built_in">memset</span>(tian1, <span class="hljs-number">0x00</span>,  size);<br><br>	<span class="hljs-comment">//tian1  </span><br>	<span class="hljs-comment">//BYTE tian[4096] = &#123; 0x00 &#125;;</span><br>	<span class="hljs-built_in">memcpy</span>(endexe, tian1 , size);<br><br>	<span class="hljs-comment">//修改sizeofimage大小</span><br>	pNtHeaders-&gt;OptionalHeader.SizeOfImage = pNtHeaders-&gt;OptionalHeader.SizeOfImage + size;<br><br>	<span class="hljs-comment">//修改新添加节的属性</span><br>	pnewSectionHeaderBase =(PIMAGE_SECTION_HEADER) addsectionstart;<br>	pnewSectionHeaderBase-&gt;Misc.VirtualSize = size;<br>	pnewSectionHeaderBase-&gt;VirtualAddress = (DWORD) endexe - (DWORD) pImageBuffer;<br>	pnewSectionHeaderBase-&gt;SizeOfRawData = size;<br>	<span class="hljs-comment">//文件中偏移,先找上一个节的文件偏移+是一个节的大小（偷懒直接看是不是SizeOfRawData打过真实大小，直接加了）</span><br>	PIMAGE_SECTION_HEADER presec = <span class="hljs-built_in">PIMAGE_SECTION_HEADER</span>((BYTE*)pnewSectionHeaderBase - <span class="hljs-number">0x28</span>);<br>	<span class="hljs-keyword">if</span> (presec-&gt;SizeOfRawData &gt; presec-&gt;Misc.VirtualSize)<br>	&#123;<br>		pointtonew = presec-&gt;SizeOfRawData + presec-&gt;PointerToRawData;<br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>	&#125;<br>	pnewSectionHeaderBase-&gt;PointerToRawData = pointtonew;<br><br><br><br>	<span class="hljs-comment">//+pNtHeaders-&gt;OptionalHeader.SectionAlignment</span><br>	<span class="hljs-comment">//修改节的数量+1</span><br>	pNtHeaders-&gt;FileHeader.NumberOfSections = pNtHeaders-&gt;FileHeader.NumberOfSections + <span class="hljs-number">1</span>;<br><br><br><br>	<span class="hljs-keyword">return</span> pImageBuffer;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h1 id="扩大节"><a class="markdownIt-Anchor" href="#扩大节"></a> 扩大节:</h1>
+<p>1、拉伸到内存<br>
+2.分配一块新的空间: Size0fImage + Ex<br>
+3、将最后一个节的Si zeOfRawData和VirtualSize改成N<br>
+SizeOfRawData = VirtualSize = N<br>
+N = (SizeOfRawData或者VirtualSize 内存对齐后的值) + Ex （这两个值取最大的）<br>
+4、修改SizeOfImage大小<br>
+Size0fImage = Size0fImage + Ex</p>
+<h1 id="合并节"><a class="markdownIt-Anchor" href="#合并节"></a> 合并节</h1>
+<p>1、拉伸到内存											<br>
+2、将第一个节的内存大小、文件大小改成一样						<br>
+Max = SizeOfRawData&gt;VirtualSize?SizeOfRawData:VirtualSize										<br>
+SizeOfRawData = VirtualSize = 最后一个节的VirtualAddress（23000h) + Max (4000h)- SizeOfHeaders内存对齐后的大小(1000h)																	<br>
+3、将第一个节的属性改为包含所有节的属性</p>
+<p><strong>DWORD Characteristics;</strong>	进行或运算即可											<br>
+4、修改节的数量为1</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/*</span><br><span class="hljs-comment">函数功能：合并节</span><br><span class="hljs-comment">参数：内存映像指针</span><br><span class="hljs-comment">返回值：内存映像指针</span><br><span class="hljs-comment">注意：无</span><br><span class="hljs-comment">1、拉伸到内存</span><br><span class="hljs-comment">2、将第一个节的内存大小、文件大小改成一样</span><br><span class="hljs-comment">	   Max = SizeOfRawData&gt;VirtualSize?SizeOfRawData:VirtualSize</span><br><span class="hljs-comment">   SizeOfRawData = VirtualSize = 最后一个节的VirtualAddress + Max - SizeOfHeaders内存对齐后的大小</span><br><span class="hljs-comment">3、将第一个节的属性改为包含所有节的属性</span><br><span class="hljs-comment">4、修改节的数量为1</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">LPVOID <span class="hljs-title">Setiontoone</span><span class="hljs-params">(LPVOID pImageBuffer)</span> </span>&#123;<br>	PIMAGE_DOS_HEADER pDosHeader = <span class="hljs-literal">NULL</span>;<br>	DWORD SizeOfImage = <span class="hljs-number">0</span>;<br>	DWORD SizeOfHeaders = <span class="hljs-number">0</span>;<br>	DWORD SizeOfRawData = <span class="hljs-number">0</span>;<br>	DWORD VirtualSize = <span class="hljs-number">0</span>;<br>	DWORD MAX = <span class="hljs-number">0</span>;<br>	WORD NumberOfSections = <span class="hljs-number">0</span>;<br>	DWORD pointtonew = <span class="hljs-number">0</span>;<br>	PIMAGE_SECTION_HEADER pSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_SECTION_HEADER pnewSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br><br>	pDosHeader = (PIMAGE_DOS_HEADER)pImageBuffer;<span class="hljs-comment">//dos头</span><br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pImageBuffer);<span class="hljs-comment">//nt头</span><br><br>	<span class="hljs-comment">//SizeOfHeaders内存对齐后的大小</span><br>	pSectionHeaderBase = <span class="hljs-built_in">LocateSectionBase</span>(pImageBuffer);<br>	DWORD SizeOfHeadersmem = pSectionHeaderBase-&gt;VirtualAddress;<br>	<span class="hljs-comment">//找最后一个节</span><br>	PIMAGE_SECTION_HEADER pLaswSectionHeaderBase = <span class="hljs-built_in">PIMAGE_SECTION_HEADER</span> ((BYTE*)pSectionHeaderBase + (DWORD)(<span class="hljs-number">0x28</span> * (pNtHeaders-&gt;FileHeader.NumberOfSections<span class="hljs-number">-1</span>)));<br>	<span class="hljs-comment">//Max = SizeOfRawData&gt;VirtualSize?SizeOfRawData:VirtualSize</span><br>	<span class="hljs-keyword">if</span> (pLaswSectionHeaderBase-&gt;SizeOfRawData &gt; pLaswSectionHeaderBase-&gt;Misc.VirtualSize)<br>	&#123;<br>		MAX = pLaswSectionHeaderBase-&gt;SizeOfRawData;<br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>		MAX = pLaswSectionHeaderBase-&gt;Misc.VirtualSize;<br>	&#125;<br>	<span class="hljs-comment">//SizeOfRawData = VirtualSize = 最后一个节的VirtualAddress + Max - SizeOfHeaders内存对齐后的大小</span><br>	SizeOfRawData = pLaswSectionHeaderBase-&gt;VirtualAddress + MAX - SizeOfHeadersmem;<br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">	修改节表属性或操作</span><br><span class="hljs-comment">	*/</span><br>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> x = <span class="hljs-number">1</span>; x &lt; pNtHeaders-&gt;FileHeader.NumberOfSections ; x++) &#123;<br>		PIMAGE_SECTION_HEADER pSectiontime = (PIMAGE_SECTION_HEADER)((BYTE*)pSectionHeaderBase +x* <span class="hljs-number">0x28</span>);<br>		pSectionHeaderBase-&gt;Characteristics = pSectiontime-&gt;Characteristics | pSectionHeaderBase-&gt;Characteristics;<br>	&#125;<br>	<span class="hljs-comment">//修改节表数量</span><br>	pNtHeaders-&gt;FileHeader.NumberOfSections = <span class="hljs-number">1</span>;<br><br>	<span class="hljs-comment">//修改第一个节表属性</span><br>	pSectionHeaderBase-&gt;SizeOfRawData = SizeOfRawData;<br>	pSectionHeaderBase-&gt;Misc.VirtualSize = SizeOfRawData;<br><br>	<span class="hljs-comment">//修改所有节的属性</span><br><br><br><br>	<span class="hljs-keyword">return</span> pImageBuffer;<br></code></pre></td></tr></table></figure>
+<p>​</p>
+<h2 id="代码遇到的问题-2"><a class="markdownIt-Anchor" href="#代码遇到的问题-2"></a> 代码遇到的问题</h2>
+<p>1.忘记修改节表属性了</p>
+<h1 id="动态链接库-静态链接库"><a class="markdownIt-Anchor" href="#动态链接库-静态链接库"></a> 动态链接库 静态链接库</h1>
+<p>静态链接库：直接把函数编译到exe里，但是如果需要修改函数就得重新编译exe</p>
+<p>动态链接库：修改时直接编译dll即可，exe不用重新生成</p>
+<h1 id="导出表"><a class="markdownIt-Anchor" href="#导出表"></a> 导出表</h1>
+<p>在可选PE头里的数据目录第一项</p>
+<img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220307232838234.png" srcset="/img/loading.gif" lazyload alt="image-20220307232838234" style="zoom: 50%;">
+<h2 id="数据目录结构"><a class="markdownIt-Anchor" href="#数据目录结构"></a> 数据目录结构</h2>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs elm">// 数据目录 _IMAGE_DATA_DIRECTORY结构体<br>typedef struct _IMAGE_DATA_DIRECTORY &#123;<br>  <span class="hljs-type">DWORD</span> <span class="hljs-type">VirtualAddress</span>;     /**指向某个数据的相对虚拟地址   <span class="hljs-type">RAV</span>  偏移0x00**/<br>  <span class="hljs-type">DWORD</span> <span class="hljs-type">Size</span>;               /**某个数据块的大小                 偏移0x04**/<br>&#125; <span class="hljs-type">IMAGE_DATA_DIRECTORY</span>, *<span class="hljs-type">PIMAGE_DATA_DIRECTORY</span>;<br></code></pre></td></tr></table></figure>
+<p>要在文件中找到需要RVA转FOA查看文件中的位置</p>
+<h2 id="导出表结构"><a class="markdownIt-Anchor" href="#导出表结构"></a> 导出表结构</h2>
+<img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220307233122342.png" srcset="/img/loading.gif" lazyload alt="image-20220307233122342" style="zoom:80%;">
+<p>*<strong>不一定是导出的函数地址长度最大，有可能几个函数指向同一个的地址</strong></p>
+<p>numberoffunctions，不一定就是真正的导出函数个数（用序号的最后一个减去开始的序号然后加1）</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！，本博客仅用于交流学习，由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，文章作者不为此承担任何责任。
+文章作者拥有对此站文章的修改和解释权。如欲转载此站文章，需取得作者同意，且必须保证此文章的完整性，包括版权声明等全部内容。未经文章作者允许，不得任意修改或者增减此文章内容，不得以任何方式将其用于商业目的。若造成严重后果，本人将依法追究法律责任。 阅读本站文章则默认遵守此规则。
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/12/13/log4j%E8%BF%9C%E7%A8%8BRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E7%AC%94%E8%AE%B0/">
+                        <span class="hidden-mobile">log4j远程RCE漏洞复现笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
