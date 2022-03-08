@@ -185,7 +185,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.8k 字
+      3.7k 字
     </span>
   
 
@@ -195,7 +195,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      49
+      47
        分钟
     </span>
   
@@ -263,46 +263,29 @@
 </li>
 <li>
 <p>节表大小 = FileHeader.NumberOfSections（节数量）* IMAGE_SECTION_HEADER 结构体。</p>
-</li>
-<li>
-<pre class="highlight"><code class="c++"><span class="hljs-comment">// IMAGE_SECTION_HEADER 节表结构体，大小40B</span>
-<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_SECTION_HEADER</span> &#123;</span>
-  BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];  <span class="hljs-comment">// 节表名称：描述性字段</span>
-  <span class="hljs-comment">// 下方4个字段：从文件S1处开始，拷贝S2大小的数据，到内存S3处，有效数据占用内存S4大小</span>
-  <span class="hljs-keyword">union</span> &#123;
-    DWORD PhysicalAddress;
-    DWORD VirtualSize;         <span class="hljs-comment">// S4:内存大小</span>
-  &#125; Misc;
-  DWORD VirtualAddress;          <span class="hljs-comment">// S3:内存地址：基于模块基址</span>
-  DWORD SizeOfRawData;           <span class="hljs-comment">// （拷贝的到内存数据大小）S2:文件对齐大小</span>
-  DWORD PointerToRawData;        <span class="hljs-comment">// （节在文件中偏移）S1:文件偏移</span>
-  DWORD PointerToRelocations;    <span class="hljs-comment">// 无用</span>
-  DWORD PointerToLinenumbers;    <span class="hljs-comment">// 无用</span>
-  WORD  NumberOfRelocations;    <span class="hljs-comment">// 无用</span>
-  WORD  NumberOfLinenumbers;    <span class="hljs-comment">// 无用</span>
-  DWORD Characteristics;     <span class="hljs-comment">// 节属性，取值IMAGE_SCN_...系列宏</span>
-&#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
-&lt;!--code￼<span class="hljs-number">4</span>--&gt;
-</code></pre>
+<p><img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/1.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
 </li>
 </ul>
-<p>SizeOfRawData不一定比Misc大，因为Misc在文件中，可能是在文件里未初始化未进行分配的值（记录的是在内存中的大小）</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><br>&lt;img <span class="hljs-attribute">src</span>=<span class="hljs-string">&quot;image-20220227212440476.png&quot;</span> <span class="hljs-attribute">alt</span>=<span class="hljs-string">&quot;image-20220227212440476&quot;</span> <span class="hljs-attribute">style</span>=<span class="hljs-string">&quot;zoom:67%;&quot;</span> /&gt;<br><br></code></pre></td></tr></table></figure>
-<p>写代码的坑<br>
-vs fopen_s 函数：<br>
-第一个参数是FILE *指针<br>
-第二个文件名字<br>
-第三个是方法</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vala"><br><span class="hljs-meta"># call jmp</span><br><br></code></pre></td></tr></table></figure>
-<p>jmp = E8<br>
-jmp后面的值x = jmp后一条指令地址（运行时内存中的地址）+要跳转的地址<br>
-call = E9<br>
-call 后面的值同上，均是运行时内存中的地址</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vala"><br><span class="hljs-meta"># 指针</span><br><br></code></pre></td></tr></table></figure>
-<p>（byte*）转byte型指针<br>
-（dword）要用指针算地址的时候转的dword类型<br>
-都是强制类型转换</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs php"><br><span class="hljs-comment"># 任意空白区添加代码</span><br><br><span class="hljs-comment">## 修改vs编译的程序，遇到的问题：</span><br><br><span class="hljs-number">1</span>.要是修改vs编译出来的程序要跳过.textbss这个节表，这个表的内存地址和文件地址都为<span class="hljs-number">0x000000</span><br><br><span class="hljs-number">2</span>.vs编译的程序已经开启ALSR(地址随机化)，要想修改成功需要关闭这个<br><br>&lt;img src=<span class="hljs-string">&quot;image-20220303143104764.png&quot;</span> alt=<span class="hljs-string">&quot;image-20220303143104764&quot;</span> style=<span class="hljs-string">&quot;zoom: 67%;&quot;</span> /&gt;<br><br><br><br>```c++<br>LPVOID changeimagebuffer(LPVOID imagebuffer) &#123;<br>	PIMAGE_DOS_HEADER pDosHeader = <span class="hljs-literal">NULL</span>;<br>	DWORD SizeOfImage = <span class="hljs-number">0</span>;<br>	DWORD SizeOfHeaders = <span class="hljs-number">0</span>;<br>	WORD NumberOfSections = <span class="hljs-number">0</span>;<br>	PIMAGE_SECTION_HEADER pSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	LPVOID pImageBuffer = <span class="hljs-literal">NULL</span>;<br>	PBYTE codebegin = <span class="hljs-literal">NULL</span>;<br><br><br><br>	pDosHeader = (PIMAGE_DOS_HEADER)imagebuffer;<br>	pNtHeaders = FileToNtHeader(imagebuffer);<br><br>	<span class="hljs-comment">//判断空闲区是否能存储shellcode代码(文件对齐大小-misc里真实内存大小）</span><br>	pSectionHeaderBase = LocateSectionBase(imagebuffer);<br>	<span class="hljs-keyword">if</span> (((pSectionHeaderBase-&gt;SizeOfRawData) - (pSectionHeaderBase-&gt;Misc.VirtualSize)) &lt; sizeof(shellcode))<br>	&#123;<br>		printf(<span class="hljs-string">&quot;代码空闲区不足&quot;</span>);<br>		free(imagebuffer);<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>	&#125;<br><br>	<span class="hljs-comment">//把代码复制到空闲区</span><br>	codebegin = (PBYTE)((DWORD)imagebuffer + pSectionHeaderBase-&gt;VirtualAddress + pSectionHeaderBase-&gt;Misc.VirtualSize)+<span class="hljs-number">14</span>;<br>	memcpy(codebegin, shellcode, sizeof(shellcode));<br>	<span class="hljs-comment">//修正E8</span><br><br>	DWORD e8addr = (DWORD)(MESSAGE_BOX_ADDRESS - (pNtHeaders-&gt;OptionalHeader.ImageBase + ((DWORD)codebegin +(DWORD)<span class="hljs-number">0x0D</span> - (DWORD)imagebuffer)));<br>	<span class="hljs-comment">//e8addr = 0x7D8A55E1;</span><br>	*(PDWORD)(codebegin + <span class="hljs-number">9</span>) = e8addr;<br>	<span class="hljs-comment">// 修正E9</span><br>	DWORD e9addr = (DWORD)((pNtHeaders-&gt;OptionalHeader.ImageBase + pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint) - (pNtHeaders-&gt;OptionalHeader.ImageBase + ((DWORD)codebegin + (DWORD)<span class="hljs-number">0x12</span> - (DWORD)imagebuffer)));<br>	<span class="hljs-comment">//e9addr = 0xFFFFDC95;</span><br>	*(PDWORD)(codebegin + <span class="hljs-number">0xE</span>) = e9addr;<br>	<span class="hljs-comment">//pSectionHeaderBase = (PIMAGE_SECTION_HEADER)(BYTE*)imagebuffer + pDosHeader-&gt;e_lfanew + sizeof(IMAGE_); </span><br><br>	pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint = (DWORD)codebegin - (DWORD)imagebuffer;<br>	<span class="hljs-comment">//pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint = 0x01A730;</span><br>	<span class="hljs-keyword">return</span> imagebuffer;<br><br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>图3-5   节属性常用位含义</p>
+<p>节表置于选项头之后，节表首地址 计算方法：</p>
+<p>选项头的地址 + 选项头的大小；</p>
+<p>（2） e_lfanew+4+0x14（文件头大小）+0xE0（32位选项头大小）。</p>
+<p><img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220227003416563.png" srcset="/img/loading.gif" lazyload alt="image-20220227003416563"></p>
+<h2 id="filebuffer文件里的数据状态与imagebuffer内存里的数据状态"><a class="markdownIt-Anchor" href="#filebuffer文件里的数据状态与imagebuffer内存里的数据状态"></a> FileBuffer（文件里的数据状态）与ImageBuffer（内存里的数据状态）</h2>
+<img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220227205440595.png" srcset="/img/loading.gif" lazyload alt="image-20220227205440595" style="zoom:80%;">
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">SizeOfRawData不一定比Misc大，因为Misc在文件中，可能是在文件里未初始化未进行分配的值（记录的是在内存中的大小）<br></code></pre></td></tr></table></figure>
+<img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220227212440476.png" srcset="/img/loading.gif" lazyload alt="image-20220227212440476" style="zoom:67%;">
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cmake">写代码的坑<br>vs fopen_s 函数：<br>第一个参数是<span class="hljs-keyword">FILE</span> *指针<br>第二个文件名字<br>第三个是方法<br></code></pre></td></tr></table></figure>
+<h1 id="call-jmp"><a class="markdownIt-Anchor" href="#call-jmp"></a> call jmp</h1>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs avrasm"><span class="hljs-keyword">jmp</span> = E8<br><span class="hljs-keyword">jmp</span>后面的值<span class="hljs-built_in">x</span> = <span class="hljs-keyword">jmp</span>后一条指令地址（运行时内存中的地址）+要跳转的地址<br><span class="hljs-keyword">call</span> = E9<br><span class="hljs-keyword">call</span> 后面的值同上，均是运行时内存中的地址<br></code></pre></td></tr></table></figure>
+<h1 id="指针"><a class="markdownIt-Anchor" href="#指针"></a> 指针</h1>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs x86asm">（<span class="hljs-built_in">byte</span>*）转<span class="hljs-built_in">byte</span>型指针<br>（<span class="hljs-built_in">dword</span>）要用指针算地址的时候转的<span class="hljs-built_in">dword</span>类型<br>都是强制类型转换<br></code></pre></td></tr></table></figure>
+<h1 id="任意空白区添加代码"><a class="markdownIt-Anchor" href="#任意空白区添加代码"></a> 任意空白区添加代码</h1>
+<h2 id="修改vs编译的程序遇到的问题"><a class="markdownIt-Anchor" href="#修改vs编译的程序遇到的问题"></a> 修改vs编译的程序，遇到的问题：</h2>
+<p>1.要是修改vs编译出来的程序要跳过.textbss这个节表，这个表的内存地址和文件地址都为0x000000</p>
+<p>2.vs编译的程序已经开启ALSR(地址随机化)，要想修改成功需要关闭这个</p>
+<img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220303143104764.png" srcset="/img/loading.gif" lazyload alt="image-20220303143104764" style="zoom: 67%;">
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function">LPVOID <span class="hljs-title">changeimagebuffer</span><span class="hljs-params">(LPVOID imagebuffer)</span> </span>&#123;<br>	PIMAGE_DOS_HEADER pDosHeader = <span class="hljs-literal">NULL</span>;<br>	DWORD SizeOfImage = <span class="hljs-number">0</span>;<br>	DWORD SizeOfHeaders = <span class="hljs-number">0</span>;<br>	WORD NumberOfSections = <span class="hljs-number">0</span>;<br>	PIMAGE_SECTION_HEADER pSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	LPVOID pImageBuffer = <span class="hljs-literal">NULL</span>;<br>	PBYTE codebegin = <span class="hljs-literal">NULL</span>;<br><br><br><br>	pDosHeader = (PIMAGE_DOS_HEADER)imagebuffer;<br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(imagebuffer);<br><br>	<span class="hljs-comment">//判断空闲区是否能存储shellcode代码(文件对齐大小-misc里真实内存大小）</span><br>	pSectionHeaderBase = <span class="hljs-built_in">LocateSectionBase</span>(imagebuffer);<br>	<span class="hljs-keyword">if</span> (((pSectionHeaderBase-&gt;SizeOfRawData) - (pSectionHeaderBase-&gt;Misc.VirtualSize)) &lt; <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(shellcode))<br>	&#123;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;代码空闲区不足&quot;</span>);<br>		<span class="hljs-built_in">free</span>(imagebuffer);<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>	&#125;<br><br>	<span class="hljs-comment">//把代码复制到空闲区</span><br>	codebegin = (PBYTE)((DWORD)imagebuffer + pSectionHeaderBase-&gt;VirtualAddress + pSectionHeaderBase-&gt;Misc.VirtualSize)+<span class="hljs-number">14</span>;<br>	<span class="hljs-built_in">memcpy</span>(codebegin, shellcode, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(shellcode));<br>	<span class="hljs-comment">//修正E8</span><br><br>	DWORD e8addr = (DWORD)(MESSAGE_BOX_ADDRESS - (pNtHeaders-&gt;OptionalHeader.ImageBase + ((DWORD)codebegin +(DWORD)<span class="hljs-number">0x0D</span> - (DWORD)imagebuffer)));<br>	<span class="hljs-comment">//e8addr = 0x7D8A55E1;</span><br>	*(PDWORD)(codebegin + <span class="hljs-number">9</span>) = e8addr;<br>	<span class="hljs-comment">// 修正E9</span><br>	DWORD e9addr = (DWORD)((pNtHeaders-&gt;OptionalHeader.ImageBase + pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint) - (pNtHeaders-&gt;OptionalHeader.ImageBase + ((DWORD)codebegin + (DWORD)<span class="hljs-number">0x12</span> - (DWORD)imagebuffer)));<br>	<span class="hljs-comment">//e9addr = 0xFFFFDC95;</span><br>	*(PDWORD)(codebegin + <span class="hljs-number">0xE</span>) = e9addr;<br>	<span class="hljs-comment">//pSectionHeaderBase = (PIMAGE_SECTION_HEADER)(BYTE*)imagebuffer + pDosHeader-&gt;e_lfanew + sizeof(IMAGE_); </span><br><br>	pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint = (DWORD)codebegin - (DWORD)imagebuffer;<br>	<span class="hljs-comment">//pNtHeaders-&gt;OptionalHeader.AddressOfEntryPoint = 0x01A730;</span><br>	<span class="hljs-keyword">return</span> imagebuffer;<br><br><br>&#125;<br></code></pre></td></tr></table></figure>
 <h1 id="新增加一个节"><a class="markdownIt-Anchor" href="#新增加一个节"></a> 新增加一个节</h1>
 <h2 id="需要进行的操作"><a class="markdownIt-Anchor" href="#需要进行的操作"></a> 需要进行的操作</h2>
 <p>1)添加一个新的节(可以copy一份)<br>
