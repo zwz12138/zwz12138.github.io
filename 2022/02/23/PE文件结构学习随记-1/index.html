@@ -185,7 +185,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.7k 字
+      3.8k 字
     </span>
   
 
@@ -195,7 +195,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      47
+      49
        分钟
     </span>
   
@@ -263,10 +263,11 @@
 </li>
 <li>
 <p>节表大小 = FileHeader.NumberOfSections（节数量）* IMAGE_SECTION_HEADER 结构体。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// IMAGE_SECTION_HEADER 节表结构体，大小40B</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_SECTION_HEADER</span> &#123;</span><br>  BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];  <span class="hljs-comment">// 节表名称：描述性字段</span><br>  <span class="hljs-comment">// 下方4个字段：从文件S1处开始，拷贝S2大小的数据，到内存S3处，有效数据占用内存S4大小</span><br>  <span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span><br>    DWORD PhysicalAddress;<br>    DWORD VirtualSize;         <span class="hljs-comment">// S4:内存大小</span><br>  &#125; Misc;<br>  DWORD VirtualAddress;          <span class="hljs-comment">// S3:内存地址：基于模块基址</span><br>  DWORD SizeOfRawData;           <span class="hljs-comment">// （拷贝的到内存数据大小）S2:文件对齐大小</span><br>  DWORD PointerToRawData;        <span class="hljs-comment">// （节在文件中偏移）S1:文件偏移</span><br>  DWORD PointerToRelocations;    <span class="hljs-comment">// 无用</span><br>  DWORD PointerToLinenumbers;    <span class="hljs-comment">// 无用</span><br>  WORD  NumberOfRelocations;    <span class="hljs-comment">// 无用</span><br>  WORD  NumberOfLinenumbers;    <span class="hljs-comment">// 无用</span><br>  DWORD Characteristics;     <span class="hljs-comment">// 节属性，取值IMAGE_SCN_...系列宏</span><br>&#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;<br></code></pre></td></tr></table></figure>
 <p><img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/1.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
 </li>
 </ul>
-<p>图3-5   节属性常用位含义</p>
+<p>节属性常用位含义</p>
 <p>节表置于选项头之后，节表首地址 计算方法：</p>
 <p>选项头的地址 + 选项头的大小；</p>
 <p>（2） e_lfanew+4+0x14（文件头大小）+0xE0（32位选项头大小）。</p>
