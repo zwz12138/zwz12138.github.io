@@ -185,7 +185,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.9k 字
+      3.8k 字
     </span>
   
 
@@ -195,7 +195,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      50
+      49
        分钟
     </span>
   
@@ -265,29 +265,29 @@
 <p>节表大小 = FileHeader.NumberOfSections（节数量）* IMAGE_SECTION_HEADER 结构体。</p>
 </li>
 <li>
-<pre class="highlight"><code class>// IMAGE_SECTION_HEADER 节表结构体，大小40B
-typedef struct _IMAGE_SECTION_HEADER &#123;
-  BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];  // 节表名称：描述性字段
-  // 下方4个字段：从文件S1处开始，拷贝S2大小的数据，到内存S3处，有效数据占用内存S4大小
-  union &#123;
+<pre class="highlight"><code class="c++"><span class="hljs-comment">// IMAGE_SECTION_HEADER 节表结构体，大小40B</span>
+<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_SECTION_HEADER</span> &#123;</span>
+  BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];  <span class="hljs-comment">// 节表名称：描述性字段</span>
+  <span class="hljs-comment">// 下方4个字段：从文件S1处开始，拷贝S2大小的数据，到内存S3处，有效数据占用内存S4大小</span>
+  <span class="hljs-keyword">union</span> &#123;
     DWORD PhysicalAddress;
-    DWORD VirtualSize;         // S4:内存大小
+    DWORD VirtualSize;         <span class="hljs-comment">// S4:内存大小</span>
   &#125; Misc;
-  DWORD VirtualAddress;          // S3:内存地址：基于模块基址
-  DWORD SizeOfRawData;           // （拷贝的到内存数据大小）S2:文件对齐大小
-  DWORD PointerToRawData;        // （节在文件中偏移）S1:文件偏移
-  DWORD PointerToRelocations;    // 无用
-  DWORD PointerToLinenumbers;    // 无用
-  WORD  NumberOfRelocations;    // 无用
-  WORD  NumberOfLinenumbers;    // 无用
-  DWORD Characteristics;     // 节属性，取值IMAGE_SCN_...系列宏
+  DWORD VirtualAddress;          <span class="hljs-comment">// S3:内存地址：基于模块基址</span>
+  DWORD SizeOfRawData;           <span class="hljs-comment">// （拷贝的到内存数据大小）S2:文件对齐大小</span>
+  DWORD PointerToRawData;        <span class="hljs-comment">// （节在文件中偏移）S1:文件偏移</span>
+  DWORD PointerToRelocations;    <span class="hljs-comment">// 无用</span>
+  DWORD PointerToLinenumbers;    <span class="hljs-comment">// 无用</span>
+  WORD  NumberOfRelocations;    <span class="hljs-comment">// 无用</span>
+  WORD  NumberOfLinenumbers;    <span class="hljs-comment">// 无用</span>
+  DWORD Characteristics;     <span class="hljs-comment">// 节属性，取值IMAGE_SCN_...系列宏</span>
 &#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
-<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs subunit"><br>- <br><br>![img](919233_4Y9YEAZHVQ447Z6.jpg)<br><br>图3<span class="hljs-string">-5</span>   节属性常用位含义<br><br>- 节表置于选项头之后，节表首地址 计算方法：<br><br>- - （1）选项头的地址 + 选项头的大小；<br>  - （2） e_lfanew<span class="hljs-string">+4</span><span class="hljs-string">+0</span>x14（文件头大小）<span class="hljs-string">+0</span>xE0（32位选项头大小）。<br><br>![image<span class="hljs-string">-20220227003416563</span>](image<span class="hljs-string">-20220227003416563</span>.png)<br><br>## FileBuffer（文件里的数据状态）与ImageBuffer（内存里的数据状态）<br><br>&lt;img src=&quot;image<span class="hljs-string">-20220227205440595</span>.png&quot; alt=&quot;image<span class="hljs-string">-20220227205440595</span>&quot; style=&quot;zoom:80%;&quot; /&gt;<br><br></code></pre></td></tr></table></figure>
+&lt;!--code￼<span class="hljs-number">4</span>--&gt;
 </code></pre>
 </li>
 </ul>
 <p>SizeOfRawData不一定比Misc大，因为Misc在文件中，可能是在文件里未初始化未进行分配的值（记录的是在内存中的大小）</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><br><br><br>&lt;img <span class="hljs-attribute">src</span>=<span class="hljs-string">&quot;image-20220227212440476.png&quot;</span> <span class="hljs-attribute">alt</span>=<span class="hljs-string">&quot;image-20220227212440476&quot;</span> <span class="hljs-attribute">style</span>=<span class="hljs-string">&quot;zoom:67%;&quot;</span> /&gt;<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><br>&lt;img <span class="hljs-attribute">src</span>=<span class="hljs-string">&quot;image-20220227212440476.png&quot;</span> <span class="hljs-attribute">alt</span>=<span class="hljs-string">&quot;image-20220227212440476&quot;</span> <span class="hljs-attribute">style</span>=<span class="hljs-string">&quot;zoom:67%;&quot;</span> /&gt;<br><br></code></pre></td></tr></table></figure>
 <p>写代码的坑<br>
 vs fopen_s 函数：<br>
 第一个参数是FILE *指针<br>
