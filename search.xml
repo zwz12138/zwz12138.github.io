@@ -197,13 +197,6 @@ SizeOfRawData = VirtualSize = 最后一个节的VirtualAddress（23000h) + Max (
 <p>*<strong>不一定是导出的函数地址长度最大，有可能几个函数指向同一个的地址</strong></p>
 <p>numberoffunctions，不一定就是真正的导出函数个数（用序号的最后一个减去开始的序号然后加1）</p>
 ]]></content>
-      <categories>
-        <category>逆向学习</category>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>逆向学习</tag>
-      </tags>
   </entry>
   <entry>
     <title>XXE 漏洞学习</title>
@@ -2641,5 +2634,10 @@ SizeOfRawData = VirtualSize = 最后一个节的VirtualAddress（23000h) + Max (
       <tags>
         <tag>web学习</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>PE文件结构学习随记-1</title>
+    <url>/2022/03/08/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/</url>
+    <content><![CDATA[]]></content>
   </entry>
 </search>
