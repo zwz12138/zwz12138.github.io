@@ -696,26 +696,22 @@ XML代表可扩展标记语言，它像HTML，有一个树状的标签和数据�
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/05/11/sqli-labs-master-%E5%AD%A6%E4%B9%A0/">sqli labs master 学习</a>
+        <a href="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/">unlink漏洞学习</a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/05/11/sqli-labs-master-%E5%AD%A6%E4%B9%A0/">
+        <a href="/2021/04/15/unlink%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/">
           
           
             
           
-           sqli labs master 学习
- Less 1
-1.首先判断注入点
-在http请求后加上？id=1’ and 1=1 – -，显示如下
+           堆的unlink漏洞学习
+ 前言
+做实验做到的堆部分，第一个就是这个，以前没怎么详细做过堆的题，理解起来真的困难，看了几天才能理解，还是太菜了。就决定要把这个记录下来TAT
+ Unlink基本原理
+Unlink的目的是把一个双向链表中的空闲块拿出来（例如 free 时和目前物理相邻的 free chunk 进行合并）。其基本的过程如下
 
-把后面改为1=2显示如下，可以看到sql语句应该是正常执行了，没有报错
-
-可以说明存在字符型注入，猜测语句为select… where id=’’这样的语句。
-接下来判断注入点
-判断字段数
-输入?id=1’ order by 3 – -时候会显示如下，
+目的是为了把图中的P拿出来，然后使FD-&gt;bk=BK
         </a>
       </p>
 
@@ -723,8 +719,8 @@ XML代表可扩展标记语言，它像HTML，有一个树状的标签和数据�
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-05-11 20:41" pubdate>
-              2021-05-11
+            <time datetime="2021-04-15 21:45" pubdate>
+              2021-04-15
             </time>
           </div>
         
@@ -732,9 +728,9 @@ XML代表可扩展标记语言，它像HTML，有一个树状的标签和数据�
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+              <a href="/categories/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
             
-              <a href="/categories/web%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+              <a href="/categories/PWN%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
             
           </div>
         
@@ -742,7 +738,7 @@ XML代表可扩展标记语言，它像HTML，有一个树状的标签和数据�
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/web%E5%AD%A6%E4%B9%A0/">web学习</a>
+              <a href="/tags/PWN%E5%AD%A6%E4%B9%A0/">PWN学习</a>
             
           </div>
         
