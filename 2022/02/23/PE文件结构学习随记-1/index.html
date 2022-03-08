@@ -331,7 +331,7 @@ SizeOfRawData = VirtualSize = 最后一个节的VirtualAddress（23000h) + Max (
 <figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs elm">// 数据目录 _IMAGE_DATA_DIRECTORY结构体<br>typedef struct _IMAGE_DATA_DIRECTORY &#123;<br>  <span class="hljs-type">DWORD</span> <span class="hljs-type">VirtualAddress</span>;     /**指向某个数据的相对虚拟地址   <span class="hljs-type">RAV</span>  偏移0x00**/<br>  <span class="hljs-type">DWORD</span> <span class="hljs-type">Size</span>;               /**某个数据块的大小                 偏移0x04**/<br>&#125; <span class="hljs-type">IMAGE_DATA_DIRECTORY</span>, *<span class="hljs-type">PIMAGE_DATA_DIRECTORY</span>;<br></code></pre></td></tr></table></figure>
 <p>要在文件中找到需要RVA转FOA查看文件中的位置</p>
 <h2 id="导出表结构"><a class="markdownIt-Anchor" href="#导出表结构"></a> 导出表结构</h2>
-<img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220307233122342.png" srcset="/img/loading.gif" lazyload alt="image-20220307233122342" style="zoom:80%;">
+<img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220308230652307.png" srcset="/img/loading.gif" lazyload alt="image-20220308230652307" style="zoom:80%;">
 <p>*<strong>不一定是导出的函数地址长度最大，有可能几个函数指向同一个的地址</strong></p>
 <p>numberoffunctions，不一定就是真正的导出函数个数（用序号的最后一个减去开始的序号然后加1）</p>
 
