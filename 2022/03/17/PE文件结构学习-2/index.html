@@ -1,0 +1,554 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>PE文件结构学习-2 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="PE文件结构学习-2">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-17 17:53" pubdate>
+        2022年3月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      61
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PE文件结构学习-2</h1>
+            
+            <div class="markdown-body">
+              <h1 id="rva转foa的过程"><a class="markdownIt-Anchor" href="#rva转foa的过程"></a> Rva转Foa的过程</h1>
+<p>1.判断Rva减去imagebase对比sizeofheader的大小，如果比这个小，那说明这个Rva减去imagebase对比sizeofheader就是foa</p>
+<p>2.如果上述不成立，则遍历节表的virtualaddress，看位于哪2个节表之间，判断成功后用节表的pointtoraw+rva-virtualaddress，就是得到的foa</p>
+<h2 id="foa转rva"><a class="markdownIt-Anchor" href="#foa转rva"></a> foa转rva</h2>
+<p>反过来就行，先看这个foa在那个节，计算与这个节pointtoraw地址的偏移，然后加上这个节的virtualaddress</p>
+<p>代码待补充</p>
+<h1 id="动态链接库测试"><a class="markdownIt-Anchor" href="#动态链接库测试"></a> 动态链接库测试</h1>
+<h2 id="隐式链接"><a class="markdownIt-Anchor" href="#隐式链接"></a> 隐式链接</h2>
+<p>vs创建dll项目,pch.cpp和pch.h如下</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// pch.cpp: 与预编译标头对应的源文件</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&quot;pch.h&quot;</span></span><br><br><span class="hljs-comment">// 当使用预编译的头时，需要使用此源文件，编译才能成功。</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall <span class="hljs-title">Plus</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">return</span> x + y;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall <span class="hljs-title">Sub</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">return</span> x - y;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall <span class="hljs-title">Mul</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">return</span> x * y;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall <span class="hljs-title">Div</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">return</span> x / y;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// pch.h: 这是预编译标头文件。</span><br><span class="hljs-comment">// 下方列出的文件仅编译一次，提高了将来生成的生成性能。</span><br><span class="hljs-comment">// 这还将影响 IntelliSense 性能，包括代码完成和许多代码浏览功能。</span><br><span class="hljs-comment">// 但是，如果此处列出的文件中的任何一个在生成之间有更新，它们全部都将被重新编译。</span><br><span class="hljs-comment">// 请勿在此处添加要频繁更新的文件，这将使得性能优势无效。</span><br><br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-keyword">int</span> _declspec(dllexport) <span class="hljs-function">__stdcall  <span class="hljs-title">Plus</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-keyword">int</span> _declspec(dllexport) <span class="hljs-function">__stdcall <span class="hljs-title">Sub</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-keyword">int</span> _declspec(dllexport) <span class="hljs-function">__stdcall <span class="hljs-title">Mul</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-keyword">int</span> _declspec(dllexport) <span class="hljs-function">__stdcall  <span class="hljs-title">Div</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifndef</span> PCH_H</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PCH_H</span><br><br><span class="hljs-comment">// 添加要在此处预编译的标头</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&quot;framework.h&quot;</span></span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span> <span class="hljs-comment">//PCH_H</span></span><br><br></code></pre></td></tr></table></figure>
+<p>把生成的dll，pch.h,framkwork.h,lib拷贝到测试项目里</p>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/222.png" srcset="/img/loading.gif" lazyload alt="image-20220310194805992" style="zoom: 50%;">
+<p>测试项目加入</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-meta-keyword">pragma</span> comment(lib, <span class="hljs-meta-string">&quot;Dll1.lib&quot;</span>)</span><br><br><br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> __declspec(dllimport) <span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall  <span class="hljs-title">Plus</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> __declspec(dllimport) <span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall  <span class="hljs-title">Sub</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> __declspec(dllimport) <span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall  <span class="hljs-title">Mul</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> __declspec(dllimport) <span class="hljs-function"><span class="hljs-keyword">int</span> __stdcall  <span class="hljs-title">Div</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span></span>;<br></code></pre></td></tr></table></figure>
+<p>编译即可</p>
+<h2 id="函数无名字导出"><a class="markdownIt-Anchor" href="#函数无名字导出"></a> 函数无名字导出</h2>
+<p>新建立一个模块</p>
+<p><img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220316102255477.png" srcset="/img/loading.gif" lazyload alt="image-20220316102255477"></p>
+<p>输入如下</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++">LIBRARY<br>EXPORTS	<br>		<br>Plus   	@<span class="hljs-number">12</span><br>Sub	@<span class="hljs-number">15</span> NONAME <span class="hljs-comment">//要不使用名字导出的函数</span><br>Mul    	@<span class="hljs-number">13</span><br>Div    	@<span class="hljs-number">16</span><br><br></code></pre></td></tr></table></figure>
+<h1 id="导出表"><a class="markdownIt-Anchor" href="#导出表"></a> 导出表</h1>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220308231541901.png" srcset="/img/loading.gif" lazyload alt="image-20220308231541901" style="zoom: 67%;">
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs awk">   DWORD   NumberOfFunctions; <br>   根据导出函数的序号最大的减最小+<span class="hljs-number">1</span>的得出，所以不一定是真实的个数<br>DWORD   AddressOfFunctions;     <span class="hljs-regexp">//</span>  导出函数地址表RVA<br>有可能是空的-&gt;指这个地方无对应序号的函数<br>DWORD   Base;<br>此数据加上（DWORD   AddressOfNameOrdinals;  <span class="hljs-regexp">//</span> 导出函数序号表RVA）里的序号   才是导出时函数的序号<br><br></code></pre></td></tr></table></figure>
+<h2 id="按名字找函数"><a class="markdownIt-Anchor" href="#按名字找函数"></a> 按名字找函数</h2>
+<p>DWORD   AddressOfNames; -&gt;找到名字，然后根据找到的函数对应的下标-&gt;DWORD   AddressOfNameOrdinals;对应的下标找到序号-&gt;到DWORD   AddressOfFunctions;表里找到对应此下标的函数</p>
+<h2 id="序号查找"><a class="markdownIt-Anchor" href="#序号查找"></a> 序号查找</h2>
+<p>给出的序号减去DWORD   Base;，根据下标到AddressOfNames;寻找地址即可</p>
+<p>给的图例：</p>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220308234327903.png" srcset="/img/loading.gif" lazyload alt="image-20220308234327903" style="zoom: 67%;">
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220308234515094.png" srcset="/img/loading.gif" lazyload alt="image-20220308234515094" style="zoom: 67%;">
+<p><strong>名字表的索引是用来定位序号表的序号：名字表[2]-&gt;序号表[2]-&gt;取出序号</strong></p>
+<p><strong>！！序号对应地址表的索引，如果是无名的函数，序号应该是地址表的下标加base</strong></p>
+<h2 id="写的程序"><a class="markdownIt-Anchor" href="#写的程序"></a> 写的程序</h2>
+<p>我觉得我写的有点乱，看网上是最好根据<strong>函数地址表</strong>来查另外两个表然后定位和输出</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">showEXPORT_DIRECTORY</span><span class="hljs-params">(LPVOID pFileBuffer)</span> </span>&#123;<br><br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_EXPORT_DIRECTORY exportDIRECTORY = <span class="hljs-literal">NULL</span>;<br><br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br>	exportDIRECTORY = (PIMAGE_EXPORT_DIRECTORY) pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">0</span>].VirtualAddress;<br>	exportDIRECTORY = (PIMAGE_EXPORT_DIRECTORY) <span class="hljs-built_in">RVAtoFOA</span>((DWORD)exportDIRECTORY, pFileBuffer);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表文件地址:%x\n&quot;</span>, exportDIRECTORY);<br><br>	PIMAGE_EXPORT_DIRECTORY exportDIRECTORYfilebuffer = (PIMAGE_EXPORT_DIRECTORY)((BYTE*)exportDIRECTORY + (DWORD)pFileBuffer);<br><br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数个数:%x\n&quot;</span>, exportDIRECTORYfilebuffer-&gt;NumberOfFunctions);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表有名字的函数个数:%x\n&quot;</span>, exportDIRECTORYfilebuffer-&gt;NumberOfNames);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数地址表文件地址:%x\n&quot;</span>, <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfFunctions,pFileBuffer));<br><br>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; exportDIRECTORYfilebuffer-&gt;NumberOfFunctions; i++) &#123;<br><br>		DWORD* tureAddressOfFunctions = (DWORD*)((DWORD)pFileBuffer + <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfFunctions, pFileBuffer)) + i;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数地址表文件地址%x:%x\n&quot;</span>, i,(DWORD)<span class="hljs-built_in">RVAtoFOA</span>((DWORD)tureAddressOfFunctions- (DWORD)pFileBuffer,pFileBuffer));<br>	&#125;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数名字表文件地址:%x\n&quot;</span>, <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfNames, pFileBuffer));<br><br>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; exportDIRECTORYfilebuffer-&gt;NumberOfNames; i++) &#123;<br>	DWORD* tureAddressOfNames = (DWORD*)((DWORD)pFileBuffer + <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfNames, pFileBuffer))+i;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数名字表文件中地址的值:%x\n&quot;</span>, *tureAddressOfNames);<br><br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数名字表文件地址:%x\n&quot;</span>, <span class="hljs-built_in">RVAtoFOA</span>((DWORD)*tureAddressOfNames,pFileBuffer));<br><br>		PCHAR Nameaddr = (PCHAR)((BYTE*)<span class="hljs-built_in">RVAtoFOA</span>((DWORD)*tureAddressOfNames, pFileBuffer) + (DWORD)pFileBuffer);<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数%x名字:%s\n&quot;</span>,i,Nameaddr );<br>	&#125;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数序号表base:%x\n&quot;</span>, exportDIRECTORYfilebuffer-&gt;Base);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数序号表文件地址:%x\n&quot;</span>, <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfNameOrdinals, pFileBuffer));<br><br>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; exportDIRECTORYfilebuffer-&gt;NumberOfNames; i++) &#123;<br>		WORD* tureAddressOfxvhao = (WORD*)((DWORD)pFileBuffer + <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfNameOrdinals, pFileBuffer)) + i;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数序号表序号[%x]的值:%x\n&quot;</span>, i,*tureAddressOfxvhao);<br><br>		<span class="hljs-comment">///printf(&quot;导出表函数名字表文件地址:%x\n&quot;, RVAtoFOA((DWORD)*tureAddressOfxvhao, pFileBuffer));</span><br><br>		<span class="hljs-comment">//PWORD idaddr = (PWORD)((BYTE*)RVAtoFOA((DWORD)*tureAddressOfxvhao, pFileBuffer) + (DWORD)pFileBuffer);</span><br>		<span class="hljs-comment">//printf(&quot;导出表函数名字表文件地址:%d\n&quot;, idaddr);</span><br>	&#125;<br>&#125;	<br><br></code></pre></td></tr></table></figure>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220312164228866.png" srcset="/img/loading.gif" lazyload alt="image-20220312164228866" style="zoom: 50%;">
+<h1 id="重定位表"><a class="markdownIt-Anchor" href="#重定位表"></a> 重定位表</h1>
+<p>数据目录的第六个结构，用来定位需要修改的地址位置（程序加载dll的时候，如果dll加载的基址不是imagebase，则根据此表偏移依次修改此表中指向的地址）</p>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220312000406461.png" srcset="/img/loading.gif" lazyload alt="image-20220312000406461" style="zoom:67%;">
+<h2 id="内容说明"><a class="markdownIt-Anchor" href="#内容说明"></a> 内容说明</h2>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220312164009483.png" srcset="/img/loading.gif" lazyload alt="image-20220312164009483" style="zoom: 67%;">
+<h2 id="自己写的程序解析"><a class="markdownIt-Anchor" href="#自己写的程序解析"></a> 自己写的程序解析</h2>
+<p>写了之后，感觉清楚挺多了，就是还不知道这个表修改的过程</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/*</span><br><span class="hljs-comment">展示重定位表块的内容</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">showRELOCATIONsetion</span><span class="hljs-params">(DWORD numofsetion,WORD* start,DWORD addrbase, LPVOID pFileBuffer)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">for</span> (DWORD i = <span class="hljs-number">0</span>;i &lt; numofsetion;i++)<br>	&#123;<br>		WORD time = *start;<br>		DWORD addradd = (time &amp; <span class="hljs-number">0xFFF</span>)+addrbase;<br><br>		<span class="hljs-keyword">if</span> (((time &amp; <span class="hljs-number">0xF000</span>) &gt;&gt; <span class="hljs-number">12</span>) == <span class="hljs-number">3</span>)<br>		&#123;<br>			<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;块需要修改，块高4位%x,后12位%x,RVA的值%x,,FOA值%x\n&quot;</span>, ((time &amp; <span class="hljs-number">0xF000</span>) &gt;&gt; <span class="hljs-number">12</span>),(time &amp; <span class="hljs-number">0xFFF</span>),addradd,<span class="hljs-built_in">RVAtoFOA</span>(addradd,pFileBuffer));<br>		&#125;<br>		<span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;块不需要修改，块高4位%x,后12位%x,RVA的值%x,FOA值%x\n&quot;</span>, ((time &amp; <span class="hljs-number">0xF000</span>) &gt;&gt; <span class="hljs-number">12</span>), (time &amp; <span class="hljs-number">0xFFF</span>),addradd, <span class="hljs-built_in">RVAtoFOA</span>(addradd, pFileBuffer));<br>		&#125;<br>		<br><br>		start = start + <span class="hljs-number">1</span>;<br>	&#125;<br>&#125;<span class="hljs-comment">/*</span><br><span class="hljs-comment">展示重定位表，需要文件指针</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">showRELOCATION</span><span class="hljs-params">(LPVOID pFileBuffer)</span> </span>&#123;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_BASE_RELOCATION pRELOCATIONDIRECTORY = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_BASE_RELOCATION pnextRELOCATIONDIRECTORY = <span class="hljs-literal">NULL</span>;<br>	DWORD lastRELOCATIONDIRECTORYaddr = <span class="hljs-number">1</span>;<br>	DWORD lastvirtualaddr = <span class="hljs-number">1</span>;<br>	<span class="hljs-keyword">int</span> kuai = <span class="hljs-number">0</span>;<br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br>	<br>	pRELOCATIONDIRECTORY = <span class="hljs-built_in">PIMAGE_BASE_RELOCATION</span>(<span class="hljs-built_in">RVAtoFOA</span>(pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">5</span>].VirtualAddress, pFileBuffer)+ (DWORD)pFileBuffer);<br>	pnextRELOCATIONDIRECTORY = pRELOCATIONDIRECTORY;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;重定位表内容\n&quot;</span>);<br>	<span class="hljs-comment">//lastvirtualaddr = pRELOCATIONDIRECTORY-&gt;VirtualAddress;</span><br>	<span class="hljs-keyword">while</span> (lastvirtualaddr &gt; <span class="hljs-number">0</span>) <br>	&#123;<br>		kuai++;<br>		pRELOCATIONDIRECTORY = pnextRELOCATIONDIRECTORY;<br>		DWORD numofsetion = (pRELOCATIONDIRECTORY-&gt;SizeOfBlock - <span class="hljs-number">8</span>) / <span class="hljs-number">2</span>;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;块%x的地址是%x,大小是%x,块的数量是%x\n&quot;</span>, kuai,pRELOCATIONDIRECTORY-&gt;VirtualAddress,pRELOCATIONDIRECTORY-&gt;SizeOfBlock,numofsetion);<br>		<span class="hljs-built_in">showRELOCATIONsetion</span>(numofsetion, (WORD*)((DWORD)pRELOCATIONDIRECTORY + <span class="hljs-number">8</span>), (DWORD)pRELOCATIONDIRECTORY-&gt;VirtualAddress,pFileBuffer);<br><br><br><br>		lastRELOCATIONDIRECTORYaddr = (DWORD)pRELOCATIONDIRECTORY+ pRELOCATIONDIRECTORY-&gt;SizeOfBlock;<span class="hljs-comment">//下一个块的地址是文件中的地址加块大小</span><br>		pnextRELOCATIONDIRECTORY = (PIMAGE_BASE_RELOCATION)lastRELOCATIONDIRECTORYaddr;<br>		lastvirtualaddr = pnextRELOCATIONDIRECTORY-&gt;VirtualAddress;<br><br>		<br>	&#125;<br>	<span class="hljs-comment">//pRELOCATIONDIRECTORY-&gt;VirtualAddress;</span><br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220312185341428.png" srcset="/img/loading.gif" lazyload alt="image-20220312185341428" style="zoom:50%;">
+<p>完全一致，说明应该没问题</p>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220312190100318.png" srcset="/img/loading.gif" lazyload alt="image-20220312190100318" style="zoom:50%;">
+<h1 id="重定位表和导出表的迁移"><a class="markdownIt-Anchor" href="#重定位表和导出表的迁移"></a> 重定位表和导出表的迁移</h1>
+<p>步骤其实就是这样</p>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220313203239204.png" srcset="/img/loading.gif" lazyload alt="image-20220313203239204" style="zoom:67%;">
+<p>不过程序写的时候比较蛋疼，调了好几次都没成功：</p>
+<p><strong>1.注意rva的转换，主要是注意函数使用的是内存空间，要计算foa就得减去指针开始的地方。</strong></p>
+<p><strong>2.注意rva的计算，因为表里存放的都是rva，反正是在最后一个节之后添加的的节，可以用最后一个节的VirtualAddress 加上文件地址和最后一个节文件地址PointerToRawData的相对偏移。</strong></p>
+<p>这个和肝了我好久</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/*</span><br><span class="hljs-comment">导出表和重定位表迁移测试</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">LPVOID <span class="hljs-title">removeDIRECTORY</span><span class="hljs-params">(LPVOID  pFileBuffer)</span> </span>&#123;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_SECTION_HEADER pSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	LPVOID start = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_EXPORT_DIRECTORY exportDIRECTORY = <span class="hljs-literal">NULL</span>;<br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br>	pSectionHeaderBase = <span class="hljs-built_in">LocateSectionBase</span>(pFileBuffer);<br>	DWORD addrofnamervafirst = <span class="hljs-number">0</span>;<br><br>	exportDIRECTORY = (PIMAGE_EXPORT_DIRECTORY)pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">0</span>].VirtualAddress;<br>	exportDIRECTORY = (PIMAGE_EXPORT_DIRECTORY)<span class="hljs-built_in">RVAtoFOA</span>((DWORD)exportDIRECTORY, pFileBuffer);<br>	<span class="hljs-comment">//导出表现在的文件地址+pfilebuffer</span><br>	PIMAGE_EXPORT_DIRECTORY exportDIRECTORYfilebuffer = (PIMAGE_EXPORT_DIRECTORY)((BYTE*)exportDIRECTORY + (DWORD)pFileBuffer);<br><br><br>	<span class="hljs-comment">//DWORD SizeOfHeadersmem = pSectionHeaderBase-&gt;VirtualAddress;</span><br>	<span class="hljs-comment">//找最后一个节</span><br>	PIMAGE_SECTION_HEADER pLaswSectionHeaderBase = <span class="hljs-built_in">PIMAGE_SECTION_HEADER</span>((BYTE*)pSectionHeaderBase + (DWORD)(<span class="hljs-number">0x28</span> * (pNtHeaders-&gt;FileHeader.NumberOfSections - <span class="hljs-number">1</span>)));<br>	<span class="hljs-comment">//找最后一个节的开始地址</span><br>	start = (LPVOID)(pLaswSectionHeaderBase-&gt;PointerToRawData + (DWORD)pFileBuffer);<br>	LPVOID starttest = (LPVOID)(pLaswSectionHeaderBase-&gt;PointerToRawData + (DWORD)pFileBuffer);<span class="hljs-comment">//记录内存空间中复制开始的地址</span><br><br>	<span class="hljs-comment">//复制AddressOfFunctions </span><br>	DWORD AddressOfFunctionssize = exportDIRECTORYfilebuffer-&gt;NumberOfFunctions * <span class="hljs-number">4</span>;<span class="hljs-comment">//大小</span><br>	<span class="hljs-comment">//计算rva</span><br>	DWORD AddressOfFunctionsrva = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>	<span class="hljs-comment">//AddressOfFunctions 起始文件地址</span><br>	DWORD* tureAddressOfFunctions = (DWORD*)((DWORD)pFileBuffer + <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfFunctions, pFileBuffer));<br>	<span class="hljs-built_in">memcpy</span>(start, tureAddressOfFunctions, AddressOfFunctionssize);<br><br>	<span class="hljs-comment">//三步：复制AddressOfNameOrdinals</span><br>	start = (LPVOID)((DWORD)start + AddressOfFunctionssize);<br>	DWORD AddressOfNameOrdinalsrva = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>	DWORD AddressOfNameOrdinalssize = exportDIRECTORYfilebuffer-&gt;NumberOfNames * <span class="hljs-number">2</span>;<br>	<span class="hljs-comment">//AddressOfNameOrdinals的起始文件地址</span><br>	WORD* tureAddressOfNameOrdinals = (WORD*)((DWORD)pFileBuffer + <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfNameOrdinals, pFileBuffer));<br>	<span class="hljs-built_in">memcpy</span>(start, tureAddressOfNameOrdinals, AddressOfNameOrdinalssize);<br><br>	<span class="hljs-comment">//四步：复制AddressOfNames</span><br>	start = (LPVOID)((DWORD)start + AddressOfNameOrdinalssize);<br>	DWORD AddressOfNamesrva = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>	LPVOID namneaddrstart = start;<span class="hljs-comment">//记录一下拷贝的名字表的起始地址</span><br>	DWORD AddressOfNamessize = exportDIRECTORYfilebuffer-&gt;NumberOfNames * <span class="hljs-number">4</span>;<br>	<span class="hljs-comment">//AddressOfNames的起始文件地址</span><br>	DWORD* tureAddressOfNames = (DWORD*)((DWORD)pFileBuffer + <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfNames, pFileBuffer));<br>	<span class="hljs-built_in">memcpy</span>(start, tureAddressOfNames, AddressOfNamessize);<br><br><br>	<span class="hljs-comment">//复制所有的函数名字</span><br>	start = (LPVOID)((DWORD)start + AddressOfNamessize);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************拷贝名字表的名字\n&quot;</span>);<br>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; exportDIRECTORYfilebuffer-&gt;NumberOfNames; i++) &#123;<br>		DWORD* tureAddressOfNames = (DWORD*)((DWORD)pFileBuffer + <span class="hljs-built_in">RVAtoFOA</span>(exportDIRECTORYfilebuffer-&gt;AddressOfNames, pFileBuffer)) + i;<br>		DWORD* tureAddressOfNames2 = (DWORD*)((DWORD)namneaddrstart) + i;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数名字表文件中地址的值:%x，拷贝后的表里地址的值%x\n&quot;</span>, *tureAddressOfNames, *tureAddressOfNames2);<br><br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数名字表文件地址:%x\n&quot;</span>, <span class="hljs-built_in">RVAtoFOA</span>((DWORD)*tureAddressOfNames, pFileBuffer));<br><br>		PCHAR Nameaddr = (PCHAR)((BYTE*)<span class="hljs-built_in">RVAtoFOA</span>((DWORD)*tureAddressOfNames, pFileBuffer) + (DWORD)pFileBuffer);<br>		<span class="hljs-comment">//CHAR Name[] = &#123; *Nameaddr &#125;;</span><br>		<span class="hljs-built_in">memcpy</span>(start, Nameaddr, <span class="hljs-built_in">strlen</span>(Nameaddr));<br><br><br>		<span class="hljs-comment">//修复AddressOfNames</span><br>		DWORD namestartyz = (DWORD)start - (DWORD)pFileBuffer;<br>		<span class="hljs-comment">//计算nameaddr的rva</span><br>		DWORD addrofnamerva = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>		*tureAddressOfNames2 = addrofnamerva;<br>		start = (LPVOID)((DWORD)start + <span class="hljs-built_in">strlen</span>(Nameaddr));<br><br><br>		<span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span>)<br>		&#123;<br>			addrofnamervafirst = addrofnamerva;<br>		&#125;<br>		<span class="hljs-built_in">memset</span>(start, <span class="hljs-number">0x00</span>, <span class="hljs-number">1</span>);<span class="hljs-comment">//字符串结尾加\00</span><br>		start = (LPVOID)((DWORD)start + <span class="hljs-number">1</span>);<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;导出表函数大小%x的%x名字:%s,验证修改后的foa正确性%x,对比现在的foa：%x\n&quot;</span>, <span class="hljs-built_in">strlen</span>(Nameaddr),i, Nameaddr,<span class="hljs-built_in">RVAtoFOA</span>(*tureAddressOfNames2,pFileBuffer), namestartyz);<br>	&#125;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br><br>	<span class="hljs-comment">//复制IMAGE_EXPORT_DIRECTORY结构</span><br>	PIMAGE_EXPORT_DIRECTORY exportDIRECTORYfilebuffercopy = (PIMAGE_EXPORT_DIRECTORY) start;<br>	<span class="hljs-built_in">memcpy</span>(start, (LPVOID)exportDIRECTORYfilebuffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(IMAGE_EXPORT_DIRECTORY));<br>	start = (LPVOID)((DWORD)start + <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(IMAGE_EXPORT_DIRECTORY));<br><br><br>	<span class="hljs-comment">//</span><br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">		第七步：修复IMAGE_EXPORT_DIRECTORY结构中的				</span><br><span class="hljs-comment">					</span><br><span class="hljs-comment">		AddressOfFunctions			</span><br><span class="hljs-comment">					</span><br><span class="hljs-comment">		AddressOfNameOrdinals			</span><br><span class="hljs-comment">					</span><br><span class="hljs-comment">		AddressOfNames			</span><br><span class="hljs-comment">*/</span>	<br>	exportDIRECTORYfilebuffercopy-&gt;AddressOfFunctions = AddressOfFunctionsrva;<br>	exportDIRECTORYfilebuffercopy-&gt;AddressOfNameOrdinals = AddressOfNameOrdinalsrva;<br><br>	exportDIRECTORYfilebuffercopy-&gt;AddressOfNames = AddressOfNamesrva;<br>	<span class="hljs-comment">//exportDIRECTORYfilebuffercopy-&gt;Name = addrofnamervafirst;</span><br><br><br>	<span class="hljs-comment">//改数据目录的表指向</span><br>	pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">0</span>].VirtualAddress = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress+(DWORD)exportDIRECTORYfilebuffercopy -(DWORD)starttest;<br><br>	<span class="hljs-keyword">return</span> pFileBuffer;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>效果</p>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220313203816403.png" srcset="/img/loading.gif" lazyload alt="image-20220313203816403" style="zoom:67%;">
+<p>这个移动后是可以正常调用的</p>
+<h1 id="导入表和iat表"><a class="markdownIt-Anchor" href="#导入表和iat表"></a> 导入表和IAT表</h1>
+<p>导入表结构</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c++">	<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_IMPORT_DESCRIPTOR</span> &#123;</span>							<br>	    <span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span>							<br>	        DWORD   Characteristics;           							<br>	        DWORD   OriginalFirstThunk;    <span class="hljs-comment">//指向IMAGE_THUNK_DATA32结构的起始位置    INT表 							</span><br>	    &#125;;							<br>	    DWORD   TimeDateStamp;        <span class="hljs-comment">//这个值为0说明可执行文件不与输入的dll绑定（绑定后IAT表的值是函数地址） 			</span><br>	    DWORD   ForwarderChain;         <br>	    DWORD   Name;							<br>	    DWORD   FirstThunk;           <span class="hljs-comment">//指向IMAGE_THUNK_DATA32结构    IAT表  							</span><br>	&#125; IMAGE_IMPORT_DESCRIPTOR;							<br>	<span class="hljs-keyword">typedef</span> IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;							<br>`<br></code></pre></td></tr></table></figure>
+<p><strong>OriginalFirstThunk，FirstThunk是指向第一个IMAGE_THUNK_DATA32的rva，遍历到0算此dll结束</strong></p>
+<p>MAGE_THUNK_DATA32结构，4字节，看成一个dword就行</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_THUNK_DATA32</span> &#123;</span>									<br>    <span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span>						<span class="hljs-comment">//联合类型，高位是1则说明去除高位后记录的是函数序号，不是则是指向IMAGE_IMPORT_BY_NAME的rva		</span><br>        PBYTE  ForwarderString;									<br>        PDWORD Function;									<br>        DWORD Ordinal;						<span class="hljs-comment">//序号			</span><br>        PIMAGE_IMPORT_BY_NAME  AddressOfData;						<span class="hljs-comment">//指向IMAGE_IMPORT_BY_NAME			</span><br>    &#125; u1;									<br>&#125; IMAGE_THUNK_DATA32;									<br><span class="hljs-keyword">typedef</span> IMAGE_THUNK_DATA32 * PIMAGE_THUNK_DATA32;									<br><br></code></pre></td></tr></table></figure>
+<p>IMAGE_IMPORT_BY_NAME结构</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_IMPORT_BY_NAME</span> &#123;</span>												<br>    WORD    Hint;						<span class="hljs-comment">//可能为空，编译器决定 如果不为空 是函数在导出表中的索引					</span><br>    BYTE    Name[<span class="hljs-number">1</span>];						<span class="hljs-comment">//函数名称的首位，以\0结尾						</span><br>&#125; IMAGE_IMPORT_BY_NAME, *PIMAGE_IMPORT_BY_NAME;												<br>												<br><br></code></pre></td></tr></table></figure>
+<h2 id="程序解析"><a class="markdownIt-Anchor" href="#程序解析"></a> 程序解析</h2>
+<p>流程-通过可选头的数据目录的第二个[1]找到其数据目录数据-&gt;找到Virtualaddressrva（转换foa）-&gt;找到导入表起始地址-&gt;遍历导入表-&gt;主要遍历导入表的Name，OriginalFirstThunk，FirstThunk，遍历OriginalFirstThunk，FirstThunk时，先转foa，这个foa指向的位置是_IMAGE_THUNK_DATA32结构，看成DWORD即可-&gt;判断高位，为0则是指向IMAGE_IMPORT_BY_NAME结构的rva，需要转foa</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">showDESCRIPTOR</span><span class="hljs-params">(LPVOID pFileBuffer)</span></span><br><span class="hljs-function"></span>&#123;<br>	PIMAGE_IMPORT_DESCRIPTOR pDescriptor = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_IMPORT_BY_NAME pImportbyname = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_IMPORT_DESCRIPTOR pDescriptorture = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_IMPORT_BY_NAME namefuction = <span class="hljs-literal">NULL</span>;<br><br><br><br><br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br>	<span class="hljs-comment">//定位导入表</span><br>	pDescriptor = (PIMAGE_IMPORT_DESCRIPTOR) pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">1</span>].VirtualAddress;<br>	<span class="hljs-comment">//此时在内存中的地址要加pFileBuffer</span><br>	pDescriptorture = <span class="hljs-built_in">PIMAGE_IMPORT_DESCRIPTOR</span> (<span class="hljs-built_in">RVAtoFOA</span>((DWORD)pDescriptor,pFileBuffer)+(DWORD)pFileBuffer);<br>	<br>	<span class="hljs-comment">//遍历导入表</span><br>	<span class="hljs-keyword">while</span> (*((DWORD*)pDescriptorture) != <span class="hljs-number">0</span>)<br>	&#123;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br>		<span class="hljs-comment">//输出dll名字</span><br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;dll名字为%s\n&quot;</span>, (<span class="hljs-built_in">RVAtoFOA</span>(pDescriptorture-&gt;Name, pFileBuffer) + (DWORD)pFileBuffer));<br>		<br>		<span class="hljs-comment">//遍历OriginalFirstThunk</span><br>		DWORD* startThunk =(DWORD*) (<span class="hljs-built_in">RVAtoFOA</span>((DWORD)pDescriptorture-&gt;OriginalFirstThunk, pFileBuffer) + (DWORD)pFileBuffer);<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;OriginalFirstThunk内容：\n&quot;</span>);<br>		<span class="hljs-keyword">while</span> (*startThunk != <span class="hljs-number">0</span>)<br>		&#123;<br>			<span class="hljs-keyword">if</span> ((* startThunk &amp; <span class="hljs-number">0x80000000</span>) == <span class="hljs-number">0</span>)<br><br>			&#123;<br>				namefuction = (PIMAGE_IMPORT_BY_NAME)(<span class="hljs-built_in">RVAtoFOA</span>(*startThunk, pFileBuffer)+(DWORD)pFileBuffer);<br>				PCHAR Namefu = (PCHAR)namefuction-&gt;Name;<br>				<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;IMAGE_IMPORT_BY_NAME地址%x,函数名字：%s\n&quot;</span>, *startThunk,Namefu);<br><br>			&#125;<br>			<span class="hljs-keyword">else</span> &#123;<br>				<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;函数的序号%x\n&quot;</span>, *startThunk &amp; <span class="hljs-number">0x7FFFFFFF</span>);<br>			&#125;<br><br><br>			<span class="hljs-comment">//startThunk = 0;</span><br>			startThunk = startThunk + <span class="hljs-number">1</span>;<br>		&#125;<br><br>		<span class="hljs-comment">//遍历FirstThunk</span><br><br>		DWORD* startFirstThunk = (DWORD*)(<span class="hljs-built_in">RVAtoFOA</span>((DWORD)pDescriptorture-&gt;FirstThunk, pFileBuffer) + (DWORD)pFileBuffer);<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;FirstThunk内容：\n&quot;</span>);<br>		<span class="hljs-keyword">while</span> (*startFirstThunk != <span class="hljs-number">0</span>)<br>		&#123;<br>			<span class="hljs-keyword">if</span> ((*startFirstThunk &amp; <span class="hljs-number">0x80000000</span>) == <span class="hljs-number">0</span>)<br><br>			&#123;<br>				namefuction = (PIMAGE_IMPORT_BY_NAME)(<span class="hljs-built_in">RVAtoFOA</span>(*startFirstThunk, pFileBuffer) + (DWORD)pFileBuffer);<br>				PCHAR Namefu = (PCHAR)namefuction-&gt;Name;<br>				<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;IMAGE_IMPORT_BY_NAME地址%x,函数名字：%s\n&quot;</span>, *startFirstThunk, Namefu);<br><br>			&#125;<br>			<span class="hljs-keyword">else</span> &#123;<br>				<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;函数的序号%x\n&quot;</span>, *startFirstThunk &amp; <span class="hljs-number">0x7FFFFFFF</span>);<br>			&#125;<br><br><br>			<span class="hljs-comment">//startThunk = 0;</span><br>			startFirstThunk = startFirstThunk + <span class="hljs-number">1</span>;<br>		&#125;<br>		pDescriptorture = pDescriptorture + <span class="hljs-number">1</span>;<br>	&#125;<br><br><br><br>&#125;<br></code></pre></td></tr></table></figure>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220317171257695.png" srcset="/img/loading.gif" lazyload alt="image-20220317171257695" style="zoom:67%;">
+<h1 id="绑定导入表"><a class="markdownIt-Anchor" href="#绑定导入表"></a> 绑定导入表</h1>
+<p>PE加载EXE相关的DLL时，首先会根据<strong>IMAGE_IMPORT_DESCRIPTOR结构</strong>中的TimeDateStamp来判断是否要重新										<br>
+计算IAT表中的地址。											<br>
+TimeDateStamp == 0  未绑定										<br>
+TimeDateStamp == -1 已绑定 真正的绑定时间为IMAGE_BOUND_IMPORT_DESCRIPTOR的TimeDateStamp</p>
+<p>绑定导入表内的时间戳用于判断dll是否已经更新，如果时间戳和dll的不一样，则重新计算IAT表</p>
+<p>结构</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_BOUND_IMPORT_DESCRIPTOR</span> &#123;</span>								<br>    DWORD   TimeDateStamp;								<br>    WORD    OffsetModuleName;<span class="hljs-comment">//第一个DESCRIPTOR的值+OffsetModuleName</span><br>    WORD    NumberOfModuleForwarderRefs;								<br><span class="hljs-comment">// Array of zero or more IMAGE_BOUND_FORWARDER_REF follows								</span><br>&#125; IMAGE_BOUND_IMPORT_DESCRIPTOR,  *PIMAGE_BOUND_IMPORT_DESCRIPTOR;								<br>								<br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_BOUND_FORWARDER_REF</span> &#123;</span>								<br>    DWORD   TimeDateStamp;								<br>    WORD    OffsetModuleName;								<br>    WORD    Reserved;								<br>&#125; IMAGE_BOUND_FORWARDER_REF, *PIMAGE_BOUND_FORWARDER_REF;								<br>								<br><br></code></pre></td></tr></table></figure>
+<p>代码编写</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">showBOUND_IMPORT_DESCRIPTOR</span><span class="hljs-params">(LPVOID pFileBuffer)</span></span><br><span class="hljs-function"></span>&#123;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_BOUND_IMPORT_DESCRIPTOR pDESCRIPTOR = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_BOUND_FORWARDER_REF pFORWARDER_REF = <span class="hljs-literal">NULL</span>;<br><br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;******************************\n&quot;</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;********绑定导入表解析********\n&quot;</span>);<br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br>	<span class="hljs-keyword">if</span> (pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">11</span>].VirtualAddress == <span class="hljs-number">0</span>) &#123;<br>		<span class="hljs-keyword">return</span>;<br>	&#125;<br>	pDESCRIPTOR = (PIMAGE_BOUND_IMPORT_DESCRIPTOR)(<span class="hljs-built_in">RVAtoFOA</span>(pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">11</span>].VirtualAddress, pFileBuffer)+(DWORD)pFileBuffer);<br>	DWORD startoffer = (DWORD)pDESCRIPTOR;<br>	PCHAR name = <span class="hljs-literal">NULL</span>;<br>	<span class="hljs-keyword">while</span> (*(DWORD*)pDESCRIPTOR != <span class="hljs-number">0</span>)<br>	&#123;<br><br>		name = (PCHAR)startoffer + pDESCRIPTOR-&gt;OffsetModuleName;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;时间戳%x名字%s,NumberOfModule数量%x\n&quot;</span>, pDESCRIPTOR-&gt;TimeDateStamp,name,pDESCRIPTOR-&gt;NumberOfModuleForwarderRefs);<br>		<span class="hljs-keyword">if</span> (pDESCRIPTOR-&gt;NumberOfModuleForwarderRefs != <span class="hljs-number">0</span>)<br>		&#123;<br>			<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;存在NumberOfModuleForwarderRefs结构：\n&quot;</span>);<br>			pDESCRIPTOR = pDESCRIPTOR + <span class="hljs-number">1</span>;<br>			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i= <span class="hljs-number">0</span>; i &lt; pDESCRIPTOR-&gt;NumberOfModuleForwarderRefs; i++)<br>			&#123;<br><br>				PIMAGE_BOUND_FORWARDER_REF pFORWARDER_REF = (PIMAGE_BOUND_FORWARDER_REF)pDESCRIPTOR;<br>				name = (PCHAR)startoffer + pFORWARDER_REF-&gt;OffsetModuleName;<br>				<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;时间戳%x名字%s\n&quot;</span>, pFORWARDER_REF-&gt;TimeDateStamp, name);<br>				pDESCRIPTOR = pDESCRIPTOR + <span class="hljs-number">1</span>;<br>			&#125;<br>			<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;NumberOfModuleForwarderRefs结构结束\n&quot;</span>);<br><br>		&#125;<br>		pDESCRIPTOR = pDESCRIPTOR + <span class="hljs-number">1</span>;<br>	&#125;<br><br><br>	<br>	<br>&#125;<br></code></pre></td></tr></table></figure>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220316200303598.png" srcset="/img/loading.gif" lazyload alt="image-20220316200303598" style="zoom:67%;">
+<h2 id="导入表注入"><a class="markdownIt-Anchor" href="#导入表注入"></a> 导入表注入</h2>
+<p>dll的main方法是添加和去除时调用，使用一个在加载和退出时调用的messagebox函数的dll验证注入是否成功</p>
+<p>此处使用的dll名字InjectDll.dll，函数名字：ExportFunction，git目录中有这个dll</p>
+<p><strong>注意修改int表，iat表，导入表的结尾，要多一个这个结构，并且全是0，特别是导入表，注意大小是0x14h</strong></p>
+<p>步骤：</p>
+<p>1.新加一个节(可以找节的空白处添加，注意计算添加数据大小，这里我直接添加新节了)</p>
+<p>2.把所有导入表copy到这个节数据端，**（这里有坑，如果按照OptionalHeader.DataDirectory[1].Size的大小复制导入表，因为这个大小其实是最后一个导入表+0x14个00的大小，所以复制的位置应该是size-0x14的位置，复制完后再填充一个0x14的00）**然后新加一个导入表结构，</p>
+<p>3.新加IAT,INT表结构，因为这里函数名只有一个，所以这两个结构都要加8字节就行（最后4个字节是00），<strong>记得赋值给OriginalFirstThunk和FirstThunk</strong></p>
+<p>4.新加IMAGE_IMPORT_BY_NAME结构，函数名字拷贝到IMAGE_IMPORT_BY_NAME-&gt;Name，这个结构的起始地址赋值给IAT,INT表。</p>
+<p>5.复制dll名字，起始地址**（rva）**赋值给新加的导入表-&gt;Name。</p>
+<p>6.修正修正IMAGE_DATA_DIRECTORY结构的<strong>VirtualAddress</strong>和<strong>Size</strong></p>
+<p>程序实现，虽然好像写的很拉，调了2小时，最后还是成功了</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function">LPVOID <span class="hljs-title">injectDESCRIPTOR</span><span class="hljs-params">(LPVOID pFileBuffer)</span></span><br><span class="hljs-function"></span>&#123;<br>	PIMAGE_IMPORT_DESCRIPTOR pDescriptor = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_NT_HEADERS pNtHeaders = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_IMPORT_BY_NAME pImportbyname = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_IMPORT_DESCRIPTOR pDescriptorture = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_IMPORT_BY_NAME namefuction = <span class="hljs-literal">NULL</span>;<br><br><br><br><br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br><br><br>	<span class="hljs-comment">//第一步</span><br>	<span class="hljs-comment">//根据目录项得到导入表的信息，得到Size:导入表的总大小</span><br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br>	DWORD sizeofDescriper = pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">1</span>].Size;<br>	<span class="hljs-comment">//定位导入表</span><br>	pDescriptor = (PIMAGE_IMPORT_DESCRIPTOR)pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">1</span>].VirtualAddress;<br>	<span class="hljs-comment">//此时在内存中的地址要加pFileBuffer</span><br>	pDescriptorture = <span class="hljs-built_in">PIMAGE_IMPORT_DESCRIPTOR</span>(<span class="hljs-built_in">RVAtoFOA</span>((DWORD)pDescriptor, pFileBuffer) + (DWORD)pFileBuffer);<br>	<span class="hljs-comment">//得到OriginalFirstThunk，FirstThunk的地址</span><br>	<span class="hljs-comment">//OriginalFirstThunk</span><br>	<span class="hljs-comment">//DWORD* startThunk = (DWORD*)(RVAtoFOA((DWORD)pDescriptorture-&gt;OriginalFirstThunk, pFileBuffer) + (DWORD)pFileBuffer);</span><br>	<span class="hljs-comment">//FirstThunk</span><br>	<span class="hljs-comment">//DWORD* startFirstThunk = (DWORD*)(RVAtoFOA((DWORD)pDescriptorture-&gt;FirstThunk, pFileBuffer) + (DWORD)pFileBuffer);</span><br><br>	<span class="hljs-comment">/*	</span><br><span class="hljs-comment">	*/</span><br>	PIMAGE_SECTION_HEADER pSectionHeaderBase = <span class="hljs-literal">NULL</span>;<br>	LPVOID start = <span class="hljs-literal">NULL</span>;<br>	PIMAGE_EXPORT_DIRECTORY exportDIRECTORY = <span class="hljs-literal">NULL</span>;<br>	pNtHeaders = <span class="hljs-built_in">FileToNtHeader</span>(pFileBuffer);<br>	pSectionHeaderBase = <span class="hljs-built_in">LocateSectionBase</span>(pFileBuffer);<br>	<span class="hljs-comment">//找最后一个节</span><br>	<span class="hljs-comment">//这里直接新创建一个节了就不判断大小了（用之前的函数创建完传入filebufer）</span><br><br>	PIMAGE_SECTION_HEADER pLaswSectionHeaderBase = <span class="hljs-built_in">PIMAGE_SECTION_HEADER</span>((BYTE*)pSectionHeaderBase + (DWORD)(<span class="hljs-number">0x28</span> * (pNtHeaders-&gt;FileHeader.NumberOfSections - <span class="hljs-number">1</span>)));<br>	<span class="hljs-comment">//找最后一个节的开始地址</span><br>	start = (LPVOID)(pLaswSectionHeaderBase-&gt;PointerToRawData + (DWORD)pFileBuffer);<br>	LPVOID starttest = (LPVOID)(pLaswSectionHeaderBase-&gt;PointerToRawData + (DWORD)pFileBuffer);<span class="hljs-comment">//记录内存空间中复制开始的地址</span><br><br>	<span class="hljs-comment">//导入表copy到空白区</span><br>	<span class="hljs-built_in">memcpy</span>(start, pDescriptorture, sizeofDescriper);<br>	start = (LPVOID)((DWORD)start + sizeofDescriper);<span class="hljs-comment">//这个是最后一个导入表+1个空的导入表的位置</span><br>	start = (LPVOID)((DWORD)start - <span class="hljs-number">0x14</span>);<br><br>	<span class="hljs-comment">//追加一个导入表</span><br>	PIMAGE_IMPORT_DESCRIPTOR pNewdescripitor = (PIMAGE_IMPORT_DESCRIPTOR)start;<br>	<span class="hljs-built_in">memcpy</span>(start,starttest,<span class="hljs-number">0x14</span>);<br>	start = (LPVOID)((DWORD)start + <span class="hljs-number">2</span>*<span class="hljs-number">0x14</span>);<br>	<span class="hljs-comment">//start = (DWORD*)start + 1;</span><br><br><br>	<span class="hljs-comment">//追加8个字节的INT表和IAT表</span><br>	DWORD* startINT = (DWORD*)start;<br>	pNewdescripitor-&gt;OriginalFirstThunk = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>	start = startINT + <span class="hljs-number">2</span>;<br>	<span class="hljs-comment">//追加8字节的IAT表</span><br>	DWORD* startIAT = (DWORD*)start;<br>	pNewdescripitor-&gt;FirstThunk = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>	start = startIAT + <span class="hljs-number">2</span>;<br><br>	<span class="hljs-comment">//追加IMAGE_IMPORT_BY_NAME，因为本来创建节就为0，所以跳过前2个字节存储函数名字</span><br>	PIMAGE_IMPORT_BY_NAME Importbyname = (PIMAGE_IMPORT_BY_NAME)start;<br>	DWORD ImportbynameRva = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>	<span class="hljs-comment">//赋值给int和iat表</span><br>	*startINT = ImportbynameRva;<br>	*startIAT = ImportbynameRva;<br>	<span class="hljs-comment">//存储函数名字</span><br>	<span class="hljs-built_in">memcpy</span>(Importbyname-&gt;Name, <span class="hljs-string">&quot;ExportFunction&quot;</span>, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(<span class="hljs-string">&quot;ExportFunction&quot;</span>));<br>	<br>	start = (LPVOID)((DWORD)start + <span class="hljs-number">2</span> + <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(<span class="hljs-string">&quot;ExportFunction&quot;</span>) );<span class="hljs-comment">//\0字符串结尾</span><br><br>	<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>* dllname =<span class="hljs-literal">NULL</span>;<br>	dllname = <span class="hljs-string">&quot;InjectDll.dll&quot;</span>;<br><br>	<span class="hljs-comment">//复制dll名字</span><br>	PCHAR dllName = (PCHAR)start;<br>	<span class="hljs-built_in">memcpy</span>(dllName, <span class="hljs-string">&quot;InjectDll.dll&quot;</span>, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(<span class="hljs-string">&quot;InjectDll.dll&quot;</span>));<br>	DWORD dllnameRva = (DWORD)pLaswSectionHeaderBase-&gt;VirtualAddress + (DWORD)start - (DWORD)starttest;<br>	start = (LPVOID)((DWORD)start  + <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(<span class="hljs-string">&quot;InjectDll.dll&quot;</span>) );<span class="hljs-comment">//+1是\0字符串结尾</span><br><br><br>	<span class="hljs-comment">//把这个rva赋值给导入表的name属性</span><br>	pNewdescripitor-&gt;Name = dllnameRva;<br><br>	<span class="hljs-comment">//修正IMAGE_DATA_DIRECTORY结构的VirtualAddress和Size</span><br>	pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">1</span>].VirtualAddress = (DWORD)starttest-(DWORD)pFileBuffer;<br>	pNtHeaders-&gt;OptionalHeader.DataDirectory[<span class="hljs-number">1</span>].Size = sizeofDescriper + <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(_IMAGE_EXPORT_DIRECTORY);<br><br>	<span class="hljs-comment">//DWORD sizeofnewDescriptor = 20 + 16;</span><br><br><br>	<span class="hljs-comment">//free(pImageBuffer);</span><br>	<span class="hljs-keyword">return</span> pFileBuffer;<br>&#125;<br></code></pre></td></tr></table></figure>
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220317171414111.png" srcset="/img/loading.gif" lazyload alt="image-20220317171414111" style="zoom:80%;">
+<img src="/2022/03/17/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0-2/image-20220317171346388.png" srcset="/img/loading.gif" lazyload alt="image-20220317171346388" style="zoom:67%;">
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！，本博客仅用于交流学习，由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，文章作者不为此承担任何责任。
+文章作者拥有对此站文章的修改和解释权。如欲转载此站文章，需取得作者同意，且必须保证此文章的完整性，包括版权声明等全部内容。未经文章作者允许，不得任意修改或者增减此文章内容，不得以任何方式将其用于商业目的。若造成严重后果，本人将依法追究法律责任。 阅读本站文章则默认遵守此规则。
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/">
+                        <span class="hidden-mobile">PE文件结构学习记录-1</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
