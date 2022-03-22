@@ -1,0 +1,567 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>python学习-2 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="python学习-2">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-22 21:27" pubdate>
+        2022年3月22日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      56
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">python学习-2</h1>
+            
+            <div class="markdown-body">
+              <h1 id="第-3-章-字典和集合"><a class="markdownIt-Anchor" href="#第-3-章-字典和集合"></a> 第 3 章 字典和集合</h1>
+<h2 id="31-泛映射类型"><a class="markdownIt-Anchor" href="#31-泛映射类型"></a> 3.1 泛映射类型</h2>
+<p>如果一个对象是可散列的，那么在这个对象的生命周期中，它 的散列值是不变的，而且这个对象需要实现 __hash__() 方 法。另外可散列对象还要有 __qe__() 方法，这样才能跟其他 键做比较。如果两个可散列对象是相等的，那么它们的散列值 一定是一样的……</p>
+<p>字典的构造方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">a = <span class="hljs-built_in">dict</span>(a=<span class="hljs-number">1</span>,b=<span class="hljs-number">2</span>,c=<span class="hljs-number">3</span>)<br>b = &#123;<span class="hljs-string">&#x27;a&#x27;</span>:<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;b&#x27;</span>:<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;c&#x27;</span>:<span class="hljs-number">3</span>&#125;<br>c = <span class="hljs-built_in">dict</span>(<span class="hljs-built_in">zip</span>([<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-string">&#x27;c&#x27;</span>],[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]))<br>d = <span class="hljs-built_in">dict</span>([(<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-number">1</span>),(<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-number">2</span>),(<span class="hljs-string">&#x27;c&#x27;</span>,<span class="hljs-number">3</span>)])<br>e = <span class="hljs-built_in">dict</span>(&#123;<span class="hljs-string">&#x27;c&#x27;</span>:<span class="hljs-number">3</span>,<span class="hljs-string">&#x27;b&#x27;</span>:<span class="hljs-number">2</span>,<span class="hljs-string">&quot;a&quot;</span>:<span class="hljs-number">1</span>&#125;)<br><span class="hljs-built_in">print</span> (a==b==c==d==e) <span class="hljs-comment">#True</span><br><br></code></pre></td></tr></table></figure>
+<h2 id="32-字典推导"><a class="markdownIt-Anchor" href="#32-字典推导"></a> 3.2 字典推导</h2>
+<p>可以像{k.upper():v for k,v in dict_t.items() if v&lt;2}这样生成字典并且过滤需要的条件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">testdict = [(<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-number">1</span>),(<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-number">2</span>),(<span class="hljs-string">&#x27;c&#x27;</span>,<span class="hljs-number">3</span>)]<br>dict_t = &#123;k:v <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> testdict&#125;<br><span class="hljs-built_in">print</span> (dict_t) <span class="hljs-comment">#&#123;&#x27;a&#x27;: 1, &#x27;b&#x27;: 2, &#x27;c&#x27;: 3&#125;</span><br><br><span class="hljs-built_in">print</span>(&#123;k.upper():v <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">in</span> dict_t.items() <span class="hljs-keyword">if</span> v&lt;<span class="hljs-number">2</span>&#125;) <span class="hljs-comment">#&#123;&#x27;A&#x27;: 1&#125;</span><br></code></pre></td></tr></table></figure>
+<h2 id="33-常见的映射方法"><a class="markdownIt-Anchor" href="#33-常见的映射方法"></a> 3.3 常见的映射方法</h2>
+<p><img src="/2022/03/22/python%E5%AD%A6%E4%B9%A0-3/image-20220321193330771.png" srcset="/img/loading.gif" lazyload alt="image-20220321193330771"></p>
+<h3 id="用setdefault处理找不到的键"><a class="markdownIt-Anchor" href="#用setdefault处理找不到的键"></a> 用setdefault处理找不到的键</h3>
+<p>如果字典找不到正确的键，则会抛出异常，这时候就需要一个找不到键的时候的默认返回值，第一种写法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> key <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> my_dict:<br>    my_dict[key] = []<br>my_dict[key].append(new_value)<br><br></code></pre></td></tr></table></figure>
+<p>第二种写法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">my_dict.setdefault(key, []).append(new_value)<br></code></pre></td></tr></table></figure>
+<p>这2种写法虽然效果一样，但是第一种实际上查询了2次，如果键不存在的话还得再次查询，第二种就可一次完成操作</p>
+<h2 id="34-映射的弹性键查询"><a class="markdownIt-Anchor" href="#34-映射的弹性键查询"></a> 3.4 映射的弹性键查询</h2>
+<h3 id="341-defaultdict处理找不到的键的一个选择"><a class="markdownIt-Anchor" href="#341-defaultdict处理找不到的键的一个选择"></a> 3.4.1 defaultdict：处理找不到的键的一个选择</h3>
+<p>我们新建了这样一个字典：dd = defaultdict(list)，如果键 ‘new-key’ 在 dd 中还不存在的话，表达式 dd[‘new-key’] 会按照以 下的步骤来行事。</p>
+<p>(1) 调用 list() 来建立一个新列表。</p>
+<p>(2) 把这个新列表作为值，‘new-key’ 作为它的键，放到 dd 中。</p>
+<p>(3) 返回这个列表的引用。</p>
+<p>而这个用来生成默认值的可调用对象存放在名为 default_factory 的 实例属性里。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> collections<br><br>dict1 = collections.defaultdict(<span class="hljs-built_in">list</span>) <br><span class="hljs-built_in">print</span> (dict1)<br>dict1[<span class="hljs-string">&#x27;c&#x27;</span>].append(<span class="hljs-number">1</span>)<br><span class="hljs-built_in">print</span> (dict1)<br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">defaultdict(&lt;class &#x27;list&#x27;&gt;, &#123;&#125;)</span><br><span class="hljs-string">defaultdict(&lt;class &#x27;list&#x27;&gt;, &#123;&#x27;c&#x27;: [1]&#125;)</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>如果在创建 defaultdict 的时候没有指定 default_factory，查询不 存在的键会触发 KeyError。</p>
+<h3 id="342-特殊方法__missing__"><a class="markdownIt-Anchor" href="#342-特殊方法__missing__"></a> 3.4.2 特殊方法__missing__</h3>
+<p>所有的映射类型在处理找不到的键的时候，都会牵扯到 <strong>__missing__</strong> 方法。这也是这个方法称作“missing”的原因。虽然基类 dict 并没有定 义这个方法，但是 dict 是知道有这么个东西存在的。也就是说，如果 有一个类继承了 dict，然后这个继承类提供了 <strong>missing</strong> 方法，那 么<strong>在 __getitem__ 碰到找不到的键的时候，Python 就会自动调用它，</strong> 而不是抛出一个 KeyError 异常。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">strkeydict0</span>(<span class="hljs-params"><span class="hljs-built_in">dict</span></span>):</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__missing__</span>(<span class="hljs-params">self,key</span>):</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(key,<span class="hljs-built_in">str</span>):  <span class="hljs-comment">#isinstance() 函数来判断一个对象是否是一个已知的类型，类似 type()。例子isinstance (a,int)</span><br>            <span class="hljs-keyword">raise</span> KeyError(key) <span class="hljs-comment">#上面判断是否是字符串，否则抛出KeyError异常</span><br>        <span class="hljs-keyword">return</span> self[<span class="hljs-built_in">str</span>(key)] <span class="hljs-comment">#如果找不到的键不是字符串，那么把它转换成字符串再进行查找。</span><br>    <br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get</span>(<span class="hljs-params">self,key,default=<span class="hljs-literal">None</span></span>):</span><br>        <span class="hljs-keyword">try</span>:<br>            <span class="hljs-keyword">return</span> self[key] <span class="hljs-comment"># get 方法把查找工作用 self[key] 的形式委托给 __getitem__，这样在宣布查找失败之前，还能通过 __missing__ 再给某个键一个机会。</span><br><br>        <span class="hljs-keyword">except</span> KeyError:<br>            <span class="hljs-keyword">return</span> default <span class="hljs-comment"># 如果抛出 KeyError，那么说明 __missing__ 也失败了，于是返回default。</span><br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__contains__</span>(<span class="hljs-params">self, key</span>):</span><br>        <span class="hljs-keyword">return</span> key <span class="hljs-keyword">in</span> self.keys() <span class="hljs-keyword">or</span> <span class="hljs-built_in">str</span>(key) <span class="hljs-keyword">in</span> self.keys() <span class="hljs-comment"># 先按照传入键的原本的值来查找（我们的映射类型中可能含有非字符串的键），如果没找到，再用 str() 方法把键转换成字符串再查找一次。</span><br><br><br>d = strkeydict0(&#123;<span class="hljs-string">&#x27;a&#x27;</span>:<span class="hljs-number">1</span>&#125;) <br><span class="hljs-built_in">print</span>(d.get(<span class="hljs-string">&#x27;a&#x27;</span>))<br><span class="hljs-built_in">print</span>(d.get(<span class="hljs-string">&#x27;c&#x27;</span>))<br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">输出</span><br><span class="hljs-string">1</span><br><span class="hljs-string">None</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-built_in">print</span>(d.get(<span class="hljs-string">&#x27;r&#x27;</span>)) <span class="hljs-comment">#这里可以看到调用了missing方法</span><br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;c:ython\第三章.py&quot;</span>, line <span class="hljs-number">45</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>    <span class="hljs-built_in">print</span>(d[<span class="hljs-string">&#x27;r&#x27;</span>])<br>  File <span class="hljs-string">&quot;c:ython\第三章.py&quot;</span>, line <span class="hljs-number">28</span>, <span class="hljs-keyword">in</span> __missing__<br>    <span class="hljs-keyword">raise</span> KeyError(key) <span class="hljs-comment">#上面判断是否是字符串，否则抛出KeyError异常</span><br>KeyError: <span class="hljs-string">&#x27;r&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>i<strong>sinstance(key, str) 测试在上面的 <em>_missing</em>_ 中是必需的。</strong></p>
+<p>如果没有这个测试，只要 str(k) 返回的是一个存在的键，那么 <em>_missing</em>_ 方法是没问题的，不管是字符串键还是非字符串键，它都能正常运行。但是如果 str(k) 不是一个存在的键，代码就会陷入无限递归。这是因为 <em>_missing</em>_ 的最后一行中的 <strong>self[str(key)] 会 调用 __getitem__</strong>，而这个 str(key) 又不存在，于是 <em>_missing</em>_ 又会被调用。 为了保持一致性，__contains__ 方法在这里也是必需的。这是因为 <strong>k in d</strong> 这个操作会调用它，但是我们从 <strong>dict 继承到的 __contains__ 方法不会在找不到键的时候调用 __missing__ 方法</strong>。<code>__contains__</code> 里还有个细节，就是我们这里没有用更具 Python 风格的方式——k in my_dict——来检查键是否存在，因为那也会导致 <code>__contains__</code> 被递 归调用。为了避免这一情况，这里采取了更显式的方法，直接在这个 self.keys() 里查询。</p>
+<h2 id="35-字典的变种"><a class="markdownIt-Anchor" href="#35-字典的变种"></a> 3.5 字典的变种</h2>
+<p>这一节总结了标准库里 collections 模块中，除了 defaultdict 之外 的不同映射类型。</p>
+<p><strong>collections.OrderedDict</strong></p>
+<p>这个类型在添加键的时候会保持顺序，因此键的迭代次序总是一致 的。OrderedDict 的 popitem 方法默认删除并返回的是字典里的最后 一个元素，但是如果像 my_odict.popitem(last=False) 这样调用 它，那么它删除并返回第一个被添加进去的元素。</p>
+<p><strong>collections.ChainMap</strong></p>
+<p>该类型可以容纳数个不同的映射对象，然后在进行键查找操作的时 候，这些对象会被当作一个整体被逐个查找，直到键被找到为止。这个 功能在给有嵌套作用域的语言做解释器的时候很有用，可以用一个映射 对象来代表一个作用域的上下文。在 collections 文档介绍 ChainMap 对象的那一部分</p>
+<p><strong>collections.Counter</strong></p>
+<p>这个映射类型会给键准备一个整数计数器。每次更新一个键的时候 都会增加这个计数器。所以这个类型可以用来给可散列表对象计数，或 者是当成多重集来用——多重集合就是集合里的元素可以出现不止一 次。Counter 实现了 + 和 - 运算符用来合并记录，还有像 most_common([n]) 这类很有用的方法。most_common([n]) 会按照次 序返回映射里最常见的 n 个键和它们的计数，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">ct = collections.Counter(<span class="hljs-string">&#x27;aaabbbcccc&#x27;</span>)<br><span class="hljs-built_in">print</span> (ct) <span class="hljs-comment">#Counter(&#123;&#x27;c&#x27;: 4, &#x27;a&#x27;: 3, &#x27;b&#x27;: 3&#125;)</span><br>ct.update(<span class="hljs-string">&#x27;aaccb&#x27;</span>)<br><span class="hljs-built_in">print</span> (ct) <span class="hljs-comment">#Counter(&#123;&#x27;c&#x27;: 6, &#x27;a&#x27;: 5, &#x27;b&#x27;: 4&#125;)</span><br></code></pre></td></tr></table></figure>
+<p><strong>colllections.UserDict</strong></p>
+<p>这个类其实就是把标准 dict 用纯 Python 又实现了一遍。 跟 OrderedDict、ChainMap 和 Counter 这些开箱即用的类型不 同，UserDict 是让用户继承写子类的。</p>
+<h2 id="36-子类化userdict"><a class="markdownIt-Anchor" href="#36-子类化userdict"></a> <strong>3.6 子类化UserDict</strong></h2>
+<p>就创造自定义映射类型来说，以 UserDict 为基类，总比以普通的 dict 为基类要来得方便。 这体现在，我们能够改进示例 3-7 中定义的 StrKeyDict0 类，使得所有的键都存储为字符串类型。 而更倾向于从 UserDict 而不是从 dict 继承的主要原因是，后者有时 会在某些方法的实现上走一些捷径，导致我们不得不在它的子类中重写这些方法，但是 UserDict 就不会带来这些问题。</p>
+<p>UserDict 并不是 dict 的子类，但是 UserDict 有一个叫作 data 的属性，是 dict 的实例，这个属性实际上 是 UserDict 最终存储数据的地方。这样做的好处是，比起上例 ，UserDict 的子类就能在实现 <em>_setitem</em>_ 的时候避免不必要的递归，也可以让 <em>_contains</em>_ 里的代码更简洁。 多亏了 UserDict，示例 3-8 里的 StrKeyDict 的代码比示例 3-7 里的 StrKeyDict0 要短一些，功能却更完善：它不但把所有的键都以字符串的形式存储，还能处理一些创建或者更新实例时包含非字符串类型的键这类意外情况。</p>
+<p><strong>self.data会把所有的key转换为字符串，所以这里<code>__contains__</code>方法里写return str(key) in self.data即可</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">strkeydict</span>(<span class="hljs-params">collections.UserDict</span>):</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__missing__</span>(<span class="hljs-params">self,key</span>):</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(key,<span class="hljs-built_in">str</span>):<br>            <span class="hljs-keyword">raise</span> KeyError(key)<br>        <span class="hljs-keyword">return</span> self[<span class="hljs-built_in">str</span>(key)]<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">     __contains__ 则更简洁些。这里可以放心假设所有已经存储的键都</span><br><span class="hljs-string">是字符串。因此，只要在 self.data 上查询就好了，并不需要像</span><br><span class="hljs-string">StrKeyDict0 那样去麻烦 self.keys()。</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__contains__</span>(<span class="hljs-params">self, key</span>):</span>  <span class="hljs-comment">#</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(key) <span class="hljs-keyword">in</span> self.data<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    __setitem__ 会把所有的键都转换成字符串。由于把具体的实现委</span><br><span class="hljs-string">托给了 self.data 属性，</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__setitem__</span>(<span class="hljs-params">self, key, item</span>):</span><br>        self.data[<span class="hljs-built_in">str</span>(key)] = item<br><br>testd = strkeydict(&#123;<span class="hljs-string">&#x27;a&#x27;</span>:<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;b&#x27;</span>:<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;c&#x27;</span>:<span class="hljs-number">3</span>&#125;)<br><span class="hljs-built_in">print</span>(testd.get(<span class="hljs-string">&#x27;c&#x27;</span>))<br><span class="hljs-built_in">print</span>(testd.get(<span class="hljs-string">&#x27;e&#x27;</span>))<br><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">3</span><br><span class="hljs-string">None</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>MutableMapping.update</p>
+<p>这个方法不但可以为我们所直接利用，它还用在 <code>__init__</code> 里，让 构造方法可以利用传入的各种参数（其他映射类型、元素是 (key, value) 对的可迭代对象和键值参数）来新建实例。因为这个方法在背 后是用 self[key] = value 来添加新值的，所以它其实是在使用我们 的 <code>__setitem__</code> 方法。</p>
+<p>Mapping.get</p>
+<p>在 上一个示例中，我们不得不改写 get 方法，好让 它的表现跟 <code>__getitem__</code> 一致。这个实例就没这个必要了，因为它继承了 Mapping.get 方法.</p>
+<h2 id="37-不可变映射类型"><a class="markdownIt-Anchor" href="#37-不可变映射类型"></a> 3.7 不可变映射类型</h2>
+<h3 id="mappingproxytype"><a class="markdownIt-Anchor" href="#mappingproxytype"></a> <strong>MappingProxyType</strong></h3>
+<p>如果给这个类一个映射，它会返回一个只读的映 射视图。虽然是个只读视图，但是它是动态的。这意味着如果对原映射 做出了改动，我们通过这个视图可以观察到，但是无法通过这个视图对 原映射做出修改。演示:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> types <span class="hljs-keyword">import</span> MappingProxyType<br>d = &#123;<span class="hljs-string">&#x27;a&#x27;</span>:<span class="hljs-number">1</span>&#125;<br>d_proxy = MappingProxyType(d)<br><span class="hljs-built_in">print</span>(d_proxy)<br>d_proxy[a] = <span class="hljs-string">&#x27;2&#x27;</span><br>d[<span class="hljs-string">&#x27;a&#x27;</span>] = <span class="hljs-number">666</span>  <span class="hljs-comment"># d_proxy 是动态的，也就是说对 d 所做的任何改动都会反馈到它上面。</span><br><span class="hljs-built_in">print</span>(d_proxy) <span class="hljs-comment">#&#123;&#x27;a&#x27;: 666&#125;</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">&#123;&#x27;a&#x27;: 1&#125;</span><br><span class="hljs-string">Traceback (most recent call last):</span><br><span class="hljs-string">  File &quot;第三章.py&quot;, line 81, in &lt;module&gt;</span><br><span class="hljs-string">    d_proxy[a] = &#x27;2&#x27;</span><br><span class="hljs-string">TypeError: &#x27;mappingproxy&#x27; object does not support item assignment</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
+<h2 id="38-集合论"><a class="markdownIt-Anchor" href="#38-集合论"></a> 3.8 集合论</h2>
+<p>集合中的元素必须是可散列的，set 类型本身是不可散列的，但是 frozenset 可以。因此可以创建一个包含不同 frozenset 的 set。 除了保证唯一性，集合还实现了很多基础的中缀运算符。</p>
+<p>给定两个集合 a 和 b，<strong>a | b 返回的是它们的合集，a &amp; b 得到的是交集，而 a - b 得到的是差集</strong>。行时间。</p>
+<p>例如想求集合a在b中的出现次数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">found = <span class="hljs-built_in">len</span>(a &amp; b)<br></code></pre></td></tr></table></figure>
+<p>needles 的元素在 haystack 里出现的次数，以下代码可以用在任何可迭代对象上</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">found = <span class="hljs-built_in">len</span>(<span class="hljs-built_in">set</span>(needles) &amp; <span class="hljs-built_in">set</span>(haystack))<br><span class="hljs-comment"># 另一种写法：</span><br>found = <span class="hljs-built_in">len</span>(<span class="hljs-built_in">set</span>(needles).intersection(haystack))<br></code></pre></td></tr></table></figure>
+<h3 id="381-集合字面量"><a class="markdownIt-Anchor" href="#381-集合字面量"></a> 3.8.1 集合字面量</h3>
+<p>除空集之外，集合的字面量——{1}、{1, 2}，等等——看起来跟它的 数学形式一模一样。如果是空集，那么必须写成 <strong>set()</strong> 的形式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">a = &#123;<span class="hljs-number">1</span>&#125;<br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">type</span>(a))<br>a.pop()<br><span class="hljs-built_in">print</span>(a)<br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">type</span>(a))<br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">&lt;class &#x27;set&#x27;&gt;</span><br><span class="hljs-string">set()  #说明空集表示为set()</span><br><span class="hljs-string">&lt;class &#x27;set&#x27;&gt;</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
+<h3 id="382-集合推导"><a class="markdownIt-Anchor" href="#382-集合推导"></a> 3.8.2 集合推导</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> unicodedata <span class="hljs-keyword">import</span> name  <span class="hljs-comment">#引入unicodedata 模块里导入 name 函数，获取字符的名字</span><br><span class="hljs-built_in">print</span>(&#123;<span class="hljs-built_in">chr</span>(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">32</span>, <span class="hljs-number">256</span>) <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;SIGN&#x27;</span> <span class="hljs-keyword">in</span> name(<span class="hljs-built_in">chr</span>(i),<span class="hljs-string">&#x27;&#x27;</span>)&#125; ) <span class="hljs-comment">#如果字符的名字包含“SIGN”，放入集合</span><br><span class="hljs-comment">#&#123;&#x27;±&#x27;, &#x27;=&#x27;, &#x27;#&#x27;, &#x27;%&#x27;, &#x27;§&#x27;, &#x27;®&#x27;, &#x27;©&#x27;, &#x27;&lt;&#x27;, &#x27;¤&#x27;, &#x27;µ&#x27;, &#x27;¢&#x27;, &#x27;¶&#x27;, &#x27;+&#x27;, &#x27;£&#x27;, &#x27;°&#x27;, &#x27;×&#x27;, &#x27;¥&#x27;, &#x27;&gt;&#x27;, &#x27;¬&#x27;, &#x27;÷&#x27;, &#x27;$&#x27;&#125;</span><br></code></pre></td></tr></table></figure>
+<h3 id="383-集合的操作"><a class="markdownIt-Anchor" href="#383-集合的操作"></a> 3.8.3 集合的操作</h3>
+<p><img src="/2022/03/22/python%E5%AD%A6%E4%B9%A0-3/image-20220322174616196.png" srcset="/img/loading.gif" lazyload alt="image-20220322174616196"></p>
+<p><img src="/2022/03/22/python%E5%AD%A6%E4%B9%A0-3/image-20220322174650947.png" srcset="/img/loading.gif" lazyload alt="image-20220322174650947"></p>
+<h2 id="39-dict和set的背后"><a class="markdownIt-Anchor" href="#39-dict和set的背后"></a> 3.9 dict和set的背后</h2>
+<h3 id="392-字典中的散列表"><a class="markdownIt-Anchor" href="#392-字典中的散列表"></a> 3.9.2 字典中的散列表</h3>
+<p>散列表其实是一个稀疏数组（总是有空白元素的数组称为稀疏数组）。 在一般的数据结构教材中，散列表里的单元通常叫作表元（bucket）。 在 dict 的散列表当中，每个键值对都占用一个表元，每个表元都有两 个部分，一个是对键的引用，另一个是对值的引用。因为所有表元的大 小一致，所以可以通过偏移量来读取某个表元。 因为 Python 会设法保证大概还有三分之一的表元是空的，所以在快要达 到这个阈值的时候，原有的散列表会被复制到一个更大的空间里面。  如果要把一个对象放入散列表，那么首先要计算这个元素键的散列值。</p>
+<p><strong>01 散列值和相等性</strong></p>
+<p>内置的 hash() 方法可以用于所有的内置类型对象。如果是自定义 对象调用 hash() 的话，实际上运行的是自定义的 <code>__hash__</code>。如 果两个对象在比较的时候是相等的，那它们的散列值必须相等，否 则散列表就不能正常运行了。例如，如果 1 == 1.0 为真，那么 hash(1) == hash(1.0) 也必须为真，但其实这两个数字（整型 和浮点）的内部结构是完全不一样的。 为了让散列值能够胜任散列表索引这一角色，它们必须在索引空间 中尽量分散开来。这意味着在最理想的状况下，越是相似但不相等 的对象，它们散列值的差别应该越大。示例 3-16 是一段代码输 出，这段代码被用来比较散列值的二进制表达的不同。注意其中 1 和 1.0 的散列值是相同的，而 1.0001、1.0002 和 1.0003 的散列值则 非常不同。</p>
+<p><img src="/2022/03/22/python%E5%AD%A6%E4%B9%A0-3/image-20220322190635251.png" srcset="/img/loading.gif" lazyload alt="image-20220322190635251"></p>
+<p><strong>02. 散列表算法</strong></p>
+<p>为了获取 my_dict[search_key] 背后的值，Python 首先会调用 <strong>hash(search_key) 来计算 search_key 的散列值</strong>，把这个值最低 的几位数字当作偏移量，在散列表里查找表元（具体取几位，得看 当前散列表的大小）。若找到的表元是空的，则抛出 KeyError 异 常。若不是空的，则表元里会有一对 found_key:found_value。 这时候 Python 会检验 search_key == found_key 是否为真，如 果它们相等的话，就会返回 found_value。 如果 search_key 和 found_key 不匹配的话，这种情况称为散列 冲突。发生这种情况是因为，散列表所做的其实是把随机的元素映 射到只有几位的数字上，而散列表本身的索引又只依赖于这个数字 的一部分。为了解决散列冲突，算法会在散列值中另外再取几位， 然后用特殊的方法处理一下，把新得到的数字再当作索引来寻找表 元。 若这次找到的表元是空的，则同样抛出 KeyError；若非 空，或者键匹配，则返回这个值；或者又发现了散列冲突，则重复 以上的步骤。</p>
+<p>具体步骤如图</p>
+<p><img src="/2022/03/22/python%E5%AD%A6%E4%B9%A0-3/image-20220322190505481.png" srcset="/img/loading.gif" lazyload alt="image-20220322190505481"></p>
+<h3 id="393-dict的实现及其导致的结果"><a class="markdownIt-Anchor" href="#393-dict的实现及其导致的结果"></a> 3.9.3 dict的实现及其导致的结果</h3>
+<ol>
+<li>
+<p><strong>键必须是可散列的 一个可散列的对象必须满足以下要求。</strong></p>
+<p>(1) 支持 hash() 函数，并且通过 <code>__hash__()</code> 方法所得到的散列 值是不变的。</p>
+<p>(2) 支持通过 <strong>eq</strong>() 方法来检测相等性。</p>
+<p>(3) 若 a == b 为真，则 hash(a) == hash(b) 也为真。 所有由用户自定义的对象默认都是可散列的，因为它们的散列值由 id() 来获取，而且它们都是不相等的。</p>
+</li>
+<li>
+<p><strong>字典在内存上的开销巨大</strong></p>
+<pre><code> 由于字典使用了散列表，而散列表又必须是稀疏的，这导致它在空间上的效率低下
+</code></pre>
+</li>
+<li>
+<p><strong>键查询很快</strong></p>
+<p>dict 的实现是典型的空间换时间：字典类型有着巨大的内存开 销，但它们提供了无视数据量大小的快速访问——只要字典能被装 在内存里。</p>
+</li>
+<li>
+<p><strong>键的次序取决于添加顺序</strong></p>
+</li>
+</ol>
+<p>键有顺序，并且取决于添加顺序，判断2个字典是否一样时只看里面存储的数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">dicta = &#123;<span class="hljs-string">&#x27;a&#x27;</span>:<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>:<span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;c&#x27;</span>:<span class="hljs-string">&#x27;3&#x27;</span>&#125;<br>dictb = &#123;<span class="hljs-string">&#x27;b&#x27;</span>:<span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;c&#x27;</span>:<span class="hljs-string">&#x27;3&#x27;</span>,<span class="hljs-string">&#x27;a&#x27;</span>:<span class="hljs-string">&#x27;1&#x27;</span>&#125;<br>dictc = &#123;<span class="hljs-string">&#x27;b&#x27;</span>:<span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;a&#x27;</span>:<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;c&#x27;</span>:<span class="hljs-string">&#x27;3&#x27;</span>&#125;<br><span class="hljs-built_in">print</span> (dicta,dictb,dictc)<br><span class="hljs-built_in">print</span> (dicta == dictb == dictc)<br><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">&#123;&#x27;a&#x27;: &#x27;1&#x27;, &#x27;b&#x27;: &#x27;2&#x27;, &#x27;c&#x27;: &#x27;3&#x27;&#125; &#123;&#x27;b&#x27;: &#x27;2&#x27;, &#x27;c&#x27;: &#x27;3&#x27;, &#x27;a&#x27;: &#x27;1&#x27;&#125; &#123;&#x27;b&#x27;: &#x27;2&#x27;, &#x27;a&#x27;: &#x27;1&#x27;, &#x27;c&#x27;: &#x27;3&#x27;&#125;</span><br><span class="hljs-string">True</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
+<h3 id="394-set的实现以及导致的结果"><a class="markdownIt-Anchor" href="#394-set的实现以及导致的结果"></a> 3.9.4 set的实现以及导致的结果</h3>
+<p>set 和 frozenset 的实现也依赖散列表，但在它们的散列表里存放的只有元素的引用**（就像在字典里只存放键而没有相应的值）。**在 set 加 入到 Python 之前，我们都是把字典加上无意义的值当作集合来用的。字典和散列表的几个特点，对集合来说几乎都是适用的。为了避免太多重复的内容，这些特点总结如下。</p>
+<p><strong>集合里的元素必须是可散列的。</strong></p>
+<p><strong>集合很消耗内存。</strong></p>
+<p><strong>可以很高效地判断元素是否存在于某个集合。</strong></p>
+<p><strong>元素的次序取决于被添加到集合里的次序。</strong></p>
+<p><strong>往集合里添加元素，可能会改变集合里已有元素的次序</strong></p>
+<p>和字典的特点几乎差不多</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/python%E5%AD%A6%E4%B9%A0/">python学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/python%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/python%E5%AD%A6%E4%B9%A0/">python学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！，本博客仅用于交流学习，由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，文章作者不为此承担任何责任。
+文章作者拥有对此站文章的修改和解释权。如欲转载此站文章，需取得作者同意，且必须保证此文章的完整性，包括版权声明等全部内容。未经文章作者允许，不得任意修改或者增减此文章内容，不得以任何方式将其用于商业目的。若造成严重后果，本人将依法追究法律责任。 阅读本站文章则默认遵守此规则。
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03/20/python%E5%AD%A6%E4%B9%A0-2/">
+                        <span class="hidden-mobile">python学习-2</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
