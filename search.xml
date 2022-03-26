@@ -226,7 +226,7 @@ TimeDateStamp == -1 已绑定 真正的绑定时间为IMAGE_BOUND_IMPORT_DESCRIP
 <p>节属性常用位含义</p>
 <p>节表置于选项头之后，节表首地址 计算方法：</p>
 <p>选项头的地址 + 选项头的大小；</p>
-<p>（2） e_lfanew+4+0x14（文件头大小）+0xE0（32位选项头大小）。</p>
+<p>（2） e_lfanew+4+0x14（文件头大小）+0xE0（32位选项头大小）64位是0xF0。</p>
 <p><img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220227003416563.png" alt="image-20220227003416563"></p>
 <h2 id="filebuffer文件里的数据状态与imagebuffer内存里的数据状态"><a class="markdownIt-Anchor" href="#filebuffer文件里的数据状态与imagebuffer内存里的数据状态"></a> FileBuffer（文件里的数据状态）与ImageBuffer（内存里的数据状态）</h2>
 <img src="/2022/02/23/PE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E9%9A%8F%E8%AE%B0-1/image-20220227205440595.png" alt="image-20220227205440595" style="zoom:80%;">
@@ -3112,6 +3112,142 @@ SizeOfRawData = VirtualSize = 最后一个节的VirtualAddress（23000h) + Max (
       </categories>
       <tags>
         <tag>web学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>硬编码学习</title>
+    <url>/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id="1定长指令"><a class="markdownIt-Anchor" href="#1定长指令"></a> 1.定长指令</h1>
+<p>由opcode就可以知道这个指令的字节？</p>
+<p>32位寄存器及其主要功能</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220320151101303.png" alt="image-20220320151101303" style="zoom:50%;">
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">//32位，一个字节</span><br><span class="hljs-comment">//PUSH，POP</span><br><span class="hljs-number">50</span> PUSH EAX<br><span class="hljs-number">51</span> PUSH ECX<br><span class="hljs-number">52</span> PUSH EDX<br><span class="hljs-number">53</span> PUSH EBX<br><span class="hljs-number">54</span> PUSH ESP<br><span class="hljs-number">55</span> PUSH EBP<br><span class="hljs-number">56</span> PUSH ESI<br><span class="hljs-number">57</span> PUSH EDI<br><span class="hljs-number">58</span> POP EAX<br><span class="hljs-number">59</span> POP ECX<br><span class="hljs-number">5</span>A POP EDX<br><span class="hljs-number">5B</span> POP EBX<br><span class="hljs-number">5</span>C POP ESP<br><span class="hljs-number">5</span>D POP EBP<br><span class="hljs-number">5</span>E POP ESI<br><span class="hljs-number">5F</span> POP EDI<br><span class="hljs-comment">//INC 操作数加1</span><br><span class="hljs-number">40</span> INC EA:<br><span class="hljs-number">41</span> INC ECX<br><span class="hljs-number">42</span> INC EDX<br><span class="hljs-number">43</span> INC EBX<br><span class="hljs-number">44</span> INC ESP<br><span class="hljs-number">45</span> INC EBP<br><span class="hljs-number">46</span> INC ESI<br><span class="hljs-number">47</span> ING ERI<br><span class="hljs-comment">//DEC 操作数减1</span><br><span class="hljs-number">48</span> DEC EAX<br><span class="hljs-number">49</span> DEC ECX<br><span class="hljs-number">4</span>A DEC EDX<br><span class="hljs-number">4B</span> DEC EBX<br><span class="hljs-number">4</span>C DEC ESP<br><span class="hljs-number">4</span>D DEC EBP<br><span class="hljs-number">4</span>E DEC ESI<br><span class="hljs-number">4F</span> DEC EDI<br><br></code></pre></td></tr></table></figure>
+<h2 id="b0-b891-97"><a class="markdownIt-Anchor" href="#b0-b891-97"></a> B0-B8,91-97</h2>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220320151933166.png" alt="image-20220320151933166" style="zoom:50%;">
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++">B0 立即数 mov AL 立即数<br>B7 立即数 mov BH 立即数<br><span class="hljs-comment">//b0到b7是把立即数送到8位寄存器里al-bh</span><br>B8 立即数 mov EAX 立即数<br><span class="hljs-comment">//b8 - bf 把立即数送到32位寄存器里</span><br><span class="hljs-number">91</span> XCHG EAX ECX<br><span class="hljs-number">92</span> XCHG EAX EDX<br>....<br><span class="hljs-comment">//91-97 XCHG EAX 32位寄存器（ECX-EDI），交换2个寄存器的值，90=NOP</span><br><br></code></pre></td></tr></table></figure>
+<h2 id="70-7f"><a class="markdownIt-Anchor" href="#70-7f"></a> 70-7F</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">//一般2字节，后面跟立即数 	</span><br><span class="hljs-number">70</span> JO <span class="hljs-comment">//o标志位为1时跳转</span><br><span class="hljs-comment">//例,后面跟的数可以是有符号的</span><br><span class="hljs-number">70</span> <span class="hljs-number">6</span>A <span class="hljs-comment">//6A&lt;7F -&gt;地址往后跳6A(以这个数的地址为基础)</span><br><span class="hljs-number">70</span> <span class="hljs-number">8B</span> <span class="hljs-comment">//8B&gt;7F -&gt;往前跳</span><br><span class="hljs-comment">//如果条件成立，跳转到 当前指令地址 + 当前指令长度 + Ib（1个字节立即数）	</span><br><span class="hljs-comment">//jcc Jb = 要跳转的地址 - 下一条指令的地址 = 要跳转的地址 - (当前指令地址 + 当前指令长度)</span><br>    <span class="hljs-number">0x70</span>  	JO		OF=<span class="hljs-number">1</span><br>    <span class="hljs-number">0x71</span>	JNO		OF=<span class="hljs-number">0</span><br>    <span class="hljs-number">0x72</span>	JB/JNAE/JC		CF=<span class="hljs-number">1</span><br>    <span class="hljs-number">0x73</span>	JNB/JAE/JNC		CF=<span class="hljs-number">0</span><br>    <span class="hljs-number">0x74</span>	JZ/JE		ZF=<span class="hljs-number">1</span><br>    <span class="hljs-number">0x75</span>	JNZ/JNE		ZF=<span class="hljs-number">0</span><br>    <span class="hljs-number">0x76</span>	JBE/JNA		ZF=<span class="hljs-number">1</span>或者CF=<span class="hljs-number">1</span><br>    <span class="hljs-number">0x77</span>	JNBE/JA		ZF=<span class="hljs-number">0</span>或者CF=<span class="hljs-number">0</span><br>    <span class="hljs-number">0x78</span>	JS		SF=<span class="hljs-number">1</span><br>    <span class="hljs-number">0x79</span>	JNS		SF=<span class="hljs-number">0</span><br>    <span class="hljs-number">0x7A</span>	JP/JPE		PF=<span class="hljs-number">1</span><br>    <span class="hljs-number">0x7B</span>	JNP/JPO		PF=<span class="hljs-number">0</span><br>    <span class="hljs-number">0x7C</span>	JL/JNGE		SF!=OF<br>    <span class="hljs-number">0x7D</span>	JNL/JGE		SF=OF<br>    <span class="hljs-number">0x7E</span>	JLE/JNG		ZF!=OF 或 ZF=<span class="hljs-number">1</span><br>    <span class="hljs-number">0x7F</span>	JNLE/JG		ZF!OF 或 ZF=<span class="hljs-number">0</span><br>		<br><br></code></pre></td></tr></table></figure>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220320224916256.png" alt="image-20220320224916256" style="zoom:50%;">
+<p><strong>8B是有符号数，二进制位1000 1011 = -117（十六进制75），所以</strong></p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220320232939952.png" alt="image-20220320232939952" style="zoom:50%;">
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220320232651832.png" alt="image-20220320232651832" style="zoom:50%;">
+<p><img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220320180029381.png" alt="image-20220320180029381"></p>
+<h2 id="0f-80-0f-8f"><a class="markdownIt-Anchor" href="#0f-80-0f-8f"></a> 0F 80 - 0F 8F</h2>
+<p>条件跳转，后跟四个字节立即数的偏移(有符号)，<strong>共五个字节。</strong>					<br>
+如果条件成立，跳转到 当前指令地址 + 当前指令长度 + Id（四字节）									<br>
+最大值：向前跳7FFFFFFFF，向后跳80000000</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++">			<br>					<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x80</span>  		JO			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x81</span>		JNO			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x82</span>		JB/JNAE/JC			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x83</span>		JNB/JAE/JNC			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x84</span>		JZ/JE			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x85</span>		JNZ/JNE			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x86</span>		JBE/JNA			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x87</span>		JNBE/JA			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x88</span>		JS			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x89</span>		JNS			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x8A</span>		JP/JPE			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x8B</span>		JNP/JPO			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x8C</span>		JL/JNGE			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x8D</span>		JNL/JGE			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x8E</span>		JLE/JNG			<br><span class="hljs-number">0x0F</span> <span class="hljs-number">0x8F</span>		JNLE/JG			<br>					<br><br></code></pre></td></tr></table></figure>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220321231116886.png" alt="image-20220321231116886" style="zoom:80%;">
+<h2 id="e0-e9"><a class="markdownIt-Anchor" href="#e0-e9"></a> E0 - E9</h2>
+<figure class="highlight x86asm"><table><tr><td class="code"><pre><code class="hljs x86asm"><span class="hljs-number">0xE0</span>  	<span class="hljs-keyword">LOOPNE</span>/<span class="hljs-keyword">LOOPNZ</span> Ib (<span class="hljs-keyword">Jb</span>)			共<span class="hljs-number">2</span>字节					<br>	<span class="hljs-built_in">ECX</span> = <span class="hljs-built_in">ECX</span> - <span class="hljs-number">1</span>  当ZF = <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-built_in">ECX</span>!=<span class="hljs-number">0</span> 时跳转到 当前指令地址 + 当前指令长度 + Ib 								<br>									<br><span class="hljs-number">0XE1</span>     	<span class="hljs-keyword">LOOPE</span>/<span class="hljs-keyword">LOOPZ</span> Ib (<span class="hljs-keyword">Jb</span>)			共<span class="hljs-number">2</span>字节					<br>	<span class="hljs-built_in">ECX</span> = <span class="hljs-built_in">ECX</span> - <span class="hljs-number">1</span>  当ZF = <span class="hljs-number">1</span> &amp;&amp; <span class="hljs-built_in">ECX</span> != <span class="hljs-number">0</span> 时跳转到 当前指令地址 + 当前指令长度 + Ib								<br>									<br><span class="hljs-number">0XE2</span>	<span class="hljs-keyword">LOOP</span> Ib (<span class="hljs-keyword">Jb</span>)			共<span class="hljs-number">2</span>字节					<br>	<span class="hljs-built_in">ECX</span> = <span class="hljs-built_in">ECX</span> - <span class="hljs-number">1</span>  当 <span class="hljs-built_in">ECX</span>!=<span class="hljs-number">0</span> 时跳转到 当前指令地址 + 当前指令长度 + Ib	<br>    <br><span class="hljs-number">0XE3</span>	<span class="hljs-keyword">JrCXZ</span> Ib (<span class="hljs-keyword">Jb</span>) (在<span class="hljs-number">32</span>位模式中,<span class="hljs-built_in">rCX</span>为<span class="hljs-built_in">ECX</span>)					共<span class="hljs-number">2</span>字节			<br>	当 <span class="hljs-built_in">ECX</span> = <span class="hljs-number">0</span> 时跳转到 当前指令地址 + 当前指令长度 + Ib								<br>	(自己控制步长)								<br>									<br><span class="hljs-number">0xE8</span>	<span class="hljs-keyword">CALL</span> Id (Jd)  		共<span class="hljs-number">5</span>字节						<br>	<span class="hljs-keyword">CALL</span>指令的下一条指令地址入栈后，跳转到 当前指令地址 + 当前指令长度 + Id								<br>									<br><span class="hljs-number">0xE9</span>	<span class="hljs-keyword">JMP</span> Id (Jd)		共<span class="hljs-number">5</span>字节						<br>	跳转到 当前指令地址 + 当前指令长度 + Id								<br>							<br><span class="hljs-number">0xEA</span>	<span class="hljs-keyword">JMP</span> Ap （Ap：六字节长度的直接地址）	跨段跳转，共<span class="hljs-number">7</span>字节		<br>	<span class="hljs-keyword">JMP</span> <span class="hljs-built_in">CS</span>:Id  将Ap中的高<span class="hljs-number">2</span>位赋值给<span class="hljs-built_in">CS</span>，低<span class="hljs-number">4</span>位直接赋值给<span class="hljs-built_in">EIP</span>， 即跳转						<br>							<br>004183D7 &gt;    EA <span class="hljs-number">12345678</span> 1B00     <span class="hljs-keyword">JMP</span> <span class="hljs-built_in">FAR</span> <span class="hljs-number">001B</span>:<span class="hljs-number">78563412</span>							<br>							<br><span class="hljs-number">0xEB</span>	<span class="hljs-keyword">JMP</span> Ib (<span class="hljs-keyword">Jb</span>)						<br>	跳转到 当前指令地址 + 当前指令长度 + Ib(一个字节)					<br>							<br><br></code></pre></td></tr></table></figure>
+<h2 id="c"><a class="markdownIt-Anchor" href="#c"></a> C</h2>
+<figure class="highlight x86asm"><table><tr><td class="code"><pre><code class="hljs x86asm"><span class="hljs-number">0xC3</span> 	<span class="hljs-keyword">RET</span>	共<span class="hljs-number">1</span>字节							<br>	<span class="hljs-built_in">EIP</span>出栈								<br>									<br><span class="hljs-number">0xC2</span>	<span class="hljs-keyword">RET</span> Iw	共<span class="hljs-number">3</span>字节	<span class="hljs-keyword">ret</span> <span class="hljs-number">4</span> = <span class="hljs-keyword">pop</span> <span class="hljs-built_in">eip</span> <span class="hljs-built_in">esp</span>+<span class="hljs-number">4</span>						<br>	<span class="hljs-built_in">EIP</span>出栈后，<span class="hljs-built_in">ESP</span> = <span class="hljs-built_in">ESP</span> + Iw								<br>									<br><span class="hljs-number">0XCB</span>	<span class="hljs-keyword">RETF</span> （return <span class="hljs-built_in">far</span>） 共<span class="hljs-number">1</span>字节								<br>	出栈<span class="hljs-number">8</span>个字节，低<span class="hljs-number">4</span>个字节赋值给<span class="hljs-built_in">EIP</span>,高<span class="hljs-number">4</span>个字节中低<span class="hljs-number">2</span>位赋值给<span class="hljs-built_in">CS</span> 								<br>									<br><span class="hljs-number">0xCA</span>	<span class="hljs-keyword">RETF</span> Iw	共<span class="hljs-number">3</span>字节							<br>	出栈<span class="hljs-number">8</span>个字节，低<span class="hljs-number">4</span>个字节赋值给<span class="hljs-built_in">EIP</span>,高<span class="hljs-number">4</span>个字节中低<span class="hljs-number">2</span>位赋值给<span class="hljs-built_in">CS</span>后，<span class="hljs-built_in">ESP</span> = <span class="hljs-built_in">ESP</span> + Iw 	<br>    <br><span class="hljs-keyword">ret</span>  -&gt; <span class="hljs-keyword">pop</span> <span class="hljs-built_in">eip</span>			<br><span class="hljs-keyword">retf</span> -&gt; <span class="hljs-keyword">pop</span> <span class="hljs-built_in">eip</span>, <span class="hljs-keyword">pop</span> <span class="hljs-built_in">cs</span>			<br><br><br></code></pre></td></tr></table></figure>
+<h1 id="2变长"><a class="markdownIt-Anchor" href="#2变长"></a> 2.变长</h1>
+<h2 id="88-8b-mov"><a class="markdownIt-Anchor" href="#88-8b-mov"></a> 88 -8B MOV</h2>
+<p>opcode决定后面的，像下列指令，就肯定有ModR/M字段</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220322231038735.png" alt="image-20220322231038735" style="zoom:80%;">
+<figure class="highlight x86asm"><table><tr><td class="code"><pre><code class="hljs x86asm">经典变长指令_ModR/M							<br>							<br><span class="hljs-number">0x88</span>  	<span class="hljs-keyword">MOV</span> Eb, Gb			G：通用寄存器			<br><span class="hljs-number">0x89</span>	<span class="hljs-keyword">MOV</span> Ev, Gv			E：寄存器/内存  看mod的值 <span class="hljs-number">00</span>，<span class="hljs-number">01</span>，<span class="hljs-number">10</span>是内存，<span class="hljs-number">11</span>是寄存器		<br><span class="hljs-number">0x8A</span>	<span class="hljs-keyword">MOV</span> Gb, Eb			b：字节  //这里后面有b说明看的是八位寄存器			<br><span class="hljs-number">0x8B</span>	<span class="hljs-keyword">MOV</span> Gv, Ev			v：<span class="hljs-built_in">Word</span>, doubleword <span class="hljs-keyword">or</span> quadword	//取决当前<span class="hljs-meta">cpu</span>模式		<br><br></code></pre></td></tr></table></figure>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220322231748759.png" alt="image-20220322231748759" style="zoom:67%;">
+<p>例如 	MOV Eb, Gb  中3，4，5位决定G（通用寄存器），6，7和0-2位决定E</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220322232404169.png" alt="image-20220322232404169" style="zoom:67%;">
+<p>主要是查这个表</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220322232833542.png" alt="image-20220322232833542" style="zoom:67%;">
+<p>mod是100时理论上是esp，ebp，但是实际是没这个指令的，改成别的意义了</p>
+<p>练习：</p>
+<p>88 84 = MOV Eb Gb  84 = 10 000 100</p>
+<p>000 表示G = 1号8位寄存器 = AL</p>
+<p>10 = xx+disp32(32位的偏移)  xx根据100决定</p>
+<p>所以这个指令是 MOV byte ptr ds:[xx+32位偏移]  ,al</p>
+<p>不过xx是100，情况特殊，这就是接下来的指令</p>
+<p>opcode决定modrm，modrm决定后面有没有SIB</p>
+<p>所以字节低位是4的就有SIB</p>
+<h2 id="sib字段"><a class="markdownIt-Anchor" href="#sib字段"></a> SIB字段</h2>
+<p><img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220324002710075.png" alt="image-20220324002710075"></p>
+<p>当modRM为以上情况时，后续会有SIB字段，8个字节，被分成3个字段,这里disp32指32位的地址偏移，disp8同理</p>
+<p><img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220324003541893.png" alt="image-20220324003541893"></p>
+<p>例如， DS:[EAX + ECX*2 + 12345678] 中， Scale描述2^1， Index描述ECX, Base描述EAX，而12345678 由ModR/M字段决定。												<br>
+所以SIB字段描述的方式为：												<br>
+Base + Index*2^Scale (Scale描述2^Scale，所以只能为 *1 *2 *4 *8)</p>
+<p>分析示例：MOV BYTE PTR DS:[EAX+ECX*2+78563412],AL</p>
+<p>首先可以知道是MOV Eb Gb的形式，</p>
+<p>然后分析这个指令，原型是0x88肯定有MODR/M字段，然后G是AL那么Reg/Opcode为000</p>
+<p>然后观察这个指令形式有多个寄存器，形如下方的[–][–]+disp32，所以能确定MODR/M字段</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220324224736647.png" alt="image-20220324224736647" style="zoom:67%;">
+<p>然后根据EAX+ECX*2+78563412，其中<strong>Base对应EAX</strong>，**Index对应ECX,***<strong>2^1说明Scale为1</strong>，可以得出SIB值为</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220324225148648.png" alt="image-20220324225148648" style="zoom:67%;">
+<p>SIB字段的图表如下											<br>
+1、当Index = 100 时，Index被0替代，此时只有Base有效</p>
+<pre><code>2、当Base = 101 时，Base被0替代，此时只用Index有效，最上面那行					
+</code></pre>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220324225238995.png" alt="image-20220324225238995" style="zoom:80%;">
+<p>由此可推出，ModR/M整个字段，最长是6个字节</p>
+<p>88 84 48</p>
+<p>89 84 84</p>
+<p>89 84 22</p>
+<p>89 AC 15</p>
+<p><strong>当Base为101时，解释如下，需要看MOD字段</strong></p>
+<p><img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220324234036589.png" alt="image-20220324234036589"></p>
+<p><strong>89 2C 15</strong></p>
+<p>MOD Ev Gv</p>
+<p>00 101 100</p>
+<p>Reg = 101 = EBP (v假设是32位 )</p>
+<p>MOD R/M = 00 100 =[…][…]</p>
+<p>SIB = 00 010 101</p>
+<p>base = 101 看MOD为00  ,所以是index*2^1 + disp32</p>
+<p>index =010 = EDX</p>
+<p>v = 假设是32位运行 = DWORD</p>
+<p>MOV DWORD PTR [EDX+disp32] EBP</p>
+<h1 id="3查表"><a class="markdownIt-Anchor" href="#3查表"></a> 3.查表</h1>
+<p>主表是TABLE A-2，在英特尔白皮书里</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220326190802686.png" alt="image-20220326190802686" style="zoom:50%;">
+<p>例如 50 系列，先看这个表的对应位置，这里显示的是PUSH，但是后面还有个d64</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220326191018703.png" alt="image-20220326191018703" style="zoom:67%;">
+<p>这个d64查另一个表</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220326191113328.png" alt="image-20220326191113328" style="zoom:50%;">
+<p>这里<strong>i64说明这个指令在64位无效，o64只在64位有效，d64表示在64位下运行时默认按64位执行</strong>，</p>
+<p>rAX这类字符的原文说明：</p>
+<figure class="highlight vhdl"><table><tr><td class="code"><pre><code class="hljs vhdl">A.<span class="hljs-number">2.3</span> <span class="hljs-keyword">Register</span> Codes<br><span class="hljs-keyword">When</span> an opcode requires a specific <span class="hljs-keyword">register</span> as an operand, the <span class="hljs-keyword">register</span> <span class="hljs-keyword">is</span> identified <br>by name (<span class="hljs-keyword">for</span> example, AX, CL, <span class="hljs-keyword">or</span> ESI). The name indicates whether the <span class="hljs-keyword">register</span> <span class="hljs-keyword">is</span> <br><span class="hljs-number">64</span>, <span class="hljs-number">32</span>, <span class="hljs-number">16</span>, <span class="hljs-keyword">or</span> <span class="hljs-number">8</span> bits wide.<br>A <span class="hljs-keyword">register</span> identifier <span class="hljs-keyword">of</span> the form eXX <span class="hljs-keyword">or</span> rXX <span class="hljs-keyword">is</span> used <span class="hljs-keyword">when</span> <span class="hljs-keyword">register</span> <span class="hljs-literal">width</span> depends <span class="hljs-keyword">on</span> <br>the operand-size <span class="hljs-keyword">attribute</span>. eXX <span class="hljs-keyword">is</span> used <span class="hljs-keyword">when</span> <span class="hljs-number">16</span> <span class="hljs-keyword">or</span> <span class="hljs-number">32</span>-<span class="hljs-built_in">bit</span> sizes are possible; rXX <span class="hljs-keyword">is</span> <br>used <span class="hljs-keyword">when</span> <span class="hljs-number">16</span>, <span class="hljs-number">32</span>, <span class="hljs-keyword">or</span> <span class="hljs-number">64</span>-<span class="hljs-built_in">bit</span> sizes are possible. <span class="hljs-keyword">For</span> example: eAX indicates that the <br>AX <span class="hljs-keyword">register</span> <span class="hljs-keyword">is</span> used <span class="hljs-keyword">when</span> the operand-size <span class="hljs-keyword">attribute</span> <span class="hljs-keyword">is</span> <span class="hljs-number">16</span> <span class="hljs-keyword">and</span> the EAX <span class="hljs-keyword">register</span> <span class="hljs-keyword">is</span> used <br><span class="hljs-keyword">when</span> the operand-size <span class="hljs-keyword">attribute</span> <span class="hljs-keyword">is</span> <span class="hljs-number">32</span>. rAX can indicate AX, EAX <span class="hljs-keyword">or</span> RAX.<br><span class="hljs-keyword">When</span> the REX.B <span class="hljs-built_in">bit</span> <span class="hljs-keyword">is</span> used <span class="hljs-keyword">to</span> modify the <span class="hljs-keyword">register</span> specified <span class="hljs-keyword">in</span> the reg field <span class="hljs-keyword">of</span> the <br>opcode, this fact <span class="hljs-keyword">is</span> indicated by adding “/x” <span class="hljs-keyword">to</span> the <span class="hljs-keyword">register</span> name <span class="hljs-keyword">to</span> indicate the additional possibility. <span class="hljs-keyword">For</span> example, rCX/r9 <span class="hljs-keyword">is</span> used <span class="hljs-keyword">to</span> indicate that the <span class="hljs-keyword">register</span> could either <br>be rCX <span class="hljs-keyword">or</span> r9. <span class="hljs-literal">Note</span> that the size <span class="hljs-keyword">of</span> r9 <span class="hljs-keyword">in</span> this <span class="hljs-keyword">case</span> <span class="hljs-keyword">is</span> determined by the operand size <br><span class="hljs-keyword">attribute</span> (just as <span class="hljs-keyword">for</span> rCX)<br>机翻<br>当一个操作码需要一个特定的寄存器作为操作数时，该寄存器由名称（例如，AX、CL或ESI）标识。该名称指示寄存器是<span class="hljs-number">64</span>、<span class="hljs-number">32</span>、<span class="hljs-number">16</span>还是<span class="hljs-number">8</span>位宽。<br>当寄存器宽度取决于操作数大小属性时，使用eXX或rXX形式的寄存器标识符。当<span class="hljs-number">16</span>位或<span class="hljs-number">32</span>位大小是可能的时，使用eXX；<br>当<span class="hljs-number">16</span>位、<span class="hljs-number">32</span>位或<span class="hljs-number">64</span>位大小是可能的时，使用rXX。例如：eAX表示当操作数大小属性为<span class="hljs-number">16</span>时使用AX寄存器，当操作数大小属性为<span class="hljs-number">32</span>时使用eAX寄存器。rAX可以表示AX、EAX或rAX。<br>当REX.B位用于修改操作码的reg字段中指定的寄存器，这一事实通过在寄存器名称中添加“/x”来表示，以表示额外的可能性。例如，rCX/r9用于指示寄存器可以是rCX或r9。请注意，在这种情况下，r9的大小由操作数大小属性决定（与rCX一样）<br></code></pre></td></tr></table></figure>
+<p>总之就是rAX是指多少位代表多少，16位是AX,32位是EAX,64是RAX</p>
+<p>eAX只能是AX和EAX</p>
+<h2 id="如果是多位的opcode"><a class="markdownIt-Anchor" href="#如果是多位的opcode"></a> <strong>如果是多位的opcode</strong></h2>
+<p>例如之前学过的JCC指令，0x0f 0x8x，现在看0f处</p>
+<p><img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220326193318842.png" alt="image-20220326193318842"></p>
+<p>这就需要查A-3，<strong>（这里除了0F处，其他指令都是1字节）</strong></p>
+<p>然后查A-3</p>
+<p><img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220326193713065.png" alt="image-20220326193713065"></p>
+<p>这里<strong>第二位opcode是 38 ，3A的地方，要查A-4，A-5的表，说明opcode长度是3</strong></p>
+<p><img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220326193957195.png" alt="image-20220326193957195"></p>
+<p>如果A2里有Grp，查A6</p>
+<img src="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/image-20220326194143351.png" alt="image-20220326194143351" style="zoom:80%;">
+<h2 id="段前缀"><a class="markdownIt-Anchor" href="#段前缀"></a> 段前缀</h2>
+<p>​	<br>
+段寄存器的作用：早期8086cpu寻址范围小，Inter遍通过段寄存器来拓展内存.即通过段寄存器基址+偏移的方式来寻址。		<br>
+[]中的地址为有效地址(Effect Address)，有效地址+段寄存器基址才是实际地址LA(线性地址 Line Address)。		<br>
+线性地址 = 段基址 + 有效地址		<br>
+在后来的80386时，cpu的寻址范围大大提升，这些段寄存器便被用作了其他用途。但是DS:[]类似	<br>
+这种寻址格式却被保留了下来。	<br>
+实际上操作码已经决定了寻址时使用哪个段寄存器作为基址，不需要其他字节描述。		<br>
+1、如果没有特别说明，[]前为DS，即DS:[]	<br>
+2、<strong>PUSH POP指令，以及在[]中使用ESP/EBP的，使用SS段</strong>	<br>
+3、在[Base + Index*2Scale + I]中,以Base为判断条件，没有特别说明，用DS。如果Base为ESP/EBP，则用SS段.	<br>
+4、串操作指令一般使用ES。<strong>MOV ES:[EDI] DS:[ESI]中，目标EDI使用ES段，其他使用DS段.</strong>	<br>
+5、EIP指向当前指令，<strong>EIP取指令时使用的是CS段.</strong>	<br>
+6、如果指令加段寄存器前缀，则该条指令一律用这个段，如果加多个段寄存器前缀，默认只看op前的那个.</p>
+<h2 id="操作指令前缀关于之前指令为啥没有16位寄存器"><a class="markdownIt-Anchor" href="#操作指令前缀关于之前指令为啥没有16位寄存器"></a> 操作指令前缀	关于之前指令为啥没有16位寄存器</h2>
+<p>0x66 	将操作数改为16字节。例子50为 PUSH EAX, 而66 50则为 PUSH AX</p>
+<p>004183DA      50                     PUSH EAX	<br>
+004183DB      66:50                  PUSH AX</p>
+<h2 id="操作指令前缀修改默认寻址方式"><a class="markdownIt-Anchor" href="#操作指令前缀修改默认寻址方式"></a> 操作指令前缀：修改默认寻址方式</h2>
+<p>0x67 	将操作数改为16字节。例子50为 PUSH EAX, 而66 50则为 PUSH AX</p>
+<p>004183FD      8801          MOV BYTE PTR DS:[ECX],AL	<br>
+004183FF      67:8801       MOV BYTE PTR DS:[BX+DI],AL</p>
+]]></content>
+      <categories>
+        <category>逆向学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>逆向学习</tag>
       </tags>
   </entry>
 </search>
