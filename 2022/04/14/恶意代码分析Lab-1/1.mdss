@@ -1,0 +1,235 @@
+# 第一章实验
+
+## ida快捷键
+
+```
+空格键    反汇编窗口切换文本跟图形
+ESC退到上一个操作地址
+G搜索地址或者符号
+N重命名
+分号键   注释
+ALT+M  添加标签
+CTRL+M 列出所有标签
+CTRL +S  二进制段的开始地址结束地址
+C code   光标地址出内容解析成代码
+P       在函数开始处使用P，从当前地址处解析成函数
+D  data解析成数据
+A   ASCII解析成ASCII
+U   unDefined解析成未定义的内容
+X  交叉引用
+F5  C伪代码
+菜单栏中的搜索功能中
+有ALT+T 搜索文本
+ALT+B 搜索16进制 搜索opcode 如ELF文件头
+打开断点列表 CTRL+ALT+B
+单步步入 F7
+单步不过 F8
+运行到函数返回地址 CTRL+F7
+运行到光标处 F4
+```
+
+常见dll函数
+
+![image-20220404234608216](image-20220404234608216.png)
+
+# Lab1-1
+
+Lab01-01.exe和Lab01-01.dll
+
+**1．将文件上传至 http://www.VirusTotal.com/进行分析并查看报告。文件匹配到了已有的反病毒软件的特征？**
+
+<img src="image-20220404222643932.png" alt="image-20220404222643932" style="zoom: 44;" />
+
+**2.这些文件是什么时候编译的?**
+
+exe：
+
+<img src="image-20220404222756154.png" alt="image-20220404222756154" style="zoom: 50%;" />
+
+dll：
+
+<img src="image-20220404222833420.png" alt="image-20220404222833420" style="zoom:50%;" />
+
+**3.这两个文件中是否存在迹象说明它们是否被加壳或混淆了?如果是，这些迹象在哪里?**
+
+用peid分析，能够正常识别编译环境，ep段正常，所以没有加密或者混淆
+
+<img src="image-20220404230056042.png" alt="image-20220404230056042" style="zoom: 67%;" />
+
+<img src="image-20220404230132634.png" alt="image-20220404230132634" style="zoom:67%;" />
+
+**4.是否有导入函数显示出了这个恶意代码是做什么的?如果是，是哪些导入函数?**
+
+Lab01-01.dll的导入函数：
+
+**Wsock32.dll和Ws2_32.dll这两个是联网DLL，访问其中任何一个DLL的程序非常可能连接网络，或是执行网络相关的任务**。
+
+<img src="image-20220404230936300.png" alt="image-20220404230936300" style="zoom:67%;" />
+
+Lab01-01.exe的导入函数：
+
+**FindFirstFile和FindNextFile函数是特别值得关注的，因为它们提供的功能是搜索一个目录下所有的文件。**
+
+<img src="image-20220404231310246.png" alt="image-20220404231310246" style="zoom:67%;" />
+
+Lab01-01.exeexe，根据ida的字符串分析（ctrl+f12）可得到C:\Windows\System32\kerne132.dll可能是程序运行的特征
+
+![image-20220404231801690](image-20220404231801690.png)
+
+# Lab1-2
+
+peid的ep段显示upx1，说明文件可能加壳了
+
+<img src="image-20220404232933256.png" alt="image-20220404232933256" style="zoom:80%;" />
+
+upx -d 脱壳
+
+<img src="image-20220404234057741.png" alt="image-20220404234057741" style="zoom:67%;" />
+
+脱壳后正常显示了
+
+<img src="image-20220404234206754.png" alt="image-20220404234206754" style="zoom:67%;" />
+
+上传网页分析，得到导入函数
+
+WININET.dll，ADVAPI32.dll说明这个程序可能进行网络和进程的操作
+
+<img src="image-20220404234427730.png" alt="image-20220404234427730" style="zoom:67%;" />
+
+通过ida的字符串分析
+
+![image-20220404234925588](image-20220404234925588.png)
+
+这里可能是创建了一个名为MalService的服务（DisplayName的内容就是MalService）
+
+<img src="image-20220404235344187.png" alt="image-20220404235344187" style="zoom:67%;" />
+
+### 验证样本传输的网络数据
+
+使用od分析，右键中文搜索引擎，智能搜索，找到网站
+
+<img src="image-20220404235856331.png" alt="image-20220404235856331" style="zoom: 50%;" />
+
+<img src="image-20220405001409765.png" alt="image-20220405001409765" style="zoom: 67%;" />
+
+主线程窗口中选择数据窗口跟随（主线程窗口放大即可找到数据窗口）
+
+<img src="image-20220405001453388.png" alt="image-20220405001453388" style="zoom:50%;" />
+
+<img src="image-20220405001229162.png" alt="image-20220405001229162" style="zoom:67%;" />
+
+改成127.0.0.1，用00填充剩下的位置
+
+<img src="image-20220405170214320.png" alt="image-20220405170214320" style="zoom: 67%;" />
+
+然后右键选择复制到可执行文件，然后再右键保存文件
+
+![image-20220405173030229](image-20220405173030229.png)
+
+PS：一直捕捉不到样本的网络数据，并且调试的时候会卡住，故放弃了。。。
+
+# Lab1-3
+
+首先可以看到这是个fsg壳，看到有人试过了，所以我也决定尝试手动脱壳试试
+
+![image-20220407235939049](image-20220407235939049.png)
+
+使用x32dbg，技巧就是f4过跳转，f8走，直到看到一个大跳，跟进去看看
+
+<img src="image-20220408000554875.png" alt="image-20220408000554875" style="zoom:67%;" />
+
+如果到了系统领空，可以alt+f9跳出去
+
+<img src="C:\Users\yiyekuzhou\Desktop\笔记\恶意代码分析\image-20220408000629401.png" alt="image-20220408000629401" style="zoom:67%;" />
+
+猜测这个就是程序的oep，在反汇编窗口中转到这个地址，然后直接f4看看
+
+![image-20220408001010734](C:\Users\yiyekuzhou\Desktop\笔记\恶意代码分析\image-20220408001010734.png)
+
+<img src="C:\Users\yiyekuzhou\AppData\Roaming\Typora\typora-user-images\image-20220408001507799.png" alt="image-20220408001507799" style="zoom:67%;" />
+
+然后使用这个插件，先dump一份
+
+![image-20220408001453582](C:\Users\yiyekuzhou\AppData\Roaming\Typora\typora-user-images\image-20220408001453582.png)
+
+<img src="image-20220408002127337.png" alt="image-20220408002127337" style="zoom: 67%;" />
+
+然后点击自动搜索IAT表和获取导入表
+
+<img src="image-20220408001835717.png" alt="image-20220408001835717" style="zoom: 67%;" />
+
+最后修复dump的文件即可
+
+<img src="image-20220408002238168.png" alt="image-20220408002238168" style="zoom:67%;" />
+
+
+
+导入表内容
+
+<img src="image-20220408003250804.png" alt="image-20220408003250804" style="zoom: 67%;" />
+
+<img src="image-20220408003313799.png" alt="image-20220408003313799" style="zoom:67%;" />
+
+拖进ida，这个psz就是这个网址，可能程序会与这个网址进行连接
+
+![image-20220408003447040](C:\Users\yiyekuzhou\Desktop\笔记\恶意代码分析\image-20220408003447040.png)
+
+<img src="image-20220408003430268.png" alt="image-20220408003430268" style="zoom:67%;" />
+
+CoCreateInstance的官方文档
+
+[CoCreateInstance function （combaseapi.h） - Win32 apps |微软文档 (microsoft.com)](https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance)
+
+相关文章[COM组件的逆向 - QKSword - 博客园 (cnblogs.com)](https://www.cnblogs.com/QKSword/p/10927987.html)
+
+[TOD赤橙黄绿青蓝紫队系列：COM之恶 - FreeBuf网络安全行业门户](https://www.freebuf.com/news/207966.html)
+
+参考以上文章，com组件使用之前需要初始化，初始化com组件之后，使用函数CoCreateInstance来调用对象和接口，第一个参数使用CLSID指定了对象，第四个参数使用IID指定了接口，最后一个参数为获得的接口指针。
+
+原型
+
+```c++
+HRESULT CoCreateInstance(
+  [in]  REFCLSID  rclsid,
+  [in]  LPUNKNOWN pUnkOuter,
+  [in]  DWORD     dwClsContext,
+  [in]  REFIID    riid,
+  [out] LPVOID    *ppv
+);
+```
+
+iid和clsid的结构
+
+![image-20220408143329179](image-20220408143329179.png)
+
+样本中查看其clsid为0002DF01-0000-0000-C000-000000000046
+
+![image-20220408143206824](image-20220408143206824.png)
+
+可以直接在注册表里搜索（clsid在注册表HKEY_CLASSES_ROOT\CLSID下，IID在HKEY_CLASSES_ROOT\Interface或HKLM\Software\Classes\Interface下）
+
+<img src="image-20220408143924597.png" alt="image-20220408143924597" style="zoom:67%;" />
+
+这里获取到的**IID**是**D30C1661-CDAF-11D0-8A3E-00C04FC9E26E**
+
+![image-20220408150731857](image-20220408150731857.png)
+
+可以谷歌或者百度看看这个GUID对应的接口是什么，这里是IWebBrowser2
+
+![image-20220408150943440](image-20220408150943440.png)
+
+找到接口之后，在ida的结构体窗口添加这个标准结构体（Vtbl是虚函数表的意思）
+
+<img src="image-20220408154815435.png" alt="image-20220408154815435" style="zoom:67%;" />
+
+对于这个指针，右键convert to struct与结构体建立联系，就可以看到调用的函数是什么了
+
+![image-20220408160058127](image-20220408160058127.png)
+
+![image-20220408161004654](image-20220408161004654.png)
+
+之后就可以知道正确调用的函数了
+
+![image-20220408160839433](image-20220408160839433.png)
+
+这里可以看到是使用了IWebBrowser2::Navigate方法[IWebBrowser2：：导航|微软文档 (microsoft.com)](https://docs.microsoft.com/en-us/previous-versions/bb415532(v=msdn.10)?redirectedfrom=MSDN)打开了这个url

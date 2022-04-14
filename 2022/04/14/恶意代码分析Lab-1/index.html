@@ -1,0 +1,558 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>恶意代码分析Lab-1 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="恶意代码分析Lab-1">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-14 12:55" pubdate>
+        2022年4月14日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      14
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">恶意代码分析Lab-1</h1>
+            
+            <div class="markdown-body">
+              <h1 id="第一章实验"><a class="markdownIt-Anchor" href="#第一章实验"></a> 第一章实验</h1>
+<h2 id="ida快捷键"><a class="markdownIt-Anchor" href="#ida快捷键"></a> ida快捷键</h2>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs armasm">空格键    反汇编窗口切换文本跟图形<br><span class="hljs-symbol">ESC</span>退到上一个操作地址<br>G搜索地址或者符号<br>N重命名<br>分号键   注释<br><span class="hljs-symbol">ALT</span>+M  添加标签<br><span class="hljs-symbol">CTRL</span>+M 列出所有标签<br><span class="hljs-symbol">CTRL</span> +S  二进制段的开始地址结束地址<br>C <span class="hljs-meta">code</span>   光标地址出内容解析成代码<br>P       在函数开始处使用P，从当前地址处解析成函数<br>D  <span class="hljs-meta">data</span>解析成数据<br>A   ASCII解析成ASCII<br>U   unDefined解析成未定义的内容<br>X  交叉引用<br><span class="hljs-symbol">F5</span>  C伪代码<br>菜单栏中的搜索功能中<br>有ALT+T 搜索文本<br><span class="hljs-symbol">ALT</span>+<span class="hljs-keyword">B</span> 搜索<span class="hljs-number">16</span>进制 搜索opcode 如ELF文件头<br>打开断点列表 CTRL+ALT+B<br>单步步入 <span class="hljs-built_in">F7</span><br>单步不过 F8<br>运行到函数返回地址 CTRL+<span class="hljs-built_in">F7</span><br>运行到光标处 <span class="hljs-built_in">F4</span><br></code></pre></td></tr></table></figure>
+<p>常见dll函数</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404234608216.png" srcset="/img/loading.gif" lazyload alt="image-20220404234608216"></p>
+<h1 id="lab1-1"><a class="markdownIt-Anchor" href="#lab1-1"></a> Lab1-1</h1>
+<p>Lab01-01.exe和Lab01-01.dll</p>
+<p><strong>1．将文件上传至 <a target="_blank" rel="noopener" href="http://www.VirusTotal.com/%E8%BF%9B%E8%A1%8C%E5%88%86%E6%9E%90%E5%B9%B6%E6%9F%A5%E7%9C%8B%E6%8A%A5%E5%91%8A%E3%80%82%E6%96%87%E4%BB%B6%E5%8C%B9%E9%85%8D%E5%88%B0%E4%BA%86%E5%B7%B2%E6%9C%89%E7%9A%84%E5%8F%8D%E7%97%85%E6%AF%92%E8%BD%AF%E4%BB%B6%E7%9A%84%E7%89%B9%E5%BE%81%EF%BC%9F">http://www.VirusTotal.com/进行分析并查看报告。文件匹配到了已有的反病毒软件的特征？</a></strong></p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404222643932.png" srcset="/img/loading.gif" lazyload alt="image-20220404222643932" style="zoom: 44;">
+<p><strong>2.这些文件是什么时候编译的?</strong></p>
+<p>exe：</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404222756154.png" srcset="/img/loading.gif" lazyload alt="image-20220404222756154" style="zoom: 50%;">
+<p>dll：</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404222833420.png" srcset="/img/loading.gif" lazyload alt="image-20220404222833420" style="zoom:50%;">
+<p><strong>3.这两个文件中是否存在迹象说明它们是否被加壳或混淆了?如果是，这些迹象在哪里?</strong></p>
+<p>用peid分析，能够正常识别编译环境，ep段正常，所以没有加密或者混淆</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404230056042.png" srcset="/img/loading.gif" lazyload alt="image-20220404230056042" style="zoom: 67%;">
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404230132634.png" srcset="/img/loading.gif" lazyload alt="image-20220404230132634" style="zoom:67%;">
+<p><strong>4.是否有导入函数显示出了这个恶意代码是做什么的?如果是，是哪些导入函数?</strong></p>
+<p>Lab01-01.dll的导入函数：</p>
+<p><strong>Wsock32.dll和Ws2_32.dll这两个是联网DLL，访问其中任何一个DLL的程序非常可能连接网络，或是执行网络相关的任务</strong>。</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404230936300.png" srcset="/img/loading.gif" lazyload alt="image-20220404230936300" style="zoom:67%;">
+<p>Lab01-01.exe的导入函数：</p>
+<p><strong>FindFirstFile和FindNextFile函数是特别值得关注的，因为它们提供的功能是搜索一个目录下所有的文件。</strong></p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404231310246.png" srcset="/img/loading.gif" lazyload alt="image-20220404231310246" style="zoom:67%;">
+<p>Lab01-01.exeexe，根据ida的字符串分析（ctrl+f12）可得到C:\Windows\System32\kerne132.dll可能是程序运行的特征</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404231801690.png" srcset="/img/loading.gif" lazyload alt="image-20220404231801690"></p>
+<h1 id="lab1-2"><a class="markdownIt-Anchor" href="#lab1-2"></a> Lab1-2</h1>
+<p>peid的ep段显示upx1，说明文件可能加壳了</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404232933256.png" srcset="/img/loading.gif" lazyload alt="image-20220404232933256" style="zoom:80%;">
+<p>upx -d 脱壳</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404234057741.png" srcset="/img/loading.gif" lazyload alt="image-20220404234057741" style="zoom:67%;">
+<p>脱壳后正常显示了</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404234206754.png" srcset="/img/loading.gif" lazyload alt="image-20220404234206754" style="zoom:67%;">
+<p>上传网页分析，得到导入函数</p>
+<p>WININET.dll，ADVAPI32.dll说明这个程序可能进行网络和进程的操作</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404234427730.png" srcset="/img/loading.gif" lazyload alt="image-20220404234427730" style="zoom:67%;">
+<p>通过ida的字符串分析</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404234925588.png" srcset="/img/loading.gif" lazyload alt="image-20220404234925588"></p>
+<p>这里可能是创建了一个名为MalService的服务（DisplayName的内容就是MalService）</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404235344187.png" srcset="/img/loading.gif" lazyload alt="image-20220404235344187" style="zoom:67%;">
+<h3 id="验证样本传输的网络数据"><a class="markdownIt-Anchor" href="#验证样本传输的网络数据"></a> 验证样本传输的网络数据</h3>
+<p>使用od分析，右键中文搜索引擎，智能搜索，找到网站</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220404235856331.png" srcset="/img/loading.gif" lazyload alt="image-20220404235856331" style="zoom: 50%;">
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220405001409765.png" srcset="/img/loading.gif" lazyload alt="image-20220405001409765" style="zoom: 67%;">
+<p>主线程窗口中选择数据窗口跟随（主线程窗口放大即可找到数据窗口）</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220405001453388.png" srcset="/img/loading.gif" lazyload alt="image-20220405001453388" style="zoom:50%;">
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220405001229162.png" srcset="/img/loading.gif" lazyload alt="image-20220405001229162" style="zoom:67%;">
+<p>改成127.0.0.1，用00填充剩下的位置</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220405170214320.png" srcset="/img/loading.gif" lazyload alt="image-20220405170214320" style="zoom: 67%;">
+<p>然后右键选择复制到可执行文件，然后再右键保存文件</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220405173030229.png" srcset="/img/loading.gif" lazyload alt="image-20220405173030229"></p>
+<p>PS：一直捕捉不到样本的网络数据，并且调试的时候会卡住，故放弃了。。。</p>
+<h1 id="lab1-3"><a class="markdownIt-Anchor" href="#lab1-3"></a> Lab1-3</h1>
+<p>首先可以看到这是个fsg壳，看到有人试过了，所以我也决定尝试手动脱壳试试</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220407235939049.png" srcset="/img/loading.gif" lazyload alt="image-20220407235939049"></p>
+<p>使用x32dbg，技巧就是f4过跳转，f8走，直到看到一个大跳，跟进去看看</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408000554875.png" srcset="/img/loading.gif" lazyload alt="image-20220408000554875" style="zoom:67%;">
+<p>如果到了系统领空，可以alt+f9跳出去</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408000629401.png" srcset="/img/loading.gif" lazyload alt="image-20220408000629401" style="zoom:67%;">
+<p>猜测这个就是程序的oep，在反汇编窗口中转到这个地址，然后直接f4看看</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408001010734.png" srcset="/img/loading.gif" lazyload alt="image-20220408001010734"></p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408001507799.png" srcset="/img/loading.gif" lazyload alt="image-20220408001507799" style="zoom:67%;">
+<p>然后使用这个插件，先dump一份</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408001453582.png" srcset="/img/loading.gif" lazyload alt="image-20220408001453582"></p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408002127337.png" srcset="/img/loading.gif" lazyload alt="image-20220408002127337" style="zoom: 67%;">
+<p>然后点击自动搜索IAT表和获取导入表</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408001835717.png" srcset="/img/loading.gif" lazyload alt="image-20220408001835717" style="zoom: 67%;">
+<p>最后修复dump的文件即可</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408002238168.png" srcset="/img/loading.gif" lazyload alt="image-20220408002238168" style="zoom:67%;">
+<p>导入表内容</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408003250804.png" srcset="/img/loading.gif" lazyload alt="image-20220408003250804" style="zoom: 67%;">
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408003313799.png" srcset="/img/loading.gif" lazyload alt="image-20220408003313799" style="zoom:67%;">
+<p>拖进ida，这个psz就是这个网址，可能程序会与这个网址进行连接</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408003447040.png" srcset="/img/loading.gif" lazyload alt="image-20220408003447040"></p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408003430268.png" srcset="/img/loading.gif" lazyload alt="image-20220408003430268" style="zoom:67%;">
+<p>CoCreateInstance的官方文档</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance">CoCreateInstance function （combaseapi.h） - Win32 apps |微软文档 (microsoft.com)</a></p>
+<p>相关文章<a target="_blank" rel="noopener" href="https://www.cnblogs.com/QKSword/p/10927987.html">COM组件的逆向 - QKSword - 博客园 (cnblogs.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/news/207966.html">TOD赤橙黄绿青蓝紫队系列：COM之恶 - FreeBuf网络安全行业门户</a></p>
+<p>参考以上文章，com组件使用之前需要初始化，初始化com组件之后，使用函数CoCreateInstance来调用对象和接口，第一个参数使用CLSID指定了对象，第四个参数使用IID指定了接口，最后一个参数为获得的接口指针。</p>
+<p>原型</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function">HRESULT <span class="hljs-title">CoCreateInstance</span><span class="hljs-params">(</span></span><br><span class="hljs-function"><span class="hljs-params">  [in]  REFCLSID  rclsid,</span></span><br><span class="hljs-function"><span class="hljs-params">  [in]  LPUNKNOWN pUnkOuter,</span></span><br><span class="hljs-function"><span class="hljs-params">  [in]  DWORD     dwClsContext,</span></span><br><span class="hljs-function"><span class="hljs-params">  [in]  REFIID    riid,</span></span><br><span class="hljs-function"><span class="hljs-params">  [out] LPVOID    *ppv</span></span><br><span class="hljs-function"><span class="hljs-params">)</span></span>;<br></code></pre></td></tr></table></figure>
+<p>iid和clsid的结构</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408143329179.png" srcset="/img/loading.gif" lazyload alt="image-20220408143329179"></p>
+<p>样本中查看其clsid为0002DF01-0000-0000-C000-000000000046</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408143206824.png" srcset="/img/loading.gif" lazyload alt="image-20220408143206824"></p>
+<p>可以直接在注册表里搜索（clsid在注册表HKEY_CLASSES_ROOT\CLSID下，IID在HKEY_CLASSES_ROOT\Interface或HKLM\Software\Classes\Interface下）</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408143924597.png" srcset="/img/loading.gif" lazyload alt="image-20220408143924597" style="zoom:67%;">
+<p>这里获取到的<strong>IID</strong>是<strong>D30C1661-CDAF-11D0-8A3E-00C04FC9E26E</strong></p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408150731857.png" srcset="/img/loading.gif" lazyload alt="image-20220408150731857"></p>
+<p>可以谷歌或者百度看看这个GUID对应的接口是什么，这里是IWebBrowser2</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408150943440.png" srcset="/img/loading.gif" lazyload alt="image-20220408150943440"></p>
+<p>找到接口之后，在ida的结构体窗口添加这个标准结构体（Vtbl是虚函数表的意思）</p>
+<img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408154815435.png" srcset="/img/loading.gif" lazyload alt="image-20220408154815435" style="zoom:67%;">
+<p>对于这个指针，右键convert to struct与结构体建立联系，就可以看到调用的函数是什么了</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408160058127.png" srcset="/img/loading.gif" lazyload alt="image-20220408160058127"></p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408161004654.png" srcset="/img/loading.gif" lazyload alt="image-20220408161004654"></p>
+<p>之后就可以知道正确调用的函数了</p>
+<p><img src="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/image-20220408160839433.png" srcset="/img/loading.gif" lazyload alt="image-20220408160839433"></p>
+<p>这里可以看到是使用了IWebBrowser2::Navigate方法<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/previous-versions/bb415532(v=msdn.10)?redirectedfrom=MSDN">IWebBrowser2：：导航|微软文档 (microsoft.com)</a>打开了这个url</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！，本博客仅用于交流学习，由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，文章作者不为此承担任何责任。
+文章作者拥有对此站文章的修改和解释权。如欲转载此站文章，需取得作者同意，且必须保证此文章的完整性，包括版权声明等全部内容。未经文章作者允许，不得任意修改或者增减此文章内容，不得以任何方式将其用于商业目的。若造成严重后果，本人将依法追究法律责任。 阅读本站文章则默认遵守此规则。
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03/26/%E7%A1%AC%E7%BC%96%E7%A0%81%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">硬编码学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
