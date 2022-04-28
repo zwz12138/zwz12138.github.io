@@ -1,0 +1,561 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#795548">
+  <meta name="description" content="">
+  <meta name="author" content="一叶枯舟">
+  <meta name="keywords" content="">
+  
+  <title>恶意代码分析lab-3，lab-5 - 一叶枯舟</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>一叶枯舟</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="恶意代码分析lab-3，lab-5">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-20 12:55" pubdate>
+        2022年4月20日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">恶意代码分析lab-3，lab-5</h1>
+            
+            <div class="markdown-body">
+              <h1 id="lab3-1"><a class="markdownIt-Anchor" href="#lab3-1"></a> lab3-1</h1>
+<p>peid打开，发现程序是加壳的，其实好像前面的章节不要求脱壳，而且这是动态分析章，所以就先不脱了</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417205127511.png" srcset="/img/loading.gif" lazyload alt="image-20220417205127511" style="zoom: 67%;">
+<p>ida分析，可疑的字符串如下</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417205351590.png" srcset="/img/loading.gif" lazyload alt="image-20220417205351590" style="zoom:67%;">
+<p>使用<strong>processmonitor</strong>，添加过滤器，把字符串中的<strong>vmx32to64.exe</strong>这个名称和<strong>lab03-01.exe</strong>添加进去</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417205901834.png" srcset="/img/loading.gif" lazyload alt="image-20220417205901834" style="zoom:67%;">
+<p>使用<strong>ApateDns</strong>检测dns行为</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417210845951.png" srcset="/img/loading.gif" lazyload alt="image-20220417210845951" style="zoom: 67%;">
+<p>用<strong>regshot</strong>拍摄注册表快照</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417211422396.png" srcset="/img/loading.gif" lazyload alt="image-20220417211422396" style="zoom:67%;">
+<p>不过我这里程序没有启动成功。。。。</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417212056777.png" srcset="/img/loading.gif" lazyload alt="image-20220417212056777" style="zoom:50%;">
+<p>但是能看到一些操作，因为没运行成功也没看到最后有没有那个exe。。。</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417212346286.png" srcset="/img/loading.gif" lazyload alt="image-20220417212346286" style="zoom:67%;">
+<h1 id="lab3-2-dll"><a class="markdownIt-Anchor" href="#lab3-2-dll"></a> lab3-2 dll</h1>
+<p>题目中要求让其自行安装，观察其导出表有类似名字为install的函数，据说是需要使用rundll32 ，加载</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417213338471.png" srcset="/img/loading.gif" lazyload alt="image-20220417213338471" style="zoom:67%;">
+<h1 id="lab-5-1"><a class="markdownIt-Anchor" href="#lab-5-1"></a> lab 5 -1</h1>
+<h2 id="1ida打开处即是dllmain"><a class="markdownIt-Anchor" href="#1ida打开处即是dllmain"></a> 1.ida打开处即是dllmain</h2>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220424235620166.png" srcset="/img/loading.gif" lazyload alt="image-20220424235620166"></p>
+<h2 id="2使用imports窗口并浏览到gethostbyname-导入函数定位到什么地址"><a class="markdownIt-Anchor" href="#2使用imports窗口并浏览到gethostbyname-导入函数定位到什么地址"></a> 2.使用Imports窗口并浏览到gethostbyname, 导入函数定位到什么地址？</h2>
+<p>在import窗口可以进行CTRL+F搜索</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425000515069.png" srcset="/img/loading.gif" lazyload alt="image-20220425000515069"></p>
+<h2 id="3有多少函数调用了gethostbyname"><a class="markdownIt-Anchor" href="#3有多少函数调用了gethostbyname"></a> 3.有多少函数调用了gethostbyname?</h2>
+<p>对这个函数右键，选择Jump to xref operand，可以看到这个表，r代表读取函数，p代表引用</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425000647035.png" srcset="/img/loading.gif" lazyload alt="image-20220425000647035" style="zoom:67%;">
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425000746391.png" srcset="/img/loading.gif" lazyload alt="image-20220425000746391" style="zoom:80%;">
+<h2 id="4将精力集中在位于0x10001757处的对gethostbyname的调用你能找出那个dns请求将被触发吗"><a class="markdownIt-Anchor" href="#4将精力集中在位于0x10001757处的对gethostbyname的调用你能找出那个dns请求将被触发吗"></a> 4.将精力集中在位于0x10001757处的对gethostbyname的调用，你能找出那个DNS请求将被触发吗？</h2>
+<p>用<strong>G键</strong>，可以直接跳转到对应地址</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425001820012.png" srcset="/img/loading.gif" lazyload alt="image-20220425001820012"></p>
+<p>这里先push了eax，然后调用函数，这里的off_10019040是字符串指针（指向这个字符串起始地址），然后加上13（dh），就刚好到p的位置</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425002427941.png" srcset="/img/loading.gif" lazyload alt="image-20220425002427941"></p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425002937272.png" srcset="/img/loading.gif" lazyload alt="image-20220425002937272"></p>
+<h2 id="5ida-pro识别了在0x10001656处的子过程中的多少个局部变量"><a class="markdownIt-Anchor" href="#5ida-pro识别了在0x10001656处的子过程中的多少个局部变量"></a> 5.IDA Pro识别了在0x10001656处的子过程中的多少个局部变量？</h2>
+<p>G键跳转此地址，可以看到有差不多23个局部变量</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425003137134.png" srcset="/img/loading.gif" lazyload alt="image-20220425003137134" style="zoom:67%;">
+<h2 id="6ida-pro识别了在0x10001656处的子过程中的多少个参数"><a class="markdownIt-Anchor" href="#6ida-pro识别了在0x10001656处的子过程中的多少个参数"></a> 6.IDA Pro识别了在0x10001656处的子过程中的多少个参数？</h2>
+<p>同上，可以看到有一个<strong>lpThreadParameter</strong>参数</p>
+<h2 id="7使用strings窗口来在反汇编中定位字符串cmdexe-c-它位于哪"><a class="markdownIt-Anchor" href="#7使用strings窗口来在反汇编中定位字符串cmdexe-c-它位于哪"></a> 7.使用Strings窗口，来在反汇编中定位字符串\cmd.exe /c。 它位于哪？</h2>
+<p>shift+f12 用字符串窗口 CTRL+ F查看</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425003348521.png" srcset="/img/loading.gif" lazyload alt="image-20220425003348521" style="zoom:67%;">
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425003458480.png" srcset="/img/loading.gif" lazyload alt="image-20220425003458480" style="zoom:67%;">
+<h2 id="8在引用cmdexe-c的代码所在的区域发生了什么"><a class="markdownIt-Anchor" href="#8在引用cmdexe-c的代码所在的区域发生了什么"></a> 8.在引用\cmd.exe /c的代码所在的区域发生了什么？</h2>
+<p>转到调用\cmd.exe /的函数，上面会打印这段话，猜测可能是远程执行shell的函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425004248821.png" srcset="/img/loading.gif" lazyload alt="image-20220425004248821"></p>
+<h2 id="9在同样的区域在0x100101c8处看起来好像dword_1008e5c4是一个全局变量它帮助决定走哪条路径-那恶意代码是如何设置dword_1008e5c4的呢提示使用dword_1008e5c4的交叉引用"><a class="markdownIt-Anchor" href="#9在同样的区域在0x100101c8处看起来好像dword_1008e5c4是一个全局变量它帮助决定走哪条路径-那恶意代码是如何设置dword_1008e5c4的呢提示使用dword_1008e5c4的交叉引用"></a> 9.在同样的区域，在0x100101C8处，看起来好像dword_1008E5C4是一个全局变量，它帮助决定走哪条路径。那恶意代码是如何设置dword_1008E5C4的呢？（提示：使用dword_1008E5C4的交叉引用。）</h2>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425004426252.png" srcset="/img/loading.gif" lazyload alt="image-20220425004426252" style="zoom:67%;">
+<p>w表示写入，点进去第一处看到，eax的值写入到了这个位置，在这之前调用了sub_10003695函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426012130096.png" srcset="/img/loading.gif" lazyload alt="image-20220426012130096"></p>
+<p>跟进去函数可以看到，返回之前有</p>
+<p><strong>cmp     [ebp+VersionInformation.dwPlatformId], 2</strong></p>
+<p><strong>setz    al</strong></p>
+<p>这两个操作</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426012032565.png" srcset="/img/loading.gif" lazyload alt="image-20220426012032565" style="zoom:80%;">
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426012606122.png" srcset="/img/loading.gif" lazyload alt="image-20220426012606122"></p>
+<p>根据https://blog.csdn.net/m0_37442062/article/details/116423682的解释</p>
+<p>dwPlatformId与2进行比较确定设置AL寄存器。2代表VER_PLATFORM_WIN32_NT，如果这里相等，则AL寄存器将被置位。<br>
+setz：当ZF标志被设定时，AL寄存器设1<br>
+所以sub_10003694的返回值是1,最后的dword_1008E5C4的值就被赋成了1,所以这个全局变量在程序运行的时候一直保持的是1</p>
+<h1 id="10在位于0x1000ff58处的子过程中的几百行指令中一系列使用memecmp来比较字符串的比较-如果对robotwork的字符串比较是成功的当memcmp返回0会发生什么"><a class="markdownIt-Anchor" href="#10在位于0x1000ff58处的子过程中的几百行指令中一系列使用memecmp来比较字符串的比较-如果对robotwork的字符串比较是成功的当memcmp返回0会发生什么"></a> 10.在位于0x1000FF58处的子过程中的几百行指令中，一系列使用memecmp来比较字符串的比较。如果对robotwork的字符串比较是成功的（当memcmp返回0），会发生什么？</h1>
+<p>比较成功后会调用sub_100052A2函数</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426013143164.png" srcset="/img/loading.gif" lazyload alt="image-20220426013143164" style="zoom:67%;">
+<p>按汇编来说就是把调用memcmp，之后add esp 0ch，栈顶+12，等于释放12个字节的空间，然后test eax eax，如果返回为0，则不跳转jnz的地址</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426014612897.png" srcset="/img/loading.gif" lazyload alt="image-20220426014612897" style="zoom:50%;">
+<h1 id="11pslist导出函数做了什么"><a class="markdownIt-Anchor" href="#11pslist导出函数做了什么"></a> 11.PSLIST导出函数做了什么？</h1>
+<p>在导出函数窗口里找到该函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426231954637.png" srcset="/img/loading.gif" lazyload alt="image-20220426231954637"></p>
+<p>首先调用了sub_100036c3函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426232057235.png" srcset="/img/loading.gif" lazyload alt="image-20220426232057235"></p>
+<p>获取了系统版本，如果VersionInformation.dwPlatformId == 2 &amp;&amp; VersionInformation.dwMajorVersion &gt;= 5则返回ture</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426232528820.png" srcset="/img/loading.gif" lazyload alt="image-20220426232528820" style="zoom:67%;">
+<h1 id="12使用图模式来绘制出对sub_10004e79的交叉引用图-当进入这个函数时那个api函数可能被调用仅仅基于这些api函数你会如何重命名这个函数"><a class="markdownIt-Anchor" href="#12使用图模式来绘制出对sub_10004e79的交叉引用图-当进入这个函数时那个api函数可能被调用仅仅基于这些api函数你会如何重命名这个函数"></a> 12.使用图模式来绘制出对sub_10004E79的交叉引用图。当进入这个函数时，那个API函数可能被调用？仅仅基于这些API函数，你会如何重命名这个函数？</h1>
+<p>在view-a里g跳转到这个函数，然后右键xref graph from</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234008189.png" srcset="/img/loading.gif" lazyload alt="image-20220426234008189" style="zoom: 67%;">
+<p>然后就可以看到这个函数的调用图</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234133634.png" srcset="/img/loading.gif" lazyload alt="image-20220426234133634" style="zoom:67%;">
+<p>这里可以看到GetSystemDefaultLangID函数，貌似是获取系统的默认语言，然后还有send，malloc，free，感觉像是发送系统默认语言信息的函数</p>
+<h1 id="13dllmain直接调用了多少个windows-api-多少个在深度为2时被调用"><a class="markdownIt-Anchor" href="#13dllmain直接调用了多少个windows-api-多少个在深度为2时被调用"></a> 13.DLLMain直接调用了多少个Windows API？ 多少个在深度为2时被调用？</h1>
+<p>如果没找到视图的选项可以右键工具栏打开</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234703456.png" srcset="/img/loading.gif" lazyload alt="image-20220426234703456" style="zoom:67%;">
+<p>选最右边这个，深度选择1，然后创建</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234828507.png" srcset="/img/loading.gif" lazyload alt="image-20220426234828507" style="zoom:67%;">
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235133333.png" srcset="/img/loading.gif" lazyload alt="image-20220426235133333" style="zoom:67%;">
+<p>深度2同理，调用的函数太多了我就不放了</p>
+<h1 id="14在0x10001358处有一个对sleep一个使用一个包含要睡眠的毫秒数的参数的api函数的调用-顺着代码向后看如果这段代码执行这个程序会睡眠多久"><a class="markdownIt-Anchor" href="#14在0x10001358处有一个对sleep一个使用一个包含要睡眠的毫秒数的参数的api函数的调用-顺着代码向后看如果这段代码执行这个程序会睡眠多久"></a> 14.在0x10001358处，有一个对Sleep（一个使用一个包含要睡眠的毫秒数的参数的API函数）的调用。顺着代码向后看，如果这段代码执行，这个程序会睡眠多久？</h1>
+<p>g跳转到这个地址，可以看到参数是v16*1000，v16又是v16 = atoi(off_10019020[0] + 13);得来的</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235357429.png" srcset="/img/loading.gif" lazyload alt="image-20220426235357429" style="zoom:67%;">
+<p>进去off_10019020，可以看到这个字符串加13的位置就是30，所以v16就是30，sleep的参数就是30*1000毫秒<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235521309.png" srcset="/img/loading.gif" lazyload alt="image-20220426235521309"></p>
+<h1 id="15在0x10001701处是一个对socket的调用-它的3个参数是什么"><a class="markdownIt-Anchor" href="#15在0x10001701处是一个对socket的调用-它的3个参数是什么"></a> 15.在0x10001701处是一个对socket的调用。它的3个参数是什么？</h1>
+<p>g键跳转到这个地址发现这3个参数，据说是符号常量</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235712866.png" srcset="/img/loading.gif" lazyload alt="image-20220426235712866" style="zoom:67%;">
+<p>然后对着这个常量右键-选择使用标准符号常量，可自己更改其显示的符号常量</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">socket参数详解<br><span class="hljs-type">int</span> socket(<span class="hljs-type">int</span> <span class="hljs-keyword">domain</span>, <span class="hljs-type">int</span> <span class="hljs-keyword">type</span>, <span class="hljs-type">int</span> protocol);<br><br><span class="hljs-keyword">domain</span>可以取以下参数<br>AF_INET:Address <span class="hljs-keyword">Family</span>，指定TCP/IP协议家族<br>PF_INET:Protocol <span class="hljs-keyword">Family</span><br>在windows中 AF_INET和PF_INET完全一样<br>在某些Linux中两者会有差距（但一般也相同），理论上建立socket时是指定协议，应该用PF_XXX,设置地址时用AF_XXX，不过在两者相等的情况下混用也没啥。<br>AF_UNIX：用于同一台计算机的进程间通信<br>AF_INET6:ipv6网络协议<br><br><br><span class="hljs-keyword">type</span>:套接字类型<br>SOCK_STREAM:流套接字，对应TCP协议<br>SOCK_DGRAM:数据报套接字，对应UDP协议<br>SOCK_RAW:原始套接字，提供原始网络协议存取<br>SOCK_PACKET:直接从网络驱动获取数据，即从数据链路层开始处理（过时了）<br>如果想获取数据链路层，可用socket(PF_PACKET, SOCK_RAW, htons(ETH_P_IP|ETH_P_ARP|ETH_P_ALL))<br><br>protocol:协议类型<br>传输层：IPPROTO_TCP、IPPROTO_UDP、IPPROTO_ICMP<br>网络层：htons(ETH_P_IP|ETH_P_ARP|ETH_P_ALL)<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427000529385.png" srcset="/img/loading.gif" lazyload alt="image-20220427000529385"></p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427000624001.png" srcset="/img/loading.gif" lazyload alt="image-20220427000624001" style="zoom:67%;">
+<h1 id="16就是上面使用符号常量的过程"><a class="markdownIt-Anchor" href="#16就是上面使用符号常量的过程"></a> 16.就是上面使用符号常量的过程</h1>
+<h1 id="17搜索in指令opcode-0xed的使用-这个指令和一个魔术字符串vmxh用来进行vmware检测-这在这个恶意代码中被使用了吗使用对执行in指令函数的交叉引用能发现进一步检测vmware的证据吗"><a class="markdownIt-Anchor" href="#17搜索in指令opcode-0xed的使用-这个指令和一个魔术字符串vmxh用来进行vmware检测-这在这个恶意代码中被使用了吗使用对执行in指令函数的交叉引用能发现进一步检测vmware的证据吗"></a> 17.搜索in指令（opcode 0xED）的使用。这个指令和一个魔术字符串VMXh用来进行VMware检测。这在这个恶意代码中被使用了吗？使用对执行in指令函数的交叉引用，能发现进一步检测VMware的证据吗？</h1>
+<p>搜索里选择字节搜索，然后把这个勾上</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427001010389.png" srcset="/img/loading.gif" lazyload alt="image-20220427001010389" style="zoom:67%;">
+<p>找到in这个指令</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427001107593.png" srcset="/img/loading.gif" lazyload alt="image-20220427001107593" style="zoom:67%;">
+<p>跳转过去就可以看到这个字符串</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427001156478.png" srcset="/img/loading.gif" lazyload alt="image-20220427001156478"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/%E5%AD%A6%E4%B9%A0/">学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0/">逆向学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！，本博客仅用于交流学习，由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，文章作者不为此承担任何责任。
+文章作者拥有对此站文章的修改和解释权。如欲转载此站文章，需取得作者同意，且必须保证此文章的完整性，包括版权声明等全部内容。未经文章作者允许，不得任意修改或者增减此文章内容，不得以任何方式将其用于商业目的。若造成严重后果，本人将依法追究法律责任。 阅读本站文章则默认遵守此规则。
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04/14/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90Lab-1/">
+                        <span class="hidden-mobile">恶意代码分析Lab-1</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        琼ICP备2021006694号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

@@ -3476,4 +3476,120 @@ Base + Index*2^Scale (Scale描述2^Scale，所以只能为 *1 *2 *4 *8)</p>
         <tag>python学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>恶意代码分析lab-3，lab-5</title>
+    <url>/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/</url>
+    <content><![CDATA[<h1 id="lab3-1"><a class="markdownIt-Anchor" href="#lab3-1"></a> lab3-1</h1>
+<p>peid打开，发现程序是加壳的，其实好像前面的章节不要求脱壳，而且这是动态分析章，所以就先不脱了</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417205127511.png" alt="image-20220417205127511" style="zoom: 67%;">
+<p>ida分析，可疑的字符串如下</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417205351590.png" alt="image-20220417205351590" style="zoom:67%;">
+<p>使用<strong>processmonitor</strong>，添加过滤器，把字符串中的<strong>vmx32to64.exe</strong>这个名称和<strong>lab03-01.exe</strong>添加进去</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417205901834.png" alt="image-20220417205901834" style="zoom:67%;">
+<p>使用<strong>ApateDns</strong>检测dns行为</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417210845951.png" alt="image-20220417210845951" style="zoom: 67%;">
+<p>用<strong>regshot</strong>拍摄注册表快照</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417211422396.png" alt="image-20220417211422396" style="zoom:67%;">
+<p>不过我这里程序没有启动成功。。。。</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417212056777.png" alt="image-20220417212056777" style="zoom:50%;">
+<p>但是能看到一些操作，因为没运行成功也没看到最后有没有那个exe。。。</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417212346286.png" alt="image-20220417212346286" style="zoom:67%;">
+<h1 id="lab3-2-dll"><a class="markdownIt-Anchor" href="#lab3-2-dll"></a> lab3-2 dll</h1>
+<p>题目中要求让其自行安装，观察其导出表有类似名字为install的函数，据说是需要使用rundll32 ，加载</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220417213338471.png" alt="image-20220417213338471" style="zoom:67%;">
+<h1 id="lab-5-1"><a class="markdownIt-Anchor" href="#lab-5-1"></a> lab 5 -1</h1>
+<h2 id="1ida打开处即是dllmain"><a class="markdownIt-Anchor" href="#1ida打开处即是dllmain"></a> 1.ida打开处即是dllmain</h2>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220424235620166.png" alt="image-20220424235620166"></p>
+<h2 id="2使用imports窗口并浏览到gethostbyname-导入函数定位到什么地址"><a class="markdownIt-Anchor" href="#2使用imports窗口并浏览到gethostbyname-导入函数定位到什么地址"></a> 2.使用Imports窗口并浏览到gethostbyname, 导入函数定位到什么地址？</h2>
+<p>在import窗口可以进行CTRL+F搜索</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425000515069.png" alt="image-20220425000515069"></p>
+<h2 id="3有多少函数调用了gethostbyname"><a class="markdownIt-Anchor" href="#3有多少函数调用了gethostbyname"></a> 3.有多少函数调用了gethostbyname?</h2>
+<p>对这个函数右键，选择Jump to xref operand，可以看到这个表，r代表读取函数，p代表引用</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425000647035.png" alt="image-20220425000647035" style="zoom:67%;">
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425000746391.png" alt="image-20220425000746391" style="zoom:80%;">
+<h2 id="4将精力集中在位于0x10001757处的对gethostbyname的调用你能找出那个dns请求将被触发吗"><a class="markdownIt-Anchor" href="#4将精力集中在位于0x10001757处的对gethostbyname的调用你能找出那个dns请求将被触发吗"></a> 4.将精力集中在位于0x10001757处的对gethostbyname的调用，你能找出那个DNS请求将被触发吗？</h2>
+<p>用<strong>G键</strong>，可以直接跳转到对应地址</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425001820012.png" alt="image-20220425001820012"></p>
+<p>这里先push了eax，然后调用函数，这里的off_10019040是字符串指针（指向这个字符串起始地址），然后加上13（dh），就刚好到p的位置</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425002427941.png" alt="image-20220425002427941"></p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425002937272.png" alt="image-20220425002937272"></p>
+<h2 id="5ida-pro识别了在0x10001656处的子过程中的多少个局部变量"><a class="markdownIt-Anchor" href="#5ida-pro识别了在0x10001656处的子过程中的多少个局部变量"></a> 5.IDA Pro识别了在0x10001656处的子过程中的多少个局部变量？</h2>
+<p>G键跳转此地址，可以看到有差不多23个局部变量</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425003137134.png" alt="image-20220425003137134" style="zoom:67%;">
+<h2 id="6ida-pro识别了在0x10001656处的子过程中的多少个参数"><a class="markdownIt-Anchor" href="#6ida-pro识别了在0x10001656处的子过程中的多少个参数"></a> 6.IDA Pro识别了在0x10001656处的子过程中的多少个参数？</h2>
+<p>同上，可以看到有一个<strong>lpThreadParameter</strong>参数</p>
+<h2 id="7使用strings窗口来在反汇编中定位字符串cmdexe-c-它位于哪"><a class="markdownIt-Anchor" href="#7使用strings窗口来在反汇编中定位字符串cmdexe-c-它位于哪"></a> 7.使用Strings窗口，来在反汇编中定位字符串\cmd.exe /c。 它位于哪？</h2>
+<p>shift+f12 用字符串窗口 CTRL+ F查看</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425003348521.png" alt="image-20220425003348521" style="zoom:67%;">
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425003458480.png" alt="image-20220425003458480" style="zoom:67%;">
+<h2 id="8在引用cmdexe-c的代码所在的区域发生了什么"><a class="markdownIt-Anchor" href="#8在引用cmdexe-c的代码所在的区域发生了什么"></a> 8.在引用\cmd.exe /c的代码所在的区域发生了什么？</h2>
+<p>转到调用\cmd.exe /的函数，上面会打印这段话，猜测可能是远程执行shell的函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425004248821.png" alt="image-20220425004248821"></p>
+<h2 id="9在同样的区域在0x100101c8处看起来好像dword_1008e5c4是一个全局变量它帮助决定走哪条路径-那恶意代码是如何设置dword_1008e5c4的呢提示使用dword_1008e5c4的交叉引用"><a class="markdownIt-Anchor" href="#9在同样的区域在0x100101c8处看起来好像dword_1008e5c4是一个全局变量它帮助决定走哪条路径-那恶意代码是如何设置dword_1008e5c4的呢提示使用dword_1008e5c4的交叉引用"></a> 9.在同样的区域，在0x100101C8处，看起来好像dword_1008E5C4是一个全局变量，它帮助决定走哪条路径。那恶意代码是如何设置dword_1008E5C4的呢？（提示：使用dword_1008E5C4的交叉引用。）</h2>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220425004426252.png" alt="image-20220425004426252" style="zoom:67%;">
+<p>w表示写入，点进去第一处看到，eax的值写入到了这个位置，在这之前调用了sub_10003695函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426012130096.png" alt="image-20220426012130096"></p>
+<p>跟进去函数可以看到，返回之前有</p>
+<p><strong>cmp     [ebp+VersionInformation.dwPlatformId], 2</strong></p>
+<p><strong>setz    al</strong></p>
+<p>这两个操作</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426012032565.png" alt="image-20220426012032565" style="zoom:80%;">
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426012606122.png" alt="image-20220426012606122"></p>
+<p>根据https://blog.csdn.net/m0_37442062/article/details/116423682的解释</p>
+<p>dwPlatformId与2进行比较确定设置AL寄存器。2代表VER_PLATFORM_WIN32_NT，如果这里相等，则AL寄存器将被置位。<br>
+setz：当ZF标志被设定时，AL寄存器设1<br>
+所以sub_10003694的返回值是1,最后的dword_1008E5C4的值就被赋成了1,所以这个全局变量在程序运行的时候一直保持的是1</p>
+<h1 id="10在位于0x1000ff58处的子过程中的几百行指令中一系列使用memecmp来比较字符串的比较-如果对robotwork的字符串比较是成功的当memcmp返回0会发生什么"><a class="markdownIt-Anchor" href="#10在位于0x1000ff58处的子过程中的几百行指令中一系列使用memecmp来比较字符串的比较-如果对robotwork的字符串比较是成功的当memcmp返回0会发生什么"></a> 10.在位于0x1000FF58处的子过程中的几百行指令中，一系列使用memecmp来比较字符串的比较。如果对robotwork的字符串比较是成功的（当memcmp返回0），会发生什么？</h1>
+<p>比较成功后会调用sub_100052A2函数</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426013143164.png" alt="image-20220426013143164" style="zoom:67%;">
+<p>按汇编来说就是把调用memcmp，之后add esp 0ch，栈顶+12，等于释放12个字节的空间，然后test eax eax，如果返回为0，则不跳转jnz的地址</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426014612897.png" alt="image-20220426014612897" style="zoom:50%;">
+<h1 id="11pslist导出函数做了什么"><a class="markdownIt-Anchor" href="#11pslist导出函数做了什么"></a> 11.PSLIST导出函数做了什么？</h1>
+<p>在导出函数窗口里找到该函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426231954637.png" alt="image-20220426231954637"></p>
+<p>首先调用了sub_100036c3函数</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426232057235.png" alt="image-20220426232057235"></p>
+<p>获取了系统版本，如果VersionInformation.dwPlatformId == 2 &amp;&amp; VersionInformation.dwMajorVersion &gt;= 5则返回ture</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426232528820.png" alt="image-20220426232528820" style="zoom:67%;">
+<h1 id="12使用图模式来绘制出对sub_10004e79的交叉引用图-当进入这个函数时那个api函数可能被调用仅仅基于这些api函数你会如何重命名这个函数"><a class="markdownIt-Anchor" href="#12使用图模式来绘制出对sub_10004e79的交叉引用图-当进入这个函数时那个api函数可能被调用仅仅基于这些api函数你会如何重命名这个函数"></a> 12.使用图模式来绘制出对sub_10004E79的交叉引用图。当进入这个函数时，那个API函数可能被调用？仅仅基于这些API函数，你会如何重命名这个函数？</h1>
+<p>在view-a里g跳转到这个函数，然后右键xref graph from</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234008189.png" alt="image-20220426234008189" style="zoom: 67%;">
+<p>然后就可以看到这个函数的调用图</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234133634.png" alt="image-20220426234133634" style="zoom:67%;">
+<p>这里可以看到GetSystemDefaultLangID函数，貌似是获取系统的默认语言，然后还有send，malloc，free，感觉像是发送系统默认语言信息的函数</p>
+<h1 id="13dllmain直接调用了多少个windows-api-多少个在深度为2时被调用"><a class="markdownIt-Anchor" href="#13dllmain直接调用了多少个windows-api-多少个在深度为2时被调用"></a> 13.DLLMain直接调用了多少个Windows API？ 多少个在深度为2时被调用？</h1>
+<p>如果没找到视图的选项可以右键工具栏打开</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234703456.png" alt="image-20220426234703456" style="zoom:67%;">
+<p>选最右边这个，深度选择1，然后创建</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426234828507.png" alt="image-20220426234828507" style="zoom:67%;">
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235133333.png" alt="image-20220426235133333" style="zoom:67%;">
+<p>深度2同理，调用的函数太多了我就不放了</p>
+<h1 id="14在0x10001358处有一个对sleep一个使用一个包含要睡眠的毫秒数的参数的api函数的调用-顺着代码向后看如果这段代码执行这个程序会睡眠多久"><a class="markdownIt-Anchor" href="#14在0x10001358处有一个对sleep一个使用一个包含要睡眠的毫秒数的参数的api函数的调用-顺着代码向后看如果这段代码执行这个程序会睡眠多久"></a> 14.在0x10001358处，有一个对Sleep（一个使用一个包含要睡眠的毫秒数的参数的API函数）的调用。顺着代码向后看，如果这段代码执行，这个程序会睡眠多久？</h1>
+<p>g跳转到这个地址，可以看到参数是v16*1000，v16又是v16 = atoi(off_10019020[0] + 13);得来的</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235357429.png" alt="image-20220426235357429" style="zoom:67%;">
+<p>进去off_10019020，可以看到这个字符串加13的位置就是30，所以v16就是30，sleep的参数就是30*1000毫秒<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235521309.png" alt="image-20220426235521309"></p>
+<h1 id="15在0x10001701处是一个对socket的调用-它的3个参数是什么"><a class="markdownIt-Anchor" href="#15在0x10001701处是一个对socket的调用-它的3个参数是什么"></a> 15.在0x10001701处是一个对socket的调用。它的3个参数是什么？</h1>
+<p>g键跳转到这个地址发现这3个参数，据说是符号常量</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220426235712866.png" alt="image-20220426235712866" style="zoom:67%;">
+<p>然后对着这个常量右键-选择使用标准符号常量，可自己更改其显示的符号常量</p>
+<figure class="highlight pgsql"><table><tr><td class="code"><pre><code class="hljs pgsql">socket参数详解<br><span class="hljs-type">int</span> socket(<span class="hljs-type">int</span> <span class="hljs-keyword">domain</span>, <span class="hljs-type">int</span> <span class="hljs-keyword">type</span>, <span class="hljs-type">int</span> protocol);<br><br><span class="hljs-keyword">domain</span>可以取以下参数<br>AF_INET:Address <span class="hljs-keyword">Family</span>，指定TCP/IP协议家族<br>PF_INET:Protocol <span class="hljs-keyword">Family</span><br>在windows中 AF_INET和PF_INET完全一样<br>在某些Linux中两者会有差距（但一般也相同），理论上建立socket时是指定协议，应该用PF_XXX,设置地址时用AF_XXX，不过在两者相等的情况下混用也没啥。<br>AF_UNIX：用于同一台计算机的进程间通信<br>AF_INET6:ipv6网络协议<br><br><br><span class="hljs-keyword">type</span>:套接字类型<br>SOCK_STREAM:流套接字，对应TCP协议<br>SOCK_DGRAM:数据报套接字，对应UDP协议<br>SOCK_RAW:原始套接字，提供原始网络协议存取<br>SOCK_PACKET:直接从网络驱动获取数据，即从数据链路层开始处理（过时了）<br>如果想获取数据链路层，可用socket(PF_PACKET, SOCK_RAW, htons(ETH_P_IP|ETH_P_ARP|ETH_P_ALL))<br><br>protocol:协议类型<br>传输层：IPPROTO_TCP、IPPROTO_UDP、IPPROTO_ICMP<br>网络层：htons(ETH_P_IP|ETH_P_ARP|ETH_P_ALL)<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427000529385.png" alt="image-20220427000529385"></p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427000624001.png" alt="image-20220427000624001" style="zoom:67%;">
+<h1 id="16就是上面使用符号常量的过程"><a class="markdownIt-Anchor" href="#16就是上面使用符号常量的过程"></a> 16.就是上面使用符号常量的过程</h1>
+<h1 id="17搜索in指令opcode-0xed的使用-这个指令和一个魔术字符串vmxh用来进行vmware检测-这在这个恶意代码中被使用了吗使用对执行in指令函数的交叉引用能发现进一步检测vmware的证据吗"><a class="markdownIt-Anchor" href="#17搜索in指令opcode-0xed的使用-这个指令和一个魔术字符串vmxh用来进行vmware检测-这在这个恶意代码中被使用了吗使用对执行in指令函数的交叉引用能发现进一步检测vmware的证据吗"></a> 17.搜索in指令（opcode 0xED）的使用。这个指令和一个魔术字符串VMXh用来进行VMware检测。这在这个恶意代码中被使用了吗？使用对执行in指令函数的交叉引用，能发现进一步检测VMware的证据吗？</h1>
+<p>搜索里选择字节搜索，然后把这个勾上</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427001010389.png" alt="image-20220427001010389" style="zoom:67%;">
+<p>找到in这个指令</p>
+<img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427001107593.png" alt="image-20220427001107593" style="zoom:67%;">
+<p>跳转过去就可以看到这个字符串</p>
+<p><img src="/2022/04/20/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90lab-3%EF%BC%8Clab-5/image-20220427001156478.png" alt="image-20220427001156478"></p>
+]]></content>
+      <categories>
+        <category>逆向学习</category>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>逆向学习</tag>
+      </tags>
+  </entry>
 </search>
